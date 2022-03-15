@@ -19,4 +19,4 @@
 
 5. количество элементов в массиве `int arrSize = sizeof(arr)/sizeof(arr[0]);` или `std::array::size` 
 
-6. сравнение double 
+6. сравнение double , (строка 221)
