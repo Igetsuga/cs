@@ -1,4 +1,4 @@
-// Сиразетдинов Рустем КМБО-01-21 Вариант- 24
+// Г‘ГЁГ°Г Г§ГҐГІГ¤ГЁГ­Г®Гў ГђГіГ±ГІГҐГ¬ ГЉГЊГЃГЋ-01-21 Г‚Г Г°ГЁГ Г­ГІ- 24
 // Circle{double radius,  tuple<double, double> centerCoords(X,Y)}
 #include <iostream>
 #include <tuple>
