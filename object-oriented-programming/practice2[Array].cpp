@@ -1,101 +1,108 @@
 // Сиразетдинов Рустем КМБО-01-21 Вариант- 24
-// 
-// quantity и capacity, должны быть по разному устроены: quantity- количество элементов в массиве
-// capacity- память для этих элементов в байтах, тогда capacity = sizeof(type) * quantity
-// 
-// не понятно как работает double* ptr; 
-// 
-// не понятно как работает ptr = new double[Dimension]
-// 
-// строка 66- деконструктор, если бы мы не проверяли условие (ptr != NULL), то 
-// что тогда удаляла бы функция delete ?
 
-// количество элементов в массиве int arrSize = sizeof(arr)/sizeof(arr[0]);
-// или std::array::size 
 
 #include <iostream>
 #include <vector>
 
 using namespace std;
 
-class ArrayParent
+class ArrayMaster
 {
 protected:
 
-	int capacity; // количество памяти для массива
+	int capacity; // amount of memory for the array
 
-	int quantity; // количество элементов в массиве - сколько памяти используем
+	int quantity; // number of elements in the array < `capacity` 
 
-	double* ptr; // указатель на ячейки в памити, которые все вместе образуют массив
-	// поскольку для массива необходима непрерывная область памяти, то где гарнтия, что указатель ptr
-	// дает нам именно последовательные ячейки памяти?
+	double* ptr; // a pointer to the cells in memory that all together form an array
 
 public:
-	//конструкторы и деструктор
 	
-	// default constructor --> capacity = 100; quantity = 0; 
-	ArrayParent(int Dimension = 100)
+	// default constructor --> `capacity` = 100; `quantity` = 0; 
+	ArrayMaster(int Dimension = 100)
 	{
-		cout << "\n" << "ArrayParent constructor";
+		cout << "\n" << "default constructor";
 
 		capacity = Dimension;
 		quantity = 0;
-		ptr = new double[Dimension]; // new- выделение оперативной памяти delete- удаление элементов из памяти
+		ptr = new double[Dimension]; 
 	}
 
+	// constructor_of_copy --> copy of array 
+	ArrayMaster(const ArrayMaster& array_existing)
+	{
+		capacity = array_existing.capacity;
+		quantity = array_existing.quantity;
+		ptr = new double[capacity];
 
-	// конструктор принимает существующий массив --> создает копию массива, но с большей capacity
-	ArrayParent(double* array_exist, int len)
+		for (int itt = 0; itt < array_existing.quantity; itt++)
+		{
+			ptr[itt] = array_existing.ptr[itt];
+		}
+	}
+
+	// constructor_1 --> copy but `capacity` is bigger
+	ArrayMaster(double* array_existing, int len) // чем это отличается от 60 строчки
 	{
 
-		cout << "\n" << "ArrayParent constructor";
+		cout << "\n" << "constructor_1";
 
-		capacity = (len >= 1000) ? 2 * len : 1000; // увеличиваем выделяемую память для того, чтобы потом
-												   // можно было добавить в него элементы
+		capacity = (len >= 1000) ? 2 * len : 1000; // increase `copy.capacity` to adding elements after
+
 		ptr = new double[capacity];
 
 		for (int itt = 0; itt < len; itt++)
 		{
-			ptr[itt] = array_exist[itt];
+			ptr[itt] = array_existing[itt];
 		}
 	}
 
-	// консруктор копии существующего массива
-	ArrayParent(const ArrayParent& P)
+	// constructor_2 --> copy of array
+	ArrayMaster(const vector<double>& vector) // не понятно
 	{
-		capacity = P.capacity;
-		quantity = P.quantity;
+		//создание копии объекта - в основном, при возвращении результата из функции / передаче параметров в функцию
+		cout << "\n" << "constructor_2";
+		capacity = sizeof(vector);
+		quantity = vector.size();
 		ptr = new double[capacity];
-		for (int itt = 0; itt < P.quantity; itt++)
+
+		for (int itt = 0; itt < vector.size(); itt++)
 		{
-			ptr[itt] = P.ptr[itt];
+			ptr[itt] = vector[itt];
 		}
+
+		// return (*this); ????
 	}
 
-	// деструктор
-	// NUll - такой указатель при сравнении не будет равен любому «корректному»
-	// указателю. То есть, можно считать, что нулевой указатель не содержит корректного 
-	// адреса в памяти, но поскольку NULL разворачивается в 0, то будем использвать nullptr
-	~ArrayParent()
+
+
+	// destructor
+	~ArrayMaster()
 	{
-		cout << "\n" << "ArrayParent destructor";
-		if (ptr != nullptr) // если под массив была выделена памиять через type* ptr; то ptr != NULL
+		cout << "\n" << "ArrayMaster has been deleted";
+
+		if (ptr != nullptr) 
 		{
-			delete[] ptr; // очищение памяти, которая ранее была занята элементами массива
+			delete[] ptr; 
 			ptr = nullptr;
 		}
 	}
 
-	//обращение к полям
+
+
+
+	// get... & set...
 	int get_сapacity() { return capacity; }
 
 	int get_size() { return quantity; }
 
 	double get_element(int index)
+	// double& get_element(int index), т.к. ptr[index] это ссылка?
 	{
 		if (index >= 0 && index < quantity) { return ptr[index]; }
 		else {
-			//сгенерировать исключение, если индекс неправильный
+			// throw OutOfBounds(index);
+			//сгенерировать исключение { выдать последний элемент массива } 
 			return -1;
 		}
 	}
@@ -104,103 +111,104 @@ public:
 	{
 		if (index >= 0 && index < quantity) { ptr[index] = value; }
 		else {
-			//сгенерировать исключение, если индекс неправильный
+			//сгенерировать исключение { увеличить `capacity` и `quantity` --> вызвать еще раз этот метод }
 		}
 	}
 
 
-	//добавление в конец нового значения
-	void push(double value) 
-	{
-		if (sizeof(value) == sizeof(ptr[0])) {
 
-			if (quantity < capacity) // нужно реализовать другую проверку через занятую память строки 2-4
+
+	// add an element in the end 
+	void push_back(double value) 
+	{
+		if ( sizeof(value) == sizeof(ptr[0]) ) {
+
+			if ( quantity < capacity ) 
 			{
 				ptr[quantity++] = value;
 				//quantity++;
 			}
 			else {
-				capacity += sizeof(value);
+				capacity += (quantity - capacity) + 1;
 				ptr[quantity++] = value;
-			}
+			} 
+			// сгенерировать исключение { увиличить `capacity` --> еще раз вызвать этот метод }
 		}
+		// сгенерировать исключение { првести значение к соответствующему типу --> вызвать этот
+	    // метод еще раз с правильным типом аргумента }
 	}
 
-	//удаление элемента с конца
+	// delete the last element
 	void remove_last_element()
 	{
-		if (quantity >= 0) {
-			ptr[--quantity] = 0; // именно --quantity
+		if (quantity >= 0) 
+		{
+			ptr[--quantity] = 0;
 			quantity--;
 		}
-		//что делать, если паямть не 
-		//что делаем, если пуст?
 	}
 
-	double& operator[](int index) // почему ссылка?
+	double& operator[](int index)
 	{
-		if (index < quantity) { return ptr[index]; }
-		// else { return -1; }
-		//перегрузка оператора []
+		// if (index < quantity) { return ptr[index]; } // каким образом программа возвращает ссылку, если это число типа double
+		// if (index < quantity) { double& ref_prt_id = ptr[index]; return ref_prt_id; }
+		// в чем разница? { return get_element(index); } 
+		// в том, что первый вариант возвращает ссылку?
+		// в 126 строчке возвращаемое значение объявлено, как &, но мы же возвращаем число, или 
+		// мы возыращаем ссылку, т.к. ptr это указатель на последовательности адресов ячеек?
+		// else { return -1; } 
+		// 
+		//сгенерировать исключение { выдать последний элемент массива }
 	}
 
-	ArrayParent& operator=(const vector<double>& vector) // что делать, = идет последовательно
+	ArrayMaster& operator=(const vector<double>& vector)
 	{
-		ArrayParent(sizeof(vector));
-		capacity = sizeof(vector) / sizeof(vector[0]) * vector.size();
+		// ArrayMaster( sizeof(vector) ); массив типа ArrayMaster уже существует
+		capacity = sizeof(vector);
 		quantity = vector.size();
-		for (int itt = 0; itt < quantity; itt++) {
+
+		for (int itt = 0; itt < vector.size(); itt++) {
 			ptr[itt] = vector[itt];
 		}
-		return *this;
-		//arr1 = arr2 = arr3; где arr_i - объекты нашего класса
+		return (*this);
+		//arr1 = arr2 = arr3; где arr_i - объекты нашего класса (не понимаю комметарий)
 	}
 
-	ArrayParent(const vector<double>& vector) // не понятно
+	ArrayMaster operator=(const ArrayMaster& array_existing) //ArrayMaster& operator=(const ArrayMaster& P)
 	{
-		//создание копии объекта - в основном, при возвращении результата из функции / передаче параметров в функцию
+		capacity = array_existing.capacity;
+		quantity = array_existing.quantity;
+		for (int itt = 0; itt < quantity; itt++)
+		{
+			ptr[itt] = array_existing.ptr[itt];
+		}
+
+		return (*this);
 	}
+
+
 
 	void print()
 	{
-		cout << "\n" << "MyArrParent, size: " << quantity << ", values: {";
+		cout << "\n" << typeid(*this).name() << " size: " << quantity << ", elements: { :";
 		for (int itt = 0; itt < quantity; itt++)
 		{
-			cout << ptr[itt];
+			cout << ptr[itt]; // почесу не cout << *ptr[itt];
 			if (itt != quantity - 1)
-				cout << ", ";
+				cout << " : ";
 		}
 		cout << "}";
 	}
 
-	ArrayParent operator=(const ArrayParent& P) //ArrayParent& operator=(const ArrayParent& P)
-	{
-		if (capacity == P.capacity)
-		{
-			quantity = P.quantity;
-			for (int itt = 0; itt < quantity; itt++)
-			{
-				ptr[itt] = P.ptr[itt];
-			}
-		} else { 
-			capacity += ( P.capacity - capacity );
-
-			quantity = P.quantity;
-			for (int itt = 0; itt < quantity; itt++)
-			{
-				ptr[itt] = P.ptr[itt];
-			}
-		}
-		return (*this);
-	}
+	
 
 };
 
-class MyArrayChild : public ArrayParent //
+class MyArrayChild : public ArrayMaster //
 {
 public:
 	//используем конструктор родителя. Нужно ли что-то ещё?
-	MyArrayChild(int Dimension = 100) : ArrayParent(Dimension) { cout << "\nMyArrayChild constructor"; }
+	MyArrayChild(int Dimension = 100) : ArrayMaster(Dimension) { cout << "\nMyArrayChild constructor"; }
 
 	~MyArrayChild() { cout << "\nMyArrayChild destructor\n"; }
 
@@ -230,7 +238,7 @@ public:
 	//вставка элемента
 	void InsertAt(double value, int index = -1)
 	{
-		if (index == -1 || index >= quantity) { push(value); }
+		if (index == -1 || index >= quantity) { ArrayMaster::push_back(value); }
 		else
 		{
 
@@ -254,14 +262,15 @@ public:
 
 int main()
 {
-	ArrayParent arr;
+	ArrayMaster arr;
 	if (true)
 	{
 		MyArrayChild arr;
 		int i = 0;
 		for (i = 0; i < 10; i++)
 		{
-			arr.push(i + 1);
+			// arr.ArrayMaster::push_back(i + 1);
+			arr.push_back(i + 1);
 		}
 		arr.print();
 		cout << "\n";

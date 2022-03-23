@@ -1,0 +1,16 @@
+﻿  circle.cpp
+  practice2[Array].cpp
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(139,37): error C4430: отсутствует спецификатор типа - предполагается int. Примечание. C++ не поддерживает int по умолчанию
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(139,37): error C2143: синтаксическая ошибка: отсутствие "," перед "<"
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(151,13): error C4430: отсутствует спецификатор типа - предполагается int. Примечание. C++ не поддерживает int по умолчанию
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(151,26): error C2143: синтаксическая ошибка: отсутствие "," перед "<"
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(151,13): error C2535: ArrayMaster::ArrayMaster(int): функция-член уже определена или объявлена
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(22): message : см. объявление "ArrayMaster::ArrayMaster"
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(142,1): error C2109: для индекса требуется массив или указатель
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(145,1): error C2109: для индекса требуется массив или указатель
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(245,1): error C2059: синтаксическая ошибка: }
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(245,1): error C2143: синтаксическая ошибка: отсутствие ";" перед "}"
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(225,43): error C3861: push: идентификатор не найден
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(256,8): error C2039: "push": не является членом "MyArrayChild".
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(191): message : см. объявление "MyArrayChild"
+  Создание кода...
