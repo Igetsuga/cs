@@ -1,4 +1,4 @@
-// Сиразетдинов Рустем КМБО-01-21 Вариант- 24
+п»ї// РЎРёСЂР°Р·РµС‚РґРёРЅРѕРІ Р СѓСЃС‚РµРј РљРњР‘Рћ-01-21 Р’Р°СЂРёР°РЅС‚- 24
 
 
 #include <iostream>
@@ -42,7 +42,7 @@ public:
 	}
 
 	// constructor_1 --> copy but `capacity` is bigger
-	ArrayMaster(double* array_existing, int len) // чем это отличается от 60 строчки
+	ArrayMaster(double* array_existing, int len) // С‡РµРј СЌС‚Рѕ РѕС‚Р»РёС‡Р°РµС‚СЃСЏ РѕС‚ 60 СЃС‚СЂРѕС‡РєРё
 	{
 
 		cout << "\n" << "constructor_1";
@@ -58,9 +58,9 @@ public:
 	}
 
 	// constructor_2 --> copy of array
-	ArrayMaster(const vector<double>& vector) // не понятно
+	ArrayMaster(const vector<double>& vector) // РЅРµ РїРѕРЅСЏС‚РЅРѕ
 	{
-		//создание копии объекта - в основном, при возвращении результата из функции / передаче параметров в функцию
+		//СЃРѕР·РґР°РЅРёРµ РєРѕРїРёРё РѕР±СЉРµРєС‚Р° - РІ РѕСЃРЅРѕРІРЅРѕРј, РїСЂРё РІРѕР·РІСЂР°С‰РµРЅРёРё СЂРµР·СѓР»СЊС‚Р°С‚Р° РёР· С„СѓРЅРєС†РёРё / РїРµСЂРµРґР°С‡Рµ РїР°СЂР°РјРµС‚СЂРѕРІ РІ С„СѓРЅРєС†РёСЋ
 		cout << "\n" << "constructor_2";
 		capacity = sizeof(vector);
 		quantity = vector.size();
@@ -92,17 +92,17 @@ public:
 
 
 	// get... & set...
-	int get_сapacity() { return capacity; }
+	int get_СЃapacity() { return capacity; }
 
 	int get_size() { return quantity; }
 
 	double get_element(int index)
-	// double& get_element(int index), т.к. ptr[index] это ссылка?
+	// double& get_element(int index), С‚.Рє. ptr[index] СЌС‚Рѕ СЃСЃС‹Р»РєР°?
 	{
 		if (index >= 0 && index < quantity) { return ptr[index]; }
 		else {
 			// throw OutOfBounds(index);
-			//сгенерировать исключение { выдать последний элемент массива } 
+			//СЃРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ { РІС‹РґР°С‚СЊ РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚ РјР°СЃСЃРёРІР° } 
 			return -1;
 		}
 	}
@@ -111,7 +111,7 @@ public:
 	{
 		if (index >= 0 && index < quantity) { ptr[index] = value; }
 		else {
-			//сгенерировать исключение { увеличить `capacity` и `quantity` --> вызвать еще раз этот метод }
+			//СЃРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ { СѓРІРµР»РёС‡РёС‚СЊ `capacity` Рё `quantity` --> РІС‹Р·РІР°С‚СЊ РµС‰Рµ СЂР°Р· СЌС‚РѕС‚ РјРµС‚РѕРґ }
 		}
 	}
 
@@ -132,10 +132,10 @@ public:
 				capacity += (quantity - capacity) + 1;
 				ptr[quantity++] = value;
 			} 
-			// сгенерировать исключение { увиличить `capacity` --> еще раз вызвать этот метод }
+			// СЃРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ { СѓРІРёР»РёС‡РёС‚СЊ `capacity` --> РµС‰Рµ СЂР°Р· РІС‹Р·РІР°С‚СЊ СЌС‚РѕС‚ РјРµС‚РѕРґ }
 		}
-		// сгенерировать исключение { првести значение к соответствующему типу --> вызвать этот
-	    // метод еще раз с правильным типом аргумента }
+		// СЃРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ { РїСЂРІРµСЃС‚Рё Р·РЅР°С‡РµРЅРёРµ Рє СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРјСѓ С‚РёРїСѓ --> РІС‹Р·РІР°С‚СЊ СЌС‚РѕС‚
+	    // РјРµС‚РѕРґ РµС‰Рµ СЂР°Р· СЃ РїСЂР°РІРёР»СЊРЅС‹Рј С‚РёРїРѕРј Р°СЂРіСѓРјРµРЅС‚Р° }
 	}
 
 	// delete the last element
@@ -150,20 +150,20 @@ public:
 
 	double& operator[](int index)
 	{
-		// if (index < quantity) { return ptr[index]; } // каким образом программа возвращает ссылку, если это число типа double
+		// if (index < quantity) { return ptr[index]; } // РєР°РєРёРј РѕР±СЂР°Р·РѕРј РїСЂРѕРіСЂР°РјРјР° РІРѕР·РІСЂР°С‰Р°РµС‚ СЃСЃС‹Р»РєСѓ, РµСЃР»Рё СЌС‚Рѕ С‡РёСЃР»Рѕ С‚РёРїР° double
 		// if (index < quantity) { double& ref_prt_id = ptr[index]; return ref_prt_id; }
-		// в чем разница? { return get_element(index); } 
-		// в том, что первый вариант возвращает ссылку?
-		// в 126 строчке возвращаемое значение объявлено, как &, но мы же возвращаем число, или 
-		// мы возыращаем ссылку, т.к. ptr это указатель на последовательности адресов ячеек?
+		// РІ С‡РµРј СЂР°Р·РЅРёС†Р°? { return get_element(index); } 
+		// РІ С‚РѕРј, С‡С‚Рѕ РїРµСЂРІС‹Р№ РІР°СЂРёР°РЅС‚ РІРѕР·РІСЂР°С‰Р°РµС‚ СЃСЃС‹Р»РєСѓ?
+		// РІ 126 СЃС‚СЂРѕС‡РєРµ РІРѕР·РІСЂР°С‰Р°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ РѕР±СЉСЏРІР»РµРЅРѕ, РєР°Рє &, РЅРѕ РјС‹ Р¶Рµ РІРѕР·РІСЂР°С‰Р°РµРј С‡РёСЃР»Рѕ, РёР»Рё 
+		// РјС‹ РІРѕР·С‹СЂР°С‰Р°РµРј СЃСЃС‹Р»РєСѓ, С‚.Рє. ptr СЌС‚Рѕ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё Р°РґСЂРµСЃРѕРІ СЏС‡РµРµРє?
 		// else { return -1; } 
 		// 
-		//сгенерировать исключение { выдать последний элемент массива }
+		//СЃРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ { РІС‹РґР°С‚СЊ РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚ РјР°СЃСЃРёРІР° }
 	}
 
 	ArrayMaster& operator=(const vector<double>& vector)
 	{
-		// ArrayMaster( sizeof(vector) ); массив типа ArrayMaster уже существует
+		// ArrayMaster( sizeof(vector) ); РјР°СЃСЃРёРІ С‚РёРїР° ArrayMaster СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓРµС‚
 		capacity = sizeof(vector);
 		quantity = vector.size();
 
@@ -171,7 +171,7 @@ public:
 			ptr[itt] = vector[itt];
 		}
 		return (*this);
-		//arr1 = arr2 = arr3; где arr_i - объекты нашего класса (не понимаю комметарий)
+		//arr1 = arr2 = arr3; РіРґРµ arr_i - РѕР±СЉРµРєС‚С‹ РЅР°С€РµРіРѕ РєР»Р°СЃСЃР° (РЅРµ РїРѕРЅРёРјР°СЋ РєРѕРјРјРµС‚Р°СЂРёР№)
 	}
 
 	ArrayMaster operator=(const ArrayMaster& array_existing) //ArrayMaster& operator=(const ArrayMaster& P)
@@ -193,7 +193,7 @@ public:
 		cout << "\n" << typeid(*this).name() << " size: " << quantity << ", elements: { :";
 		for (int itt = 0; itt < quantity; itt++)
 		{
-			cout << ptr[itt]; // почесу не cout << *ptr[itt];
+			cout << ptr[itt]; // РїРѕС‡РµСЃСѓ РЅРµ cout << *ptr[itt];
 			if (itt != quantity - 1)
 				cout << " : ";
 		}
@@ -207,15 +207,15 @@ public:
 class MyArrayChild : public ArrayMaster //
 {
 public:
-	//используем конструктор родителя. Нужно ли что-то ещё?
+	//РёСЃРїРѕР»СЊР·СѓРµРј РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЂРѕРґРёС‚РµР»СЏ. РќСѓР¶РЅРѕ Р»Рё С‡С‚Рѕ-С‚Рѕ РµС‰С‘?
 	MyArrayChild(int Dimension = 100) : ArrayMaster(Dimension) { cout << "\nMyArrayChild constructor"; }
 
 	~MyArrayChild() { cout << "\nMyArrayChild destructor\n"; }
 
-	//удаление элемента
+	//СѓРґР°Р»РµРЅРёРµ СЌР»РµРјРµРЅС‚Р°
 	//void RemoveAt(int index = -1);
 
-	//поиск элемента
+	//РїРѕРёСЃРє СЌР»РµРјРµРЅС‚Р°
 	int IndexOf(double value, bool FindFromStart = true)
 	{
 		if (FindFromStart)
@@ -235,7 +235,7 @@ public:
 		return -1;
 	}
 
-	//вставка элемента
+	//РІСЃС‚Р°РІРєР° СЌР»РµРјРµРЅС‚Р°
 	void InsertAt(double value, int index = -1)
 	{
 		if (index == -1 || index >= quantity) { ArrayMaster::push_back(value); }
@@ -252,10 +252,10 @@ public:
 	}
 }
 
-//выделение подпоследовательности
+//РІС‹РґРµР»РµРЅРёРµ РїРѕРґРїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
 //MyArrayChild SubSequence(int StartIndex = 0, int Length = -1)
 
-//добавление элемента в конец
+//РґРѕР±Р°РІР»РµРЅРёРµ СЌР»РµРјРµРЅС‚Р° РІ РєРѕРЅРµС†
 //operator + ?
 
 };
