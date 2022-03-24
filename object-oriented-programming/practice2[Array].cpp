@@ -219,38 +219,42 @@ public:
 
 };
 
-class MyArrayChild : public ArrayMaster 
+class ArrayDerived : public ArrayMaster
 {
 public:
 	// Что-то нужно еще, я не знаю?
-	MyArrayChild(int Dimension = 100) : ArrayMaster(Dimension) { cout << "\nMyArrayChild constructor"; }
 
-	~MyArrayChild() { cout << "\nMyArrayChild destructor\n"; }
+	// 
+	ArrayDerived(int Dimension = 100) : ArrayMaster(Dimension) { cout << "\nMyArrayChild constructor"; }
 
-	//удаление элемента
-	//void RemoveAt(int index = -1);
 
-	//поиск элемента
-	int IndexOf(double value, bool FindFromStart = true)
+
+	// destructor
+	~ArrayDerived() { cout << "\nMyArrayChild destructor\n"; }
+
+
+
+	// find an element --> index or (-1)
+	int findElement(double value, bool findFromStart = true)
 	{
-		if (FindFromStart)
+		if (findFromStart)
 		{
-			for (int i = 0; i < quantity_; i++)
+			for (int itt = 0; itt < quantity_; itt++)
 			{
-				if (value == ptr_[i]) { return i; }
+				if (value == ptr_[itt]) { return itt; }
 			}
 		}
-		else
-		{
-			for (int i = quantity_ - 1; i > 0; i--)
+		else {
+			for (int itt = quantity_ - 1; itt > 0; itt--)
 			{
-				if (value == ptr_[i]) { return i; }
+				if (value == ptr_[itt]) { return itt; }
 			}
 		}
+
 		return -1;
 	}
 
-	//вставка элемента
+	// inserting of element
 	void InsertAt(double value, int index = -1)
 	{
 		if (index == -1 || index >= quantity_) { ArrayMaster::push_back(value); }
@@ -265,22 +269,40 @@ public:
 			quantity_++;
 		}
 	}
-}
+
+	// removing of element
+	void removeElement(int index = -1)
+	{
+		if (index > quantity_)
+		{
+			(*this).removeElement(quantity_ - 1);
+		} else {
+			for (int itt = index; itt < quantity_ - 1; itt++)
+			{
+				ptr_[itt] = ptr_[itt + 1];
+			}
+			quantity_--;
+			capacity_--;
+		}
+	}
+
+};
+
 
 //выделение подпоследовательности
-//MyArrayChild SubSequence(int StartIndex = 0, int Length = -1)
+//ArrayDerived SubSequence(int StartIndex = 0, int Length = -1)
 
 //добавление элемента в конец
 //operator + ?
 
-};
+
 
 int main()
 {
 	ArrayMaster arr;
 	if (true)
 	{
-		MyArrayChild arr;
+		ArrayDerived arr;
 		int i = 0;
 		for (i = 0; i < 10; i++)
 		{
