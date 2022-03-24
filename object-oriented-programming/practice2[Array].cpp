@@ -10,68 +10,80 @@ class ArrayMaster
 {
 protected:
 
-	int capacity; // amount of memory for the array
+	int capacity_; // amount of memory for the array
 
-	int quantity; // number of elements in the array < `capacity` 
+	int quantity_; // number of elements in the array < `capacity_` 
 
-	double* ptr; // a pointer to the cells in memory that all together form an array
+	double* ptr_; // a pointer to the cells in memory that all together form an array
 
 public:
 	
-	// default constructor --> `capacity` = 100; `quantity` = 0; 
+	// default constructor --> `capacity_` = 100; `quantity_` = 0; 
 	ArrayMaster(int Dimension = 100)
 	{
 		cout << "\n" << "default constructor";
 
-		capacity = Dimension;
-		quantity = 0;
-		ptr = new double[Dimension]; 
+		capacity_ = Dimension;
+		quantity_ = 0;
+		ptr_ = new double[Dimension]; 
 	}
 
-	// constructor_of_copy --> copy of array 
-	ArrayMaster(const ArrayMaster& array_existing)
+	// default constructor --> `capacity_` = 100; `quantity_` = 100; ptr_[itt] = 0 for all itt in 
+	ArrayMaster(int quantity = 100, double value = 0)
 	{
-		capacity = array_existing.capacity;
-		quantity = array_existing.quantity;
-		ptr = new double[capacity];
+		cout << "\n" << "default constructor";
 
-		for (int itt = 0; itt < array_existing.quantity; itt++)
+		capacity_ = quantity;
+		quantity_ = quantity;
+		ptr_ = new double[quantity];
+
+		for (int itt = 0; itt < quantity_; itt++)
 		{
-			ptr[itt] = array_existing.ptr[itt];
+			ptr_[itt] = value;
 		}
 	}
 
-	// constructor_1 --> copy but `capacity` is bigger
-	ArrayMaster(double* array_existing, int len) // чем это отличается от 60 строчки
+	// constructor_copy : ArrayMaster::array_1 --> ArrayMaster::(copy of array_1)
+	ArrayMaster(const ArrayMaster& array_existing)
+	{
+		capacity_ = array_existing.capacity_;
+		quantity_ = array_existing.quantity_;
+		ptr_ = new double[capacity_];
+
+		for (int itt = 0; itt < array_existing.quantity_; itt++)
+		{
+			ptr_[itt] = array_existing.ptr_[itt];
+		}
+	}
+
+	// constructor_1 : double _name_ [_amount_] --> ArrayMaster
+	ArrayMaster(double* array_existing, int len) 
 	{
 
 		cout << "\n" << "constructor_1";
 
-		capacity = (len >= 1000) ? 2 * len : 1000; // increase `copy.capacity` to adding elements after
+		capacity_ = (len >= 1000) ? 2 * len : 1000; // increase `capacity_` to adding elements after
 
-		ptr = new double[capacity];
+		ptr_ = new double[capacity_];
 
 		for (int itt = 0; itt < len; itt++)
 		{
-			ptr[itt] = array_existing[itt];
+			ptr_[itt] = array_existing[itt];
 		}
 	}
-
-	// constructor_2 --> copy of array
-	ArrayMaster(const vector<double>& vector) // не понятно
+	
+	// constructor_2 : vector --> ArrayMaster
+	ArrayMaster(const vector<double>& vector) 
 	{
-		//создание копии объекта - в основном, при возвращении результата из функции / передаче параметров в функцию
 		cout << "\n" << "constructor_2";
-		capacity = sizeof(vector);
-		quantity = vector.size();
-		ptr = new double[capacity];
+		capacity_ = sizeof(vector);
+		quantity_ = vector.size();
+		ptr_ = new double[capacity_];
 
 		for (int itt = 0; itt < vector.size(); itt++)
 		{
-			ptr[itt] = vector[itt];
+			ptr_[itt] = vector[itt];
 		}
-
-		// return (*this); ????
 	}
 
 
@@ -81,10 +93,10 @@ public:
 	{
 		cout << "\n" << "ArrayMaster has been deleted";
 
-		if (ptr != nullptr) 
+		if (ptr_ != nullptr) 
 		{
-			delete[] ptr; 
-			ptr = nullptr;
+			delete[] ptr_; 
+			ptr_ = nullptr;
 		}
 	}
 
@@ -92,14 +104,13 @@ public:
 
 
 	// get... & set...
-	int get_сapacity() { return capacity; }
+	int get_сapacity() { return capacity_; }
 
-	int get_size() { return quantity; }
+	int get_size() { return quantity_; }
 
-	double get_element(int index)
-	// double& get_element(int index), т.к. ptr[index] это ссылка?
+	double get_element(int index) // double& get_element(int index)
 	{
-		if (index >= 0 && index < quantity) { return ptr[index]; }
+		if (index >= 0 && index < quantity_) { return ptr_[index]; }
 		else {
 			// throw OutOfBounds(index);
 			//сгенерировать исключение { выдать последний элемент массива } 
@@ -109,9 +120,10 @@ public:
 
 	void set_element(int index, double value)
 	{
-		if (index >= 0 && index < quantity) { ptr[index] = value; }
+		if (index >= 0 && index < quantity_) { ptr_[index] = value; }
 		else {
-			//сгенерировать исключение { увеличить `capacity` и `quantity` --> вызвать еще раз этот метод }
+			//сгенерировать исключение { увеличить `capacity_` и `quantity_` --> заполнить значения 0 -->
+			// --> вызвать еще раз этот метод }
 		}
 	}
 
@@ -121,18 +133,17 @@ public:
 	// add an element in the end 
 	void push_back(double value) 
 	{
-		if ( sizeof(value) == sizeof(ptr[0]) ) {
+		if ( sizeof(value) == sizeof(ptr_[0]) ) {
 
-			if ( quantity < capacity ) 
+			if ( quantity_ < capacity_ ) 
 			{
-				ptr[quantity++] = value;
-				//quantity++;
+				ptr_[quantity_++] = value; // ...; quantity_++;
 			}
 			else {
-				capacity += (quantity - capacity) + 1;
-				ptr[quantity++] = value;
+				capacity_ += (quantity_ - capacity_) + 1;
+				ptr_[quantity_++] = value;
 			} 
-			// сгенерировать исключение { увиличить `capacity` --> еще раз вызвать этот метод }
+			// сгенерировать исключение { увиличить `capacity_` --> еще раз вызвать этот метод }
 		}
 		// сгенерировать исключение { првести значение к соответствующему типу --> вызвать этот
 	    // метод еще раз с правильным типом аргумента }
@@ -141,46 +152,50 @@ public:
 	// delete the last element
 	void remove_last_element()
 	{
-		if (quantity >= 0) 
+		if (quantity_ > 0) 
 		{
-			ptr[--quantity] = 0;
-			quantity--;
+			ptr_[--quantity_] = 0;
+			quantity_--;
 		}
 	}
 
+
+
+
 	double& operator[](int index)
 	{
-		// if (index < quantity) { return ptr[index]; } // каким образом программа возвращает ссылку, если это число типа double
-		// if (index < quantity) { double& ref_prt_id = ptr[index]; return ref_prt_id; }
+		// if (index < quantity_) { return ptr_[index]; } // каким образом программа возвращает ссылку, если это число типа double
+		// if (index < quantity_) { double& ref_prt_id = ptr_[index]; return ref_prt_id; }
 		// в чем разница? { return get_element(index); } 
 		// в том, что первый вариант возвращает ссылку?
 		// в 126 строчке возвращаемое значение объявлено, как &, но мы же возвращаем число, или 
-		// мы возыращаем ссылку, т.к. ptr это указатель на последовательности адресов ячеек?
+		// мы возыращаем ссылку, т.к. ptr_ это указатель на последовательности адресов ячеек?
 		// else { return -1; } 
 		// 
 		//сгенерировать исключение { выдать последний элемент массива }/
 	}
 
+	// array::ArrayMaster = vector::vector --> array(=vector)::ArrayMaster
 	ArrayMaster& operator=(const vector<double>& vector)
 	{
-		// ArrayMaster( sizeof(vector) ); массив типа ArrayMaster уже существует
-		capacity = sizeof(vector);
-		quantity = vector.size();
+		capacity_ = sizeof(vector);
+		quantity_ = vector.size();
 
 		for (int itt = 0; itt < vector.size(); itt++) {
-			ptr[itt] = vector[itt];
+			ptr_[itt] = vector[itt];
 		}
 		return (*this);
 		//arr1 = arr2 = arr3; где arr_i - объекты нашего класса (не понимаю комметарий)
 	}
 
+	// array::ArrayMaster = array::C --> array(=vector)::ArrayMaster
 	ArrayMaster operator=(const ArrayMaster& array_existing) //ArrayMaster& operator=(const ArrayMaster& P)
 	{
-		capacity = array_existing.capacity;
-		quantity = array_existing.quantity;
-		for (int itt = 0; itt < quantity; itt++)
+		capacity_ = array_existing.capacity_;
+		quantity_ = array_existing.quantity_;
+		for (int itt = 0; itt < quantity_; itt++)
 		{
-			ptr[itt] = array_existing.ptr[itt];
+			ptr_[itt] = array_existing.ptr_[itt];
 		}
 
 		return (*this);
@@ -190,11 +205,11 @@ public:
 
 	void print()
 	{
-		cout << "\n" << typeid(*this).name() << " size: " << quantity << ", elements: { :";
-		for (int itt = 0; itt < quantity; itt++)
+		cout << "\n" << typeid(*this).name() << " size: " << quantity_ << ", elements: { :";
+		for (int itt = 0; itt < quantity_; itt++)
 		{
-			cout << ptr[itt]; // почесу не cout << *ptr[itt];
-			if (itt != quantity - 1)
+			cout << ptr_[itt]; 
+			if (itt != quantity_ - 1)
 				cout << " : ";
 		}
 		cout << "}";
@@ -204,10 +219,10 @@ public:
 
 };
 
-class MyArrayChild : public ArrayMaster //
+class MyArrayChild : public ArrayMaster 
 {
 public:
-	//используем конструктор родителя. Нужно ли что-то ещё?
+	// Что-то нужно еще, я не знаю?
 	MyArrayChild(int Dimension = 100) : ArrayMaster(Dimension) { cout << "\nMyArrayChild constructor"; }
 
 	~MyArrayChild() { cout << "\nMyArrayChild destructor\n"; }
@@ -220,16 +235,16 @@ public:
 	{
 		if (FindFromStart)
 		{
-			for (int i = 0; i < quantity; i++)
+			for (int i = 0; i < quantity_; i++)
 			{
-				if (value == ptr[i]) { return i; }
+				if (value == ptr_[i]) { return i; }
 			}
 		}
 		else
 		{
-			for (int i = quantity - 1; i > 0; i--)
+			for (int i = quantity_ - 1; i > 0; i--)
 			{
-				if (value == ptr[i]) { return i; }
+				if (value == ptr_[i]) { return i; }
 			}
 		}
 		return -1;
@@ -238,16 +253,16 @@ public:
 	//вставка элемента
 	void InsertAt(double value, int index = -1)
 	{
-		if (index == -1 || index >= quantity) { ArrayMaster::push_back(value); }
+		if (index == -1 || index >= quantity_) { ArrayMaster::push_back(value); }
 		else
 		{
 
-			for (int i = quantity; i > index; i--)
+			for (int i = quantity_; i > index; i--)
 			{
-				ptr[i] = ptr[i - 1];
+				ptr_[i] = ptr_[i - 1];
 			}
-			ptr[index] = value;
-			quantity++;
+			ptr_[index] = value;
+			quantity_++;
 		}
 	}
 }
