@@ -1,4 +1,4 @@
-// Ñèðàçåòäèíîâ Ðóñòåì ÊÌÁÎ-01-21 Âàðèàíò- 24
+// Сиразетдинов Рустем КМБО-01-21 Вариант- 24
 // Circle{double radius,  tuple<double, double> centerCoords(X,Y)}
 #include <iostream>
 #include <tuple>
