@@ -38,6 +38,7 @@ int main()
 
 	enum Suits { clubs, diamonds, hearts, spades  = 10, groves}; // groves = 11
 	Suits suit_1 = clubs;
+	suit_1 = spades;
 	Suits suit_2 = suit_1;
 	cout << suit_2 << '\n';
 

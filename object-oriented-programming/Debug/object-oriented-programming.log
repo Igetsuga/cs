@@ -1,1 +1,11 @@
-﻿  object-oriented-programming.vcxproj -> C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\Debug\object-oriented-programming.exe
+﻿  practice2[Array].cpp
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(83,25): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(184,25): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(228,14): error C2668: ArrayMaster::ArrayMaster: неоднозначный вызов перегруженной функции
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(32,2): message : может быть "ArrayMaster::ArrayMaster(int,double)"
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(22,2): message : или       "ArrayMaster::ArrayMaster(int)"
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(228,14): message : при попытке сопоставить список аргументов "(int)"
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(302): error C2668: ArrayMaster::ArrayMaster: неоднозначный вызов перегруженной функции
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(32,2): message : может быть "ArrayMaster::ArrayMaster(int,double)"
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(22,2): message : или       "ArrayMaster::ArrayMaster(int)"
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(302,17): message : при попытке сопоставить список аргументов "()"
