@@ -6,6 +6,48 @@
 
 using namespace std;
 
+class Exception
+{
+protected:
+	string message_; // error message
+public:
+
+	// default constructor
+	Exception()
+	{
+		message_ = "ERROR";
+	}
+
+	// constructor_1
+	Exception(const string& message)
+	{
+		message_ = message;
+	}
+
+	// constructor_copy
+	Exception(const Exception& error)
+	{
+		message_ = error.message_;
+	}
+
+	// destructor
+	~Exception() {}
+
+	virtual void print()
+	{
+		cout << "Exception: " << message_ << '\n';
+	}
+};
+
+class OutOfBounds : public Exception
+{
+private: 
+	string message_;
+public:
+	OutOfBounds() { message_ = "Array index out of bounds"; }
+	~OutOfBounds() {}
+};
+
 class ArrayMaster
 {
 protected:
@@ -14,75 +56,76 @@ protected:
 
 	int quantity_; // number of elements in the array < `capacity_` 
 
-	double* ptr_; // a pointer to the cells in memory that all together form an array
+	double* array_; // a pointer to the cells in memory that all together form an array
 
 public:
 	
 	// default constructor --> `capacity_` = 100; `quantity_` = 0; 
-	ArrayMaster(int Dimension = 100)
+	ArrayMaster(int Dimension = 256)
 	{
 		cout << "\n" << "default constructor";
 
 		capacity_ = Dimension;
 		quantity_ = 0;
-		ptr_ = new double[Dimension]; 
+		array_ = new double[Dimension]; 
 	}
 
-	// default constructor --> `capacity_` = 100; `quantity_` = 100; ptr_[itt] = 0 for all itt in 
+	/* // default constructor --> `capacity_` = 100; `quantity_` = 100; array_[itt] = 0 for all itt in 
 	ArrayMaster(int quantity = 100, double value = 0)
 	{
 		cout << "\n" << "default constructor";
 
 		capacity_ = quantity;
 		quantity_ = quantity;
-		ptr_ = new double[quantity];
+		array_ = new double[quantity];
 
 		for (int itt = 0; itt < quantity_; itt++)
 		{
-			ptr_[itt] = value;
+			array_[itt] = value;
 		}
-	}
+	} */
 
 	// constructor_copy : ArrayMaster::array_1 --> ArrayMaster::(copy of array_1)
 	ArrayMaster(const ArrayMaster& array_existing)
 	{
 		capacity_ = array_existing.capacity_;
 		quantity_ = array_existing.quantity_;
-		ptr_ = new double[capacity_];
+		array_ = new double[capacity_];
 
 		for (int itt = 0; itt < array_existing.quantity_; itt++)
 		{
-			ptr_[itt] = array_existing.ptr_[itt];
+			array_[itt] = array_existing.array_[itt];
 		}
 	}
 
-	// constructor_1 : double _name_ [_amount_] --> ArrayMaster
+	// constructor_1 : double*[] --> ArrayMaster::result
 	ArrayMaster(double* array_existing, int len) 
 	{
 
 		cout << "\n" << "constructor_1";
 
 		capacity_ = (len >= 1000) ? 2 * len : 1000; // increase `capacity_` to adding elements after
+		quantity_ = len;
 
-		ptr_ = new double[capacity_];
+		array_ = new double[capacity_];
 
 		for (int itt = 0; itt < len; itt++)
 		{
-			ptr_[itt] = array_existing[itt];
+			array_[itt] = array_existing[itt];
 		}
 	}
 	
-	// constructor_2 : vector --> ArrayMaster
+	// constructor_2 : vector::vector --> ArrayMaster::result
 	ArrayMaster(const vector<double>& vector) 
 	{
 		cout << "\n" << "constructor_2";
-		capacity_ = sizeof(vector);
+		capacity_ = (vector.size() > 256) ? vector.size() : 256;
 		quantity_ = vector.size();
-		ptr_ = new double[capacity_];
+		array_ = new double[capacity_];
 
 		for (int itt = 0; itt < vector.size(); itt++)
 		{
-			ptr_[itt] = vector[itt];
+			array_[itt] = vector[itt];
 		}
 	}
 
@@ -93,13 +136,12 @@ public:
 	{
 		cout << "\n" << "ArrayMaster has been deleted";
 
-		if (ptr_ != nullptr) 
+		if (array_ != nullptr) 
 		{
-			delete[] ptr_; 
-			ptr_ = nullptr;
+			delete[] array_; 
+			array_ = nullptr;
 		}
 	}
-
 
 
 
@@ -108,20 +150,28 @@ public:
 
 	int get_size() { return quantity_; }
 
-	double get_element(int index) // double& get_element(int index)
+	double get_element(int index) 
 	{
-		if (index >= 0 && index < quantity_) { return ptr_[index]; }
+		if (index >= 0 && index < quantity_) { return array_[index]; }
 		else {
-			// throw OutOfBounds(index);
+			throw OutOfBounds(); return array_[quantity_ - 1];
 			//сгенерировать исключение { выдать последний элемент массива } 
-			return -1;
 		}
 	}
 
 	void set_element(int index, double value)
 	{
-		if (index >= 0 && index < quantity_) { ptr_[index] = value; }
+		if (index >= 0 && index < quantity_) { array_[index] = value; }
 		else {
+			throw OutOfBounds(); 
+			capacity_ = (capacity_ > index) ? capacity_ : index;
+			int itt = quantity_;
+			quantity_ = index + 1;
+			//(*this).set_element(index, value);
+			while (itt < index)
+			{
+				array_[itt] = (itt == index) ? value : 0;
+			}
 			//сгенерировать исключение { увеличить `capacity_` и `quantity_` --> заполнить значения 0 -->
 			// --> вызвать еще раз этот метод }
 		}
@@ -133,15 +183,15 @@ public:
 	// add an element in the end 
 	void push_back(double value) 
 	{
-		if ( sizeof(value) == sizeof(ptr_[0]) ) {
+		if ( sizeof(value) == sizeof(array_[0]) ) {
 
 			if ( quantity_ < capacity_ ) 
 			{
-				ptr_[quantity_++] = value; // ...; quantity_++;
+				array_[quantity_++] = value; // ...; quantity_++;
 			}
 			else {
 				capacity_ += (quantity_ - capacity_) + 1;
-				ptr_[quantity_++] = value;
+				array_[quantity_++] = value;
 			} 
 			// сгенерировать исключение { увиличить `capacity_` --> еще раз вызвать этот метод }
 		}
@@ -154,7 +204,7 @@ public:
 	{
 		if (quantity_ > 0) 
 		{
-			ptr_[--quantity_] = 0;
+			array_[--quantity_] = 0;
 			quantity_--;
 		}
 	}
@@ -164,12 +214,12 @@ public:
 
 	double& operator[](int index)
 	{
-		// if (index < quantity_) { return ptr_[index]; } // каким образом программа возвращает ссылку, если это число типа double
-		// if (index < quantity_) { double& ref_prt_id = ptr_[index]; return ref_prt_id; }
+		// if (index < quantity_) { return array_[index]; } // каким образом программа возвращает ссылку, если это число типа double
+		// if (index < quantity_) { double& ref_prt_id = array_[index]; return ref_prt_id; }
 		// в чем разница? { return get_element(index); } 
 		// в том, что первый вариант возвращает ссылку?
 		// в 126 строчке возвращаемое значение объявлено, как &, но мы же возвращаем число, или 
-		// мы возыращаем ссылку, т.к. ptr_ это указатель на последовательности адресов ячеек?
+		// мы возыращаем ссылку, т.к. array_ это указатель на последовательности адресов ячеек?
 		// else { return -1; } 
 		// 
 		//сгенерировать исключение { выдать последний элемент массива }/
@@ -182,7 +232,7 @@ public:
 		quantity_ = vector.size();
 
 		for (int itt = 0; itt < vector.size(); itt++) {
-			ptr_[itt] = vector[itt];
+			array_[itt] = vector[itt];
 		}
 		return (*this);
 		//arr1 = arr2 = arr3; где arr_i - объекты нашего класса (не понимаю комметарий)
@@ -195,7 +245,7 @@ public:
 		quantity_ = array_existing.quantity_;
 		for (int itt = 0; itt < quantity_; itt++)
 		{
-			ptr_[itt] = array_existing.ptr_[itt];
+			array_[itt] = array_existing.array_[itt];
 		}
 
 		return (*this);
@@ -208,7 +258,7 @@ public:
 		cout << "\n" << typeid(*this).name() << " size: " << quantity_ << ", elements: { :";
 		for (int itt = 0; itt < quantity_; itt++)
 		{
-			cout << ptr_[itt]; 
+			cout << array_[itt]; 
 			if (itt != quantity_ - 1)
 				cout << " : ";
 		}
@@ -241,13 +291,13 @@ public:
 		{
 			for (int itt = 0; itt < quantity_; itt++)
 			{
-				if (value == ptr_[itt]) { return itt; }
+				if (value == array_[itt]) { return itt; }
 			}
 		}
 		else {
 			for (int itt = quantity_ - 1; itt > 0; itt--)
 			{
-				if (value == ptr_[itt]) { return itt; }
+				if (value == array_[itt]) { return itt; }
 			}
 		}
 
@@ -263,9 +313,9 @@ public:
 
 			for (int i = quantity_; i > index; i--)
 			{
-				ptr_[i] = ptr_[i - 1];
+				array_[i] = array_[i - 1];
 			}
-			ptr_[index] = value;
+			array_[index] = value;
 			quantity_++;
 		}
 	}
@@ -279,7 +329,7 @@ public:
 		} else {
 			for (int itt = index; itt < quantity_ - 1; itt++)
 			{
-				ptr_[itt] = ptr_[itt + 1];
+				array_[itt] = array_[itt + 1];
 			}
 			quantity_--;
 			capacity_--;
