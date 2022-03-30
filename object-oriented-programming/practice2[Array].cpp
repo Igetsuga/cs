@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <vector>
+#include <stdlib.h>
+#include <malloc.h>
 
 using namespace std;
 
@@ -46,6 +48,15 @@ private:
 public:
 	OutOfBounds() { message_ = "Array index out of bounds"; }
 	~OutOfBounds() {}
+};
+
+class InvalidValueType : public Exception
+{
+private:
+	string message_;
+public:
+	InvalidValueType() { message_ = "Invalid type of value"; }
+	~InvalidValueType() {}
 };
 
 class ArrayMaster
@@ -153,28 +164,30 @@ public:
 	double get_element(int index) 
 	{
 		if (index >= 0 && index < quantity_) { return array_[index]; }
-		else {
-			throw OutOfBounds(); return array_[quantity_ - 1];
-			//сгенерировать исключение { выдать последний элемент массива } 
+		else if (index > quantity_) {
+			throw OutOfBounds(); return array_[quantity_ - 1]; 
 		}
 	}
 
 	void set_element(int index, double value)
 	{
 		if (index >= 0 && index < quantity_) { array_[index] = value; }
-		else {
+		else if (index >= 0) 
+		{
 			throw OutOfBounds(); 
-			capacity_ = (capacity_ > index) ? capacity_ : index;
+			capacity_ = ( capacity_ > index ) ? capacity_ : index;
 			int itt = quantity_;
 			quantity_ = index + 1;
+
 			//(*this).set_element(index, value);
-			while (itt < index)
-			{
-				array_[itt] = (itt == index) ? value : 0;
-			}
-			//сгенерировать исключение { увеличить `capacity_` и `quantity_` --> заполнить значения 0 -->
+			// while (itt < index)
+			// {
+			// 	array_[itt] = (itt == index) ? value : 0;
+			// }
+			// сгенерировать исключение { увеличить `capacity_` и `quantity_` --> заполнить значения 0 -->
 			// --> вызвать еще раз этот метод }
-		}
+		} 
+		else if (index < 0) { throw OutOfBounds();  }
 	}
 
 
@@ -184,19 +197,34 @@ public:
 	void push_back(double value) 
 	{
 		if ( sizeof(value) == sizeof(array_[0]) ) {
-
-			if ( quantity_ < capacity_ ) 
+			if (quantity_ + 1 < capacity_)
 			{
-				array_[quantity_++] = value; // ...; quantity_++;
+				// variant 1/ increase allocated memory -- doesnt work :((
+				// size_t size = _msize( array_ );
+				// array_ = realloc( array_, size + (1000 * sizeof( double )) );
+				
+				// variant 2/ copy in a bigger array_
+				double* array_copy;
+				array_copy = new double(capacity_ + 256);
+				
+				for (int itt = 0; itt < quantity_; itt++)
+				{
+					array_copy[itt] = array_[itt];
+				}
+
+				delete[] array_; array_ = nullptr;
+
+				array_ = new double[sizeof(array_copy)];
+				for (int itt = 0; itt < quantity_; itt++)
+				{
+					array_[itt] = array_copy[itt];
+				}
+
+				delete[] array_copy; array_copy = nullptr;
 			}
-			else {
-				capacity_ += (quantity_ - capacity_) + 1;
-				array_[quantity_++] = value;
-			} 
-			// сгенерировать исключение { увиличить `capacity_` --> еще раз вызвать этот метод }
+			array_[quantity_++] = value; // ...; quantity_++;
 		}
-		// сгенерировать исключение { првести значение к соответствующему типу --> вызвать этот
-	    // метод еще раз с правильным типом аргумента }
+		throw InvalidValueType();
 	}
 
 	// delete the last element
@@ -214,53 +242,91 @@ public:
 
 	double& operator[](int index)
 	{
-		// if (index < quantity_) { return array_[index]; } // каким образом программа возвращает ссылку, если это число типа double
-		// if (index < quantity_) { double& ref_prt_id = array_[index]; return ref_prt_id; }
-		// в чем разница? { return get_element(index); } 
-		// в том, что первый вариант возвращает ссылку?
-		// в 126 строчке возвращаемое значение объявлено, как &, но мы же возвращаем число, или 
-		// мы возыращаем ссылку, т.к. array_ это указатель на последовательности адресов ячеек?
-		// else { return -1; } 
-		// 
-		//сгенерировать исключение { выдать последний элемент массива }/
+		if (index >= 0 && index < quantity_) { return array_[index]; }
+		else { 
+			throw OutOfBounds();
+			return array_[quantity_ - 1];
+		}
+		
 	}
 
 	// array::ArrayMaster = vector::vector --> array(=vector)::ArrayMaster
 	ArrayMaster& operator=(const vector<double>& vector)
 	{
-		capacity_ = sizeof(vector);
 		quantity_ = vector.size();
 
-		for (int itt = 0; itt < vector.size(); itt++) {
-			array_[itt] = vector[itt];
+		if ( capacity_ < sizeof(vector) )
+		{
+			double* array_copy;
+			array_copy = new double( sizeof(vector) );
+
+			for (int itt = 0; itt < quantity_; itt++)
+			{
+				array_copy[itt] = vector[itt];
+			}
+
+			delete[] array_; array_ = nullptr;
+			
+			array_ = new double[sizeof(vector)];
+			for (int itt = 0; itt < quantity_; itt++)
+			{
+				array_[itt] = array_[itt];
+			}
+
+			delete[] array_copy; array_copy = nullptr;
+
+		} else {
+			for (int itt = 0; itt < capacity_; itt++) {
+				array_[itt] = ( itt < quantity_ ) ? vector[itt] : 0;
+			}
 		}
+
+		capacity_ = sizeof(vector);
+
 		return (*this);
-		//arr1 = arr2 = arr3; где arr_i - объекты нашего класса (не понимаю комметарий)
 	}
 
 	// array::ArrayMaster = array::C --> array(=vector)::ArrayMaster
 	ArrayMaster operator=(const ArrayMaster& array_existing) //ArrayMaster& operator=(const ArrayMaster& P)
 	{
-		capacity_ = array_existing.capacity_;
 		quantity_ = array_existing.quantity_;
-		for (int itt = 0; itt < quantity_; itt++)
+
+		if (capacity_ < array_existing.capacity_)
 		{
-			array_[itt] = array_existing.array_[itt];
+
+			delete[] array_; array_ = nullptr;
+
+			array_ = new double[array_existing.capacity_];
+			for (int itt = 0; itt < quantity_; itt++)
+			{
+				array_[itt] = array_existing.array_[itt];
+			}
+
 		}
+		else {
+			for (int itt = 0; itt < capacity_; itt++) {
+				array_[itt] = (itt < array_existing.quantity_) ? array_existing.array_[itt] : 0;
+			}
+		}
+
+		capacity_ = array_existing.capacity_;
 
 		return (*this);
 	}
 
+	// --> return index of value if its exist in array_ 
+	int IndexOf(double value)
+	{
 
+	}
 
-	void print()
+	virtual void print()
 	{
 		cout << "\n" << typeid(*this).name() << " size: " << quantity_ << ", elements: { :";
 		for (int itt = 0; itt < quantity_; itt++)
 		{
 			cout << array_[itt]; 
-			if (itt != quantity_ - 1)
-				cout << " : ";
+			if (itt != quantity_ - 1) { cout << " : "; }
 		}
 		cout << "}";
 	}
