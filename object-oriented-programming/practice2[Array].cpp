@@ -46,7 +46,7 @@ class OutOfBounds : public Exception
 private: 
 	string message_;
 public:
-	OutOfBounds() { message_ = "Array index out of bounds"; }
+	OutOfBounds(string message = "Array index out of bounds") : Exception(message) {}
 	~OutOfBounds() {}
 };
 
@@ -115,7 +115,7 @@ public:
 
 		cout << "\n" << "constructor_1";
 
-		capacity_ = (len >= 1000) ? 2 * len : 1000; // increase `capacity_` to adding elements after
+		capacity_ = (len >= 128) ? 2 * len : 128; // increase `capacity_` to adding elements after
 		quantity_ = len;
 		array_ = new double[capacity_];
 
@@ -135,7 +135,7 @@ public:
 
 		for (int itt = 0; itt < quantity_; itt++)
 		{
-			array_[itt] = vector[itt];
+			array_[itt] = double(vector[itt]);
 		}
 	}
 
@@ -196,34 +196,34 @@ public:
 	virtual void push_back(double value) 
 	{
 		if ( sizeof(value) == sizeof(array_[0]) ) {
-			if (quantity_ + 1 < capacity_)
+			if (quantity_ + 1 > capacity_)
 			{
 				// variant 1/ increase allocated memory -- doesnt work :((
 				// size_t size = _msize( array_ );
 				// array_ = realloc( array_, size + (1000 * sizeof( double )) );
 				
 				// variant 2/ copy in a bigger array_
-				double* array_copy;
-				array_copy = new double(capacity_ + 128);
+
+				vector<double> array_copy(capacity_ + 128, 0);
 				
 				for (int itt = 0; itt < quantity_; itt++)
 				{
 					array_copy[itt] = array_[itt];
 				}
-
+				
 				delete[] array_; array_ = nullptr;
-				array_ = new double[sizeof(array_copy)];
+				array_ = new double[array_copy.size()];
+				capacity_ = array_copy.size();
 
 				for (int itt = 0; itt < quantity_; itt++)
 				{
 					array_[itt] = array_copy[itt];
 				}
 
-				delete[] array_copy; array_copy = nullptr;
 			}
 			array_[quantity_++] = value; // ...; quantity_++;
 		}
-		throw InvalidValueType();
+		else { throw InvalidValueType(); }
 	}
 
 	// delete the last element
@@ -231,7 +231,7 @@ public:
 	{
 		if (quantity_ > 0) 
 		{
-			array_[--quantity_] = 0;
+			array_[quantity_ - 1] = 0;
 			quantity_--;
 		}
 	}
@@ -311,13 +311,14 @@ public:
 
 	void print()
 	{
-		cout << "\n" << typeid(*this).name() << " size: " << quantity_ << ", elements: { :";
+		cout << "\n" << typeid(*this).name() << " size: " << quantity_ << ", capacity: " << capacity_ 
+			<< '\n' <<"elements: { >> ";
 		for (int itt = 0; itt < quantity_; itt++)
 		{
-			cout << array_[itt]; 
-			if (itt != quantity_ - 1) { cout << " : "; }
+			// cout << ': ' << array_[itt];
+			cout << ": " << array_[itt] << " ";
 		}
-		cout << "}" << '\n';
+		cout << "<< }" << '\n';
 	}
 
 };
@@ -486,11 +487,63 @@ public:
 
 int main()
 {
+	// test of default constructor
+	ArrayMaster array_master(100);
+	array_master.print();
+
+	vector<double> vv(10, 4);
+	ArrayMaster array_master_2(vv);
+	array_master_2.print();
 	
+	cout << '\n' << "get_capacity: " << array_master_2.get_сapacity();
+	cout << '\n' << "get_size: " << array_master_2.get_size() << '\n';
 
+	cout << '\n' << "///////////////////////////////////////////////"
+		<<  "//////////////////" << '\n';
 
+	double array_C[10] = { 10, 45, 64, 865, 2, 8, 1, 9.45, 11.12, 88 };
+	ArrayMaster array_master_3(array_C, 10);
+	array_master_3.print();
 
+	cout << '\n' << "///////////////////////////////////////////////"
+		<< "//////////////////" << '\n';
 
+	array_master_3.set_element(9, 99);
+	array_master_3.print();
+
+	// throw OutOfBounds
+	// array_master_3.set_element(11, 99);
+	// array_master_3.print();
+
+	cout << '\n' << "///////////////////////////////////////////////"
+		<< "//////////////////" << '\n';
+
+	cout << '\n' << "get_capacity: " << array_master_3.get_сapacity();
+	cout << '\n' << "get_size: " << array_master_3.get_size() << '\n';
+	array_master_3.push_back(76.2);
+	array_master_3.print();
+
+	// throw InvalidValueType
+	// bool re = true;
+	// array_master_3.push_back(re);
+	
+	cout << '\n' << "///////////////////////////////////////////////"
+		<< "//////////////////" << '\n';
+
+	ArrayMaster array_master_4(2); 
+	array_master_4.push_back(76.2); array_master_4.push_back(22);
+	array_master_4.print();
+
+	array_master_4.push_back(99); array_master_4.print();
+	array_master_4.push_back(99); array_master_4.print();
+	
+	cout << '\n' << "///////////////////////////////////////////////"
+		<< "//////////////////" << '\n';
+
+	array_master_4.remove_last_element(); array_master_4.print();
+
+	cout << '\n' << "///////////////////////////////////////////////"
+		<< "//////////////////" << '\n';
 
 	return 0;
 }
