@@ -71,8 +71,8 @@ protected:
 
 public:
 	
-	// default constructor --> `capacity_` = 100; `quantity_` = 0; 
-	ArrayMaster(int Dimension = 256)
+	// default constructor --> `capacity_` = 128; `quantity_` = 0; 
+	ArrayMaster(int Dimension = 128)
 	{
 		cout << "\n" << "default constructor";
 
@@ -110,14 +110,13 @@ public:
 	}
 
 	// constructor_1 : double*[] --> ArrayMaster::result
-	ArrayMaster(double* array_existing, int len) 
+	ArrayMaster(const double* array_existing, int len) 
 	{
 
 		cout << "\n" << "constructor_1";
 
 		capacity_ = (len >= 1000) ? 2 * len : 1000; // increase `capacity_` to adding elements after
 		quantity_ = len;
-
 		array_ = new double[capacity_];
 
 		for (int itt = 0; itt < len; itt++)
@@ -130,11 +129,11 @@ public:
 	ArrayMaster(const vector<double>& vector) 
 	{
 		cout << "\n" << "constructor_2";
-		capacity_ = (vector.size() > 256) ? vector.size() : 256;
+		capacity_ = (vector.size() > 128) ? vector.size() : 128;
 		quantity_ = vector.size();
 		array_ = new double[capacity_];
 
-		for (int itt = 0; itt < vector.size(); itt++)
+		for (int itt = 0; itt < quantity_; itt++)
 		{
 			array_[itt] = vector[itt];
 		}
@@ -194,7 +193,7 @@ public:
 
 
 	// add an element in the end 
-	void push_back(double value) 
+	virtual void push_back(double value) 
 	{
 		if ( sizeof(value) == sizeof(array_[0]) ) {
 			if (quantity_ + 1 < capacity_)
@@ -205,7 +204,7 @@ public:
 				
 				// variant 2/ copy in a bigger array_
 				double* array_copy;
-				array_copy = new double(capacity_ + 256);
+				array_copy = new double(capacity_ + 128);
 				
 				for (int itt = 0; itt < quantity_; itt++)
 				{
@@ -213,8 +212,8 @@ public:
 				}
 
 				delete[] array_; array_ = nullptr;
-
 				array_ = new double[sizeof(array_copy)];
+
 				for (int itt = 0; itt < quantity_; itt++)
 				{
 					array_[itt] = array_copy[itt];
@@ -291,36 +290,26 @@ public:
 	{
 		quantity_ = array_existing.quantity_;
 
-		if (capacity_ < array_existing.capacity_)
+		if (capacity_ != array_existing.capacity_)
 		{
-
 			delete[] array_; array_ = nullptr;
-
 			array_ = new double[array_existing.capacity_];
-			for (int itt = 0; itt < quantity_; itt++)
-			{
-				array_[itt] = array_existing.array_[itt];
-			}
-
 		}
-		else {
-			for (int itt = 0; itt < capacity_; itt++) {
-				array_[itt] = (itt < array_existing.quantity_) ? array_existing.array_[itt] : 0;
-			}
-		}
-
+		
 		capacity_ = array_existing.capacity_;
+
+		for (int itt = 0; itt < quantity_; itt++)
+		{
+			array_[itt] = array_existing.array_[itt];
+		}
+
 
 		return (*this);
 	}
 
-	// --> return index of value if its exist in array_ 
-	int IndexOf(double value)
-	{
+	
 
-	}
-
-	virtual void print()
+	void print()
 	{
 		cout << "\n" << typeid(*this).name() << " size: " << quantity_ << ", elements: { :";
 		for (int itt = 0; itt < quantity_; itt++)
@@ -338,52 +327,56 @@ public:
 class ArrayDerived : public ArrayMaster
 {
 public:
-	// Что-то нужно еще, я не знаю?
 
-	// 
-	ArrayDerived(int Dimension = 100) : ArrayMaster(Dimension) { cout << "\nMyArrayChild constructor"; }
-
-
+	// default constructor --> `capacity_` = 128; `quantity_` = 0;
+	ArrayDerived(int Dimension = 128) : ArrayMaster(Dimension) { cout << '\n' << "ArrayDerived constructor" << '\n'; }
 
 	// destructor
-	~ArrayDerived() { cout << "\nMyArrayChild destructor\n"; }
+	~ArrayDerived() { cout << '\n' << "ArrayDerived destructor" << '\n'; }
 
 
 
-	// find an element --> index or (-1)
-	int findElement(double value, bool findFromStart = true)
+	// --> return index of value if its exist in array_ 
+	int IndexOf(double value, bool fromStart = true)
 	{
-		if (findFromStart)
-		{
-			for (int itt = 0; itt < quantity_; itt++)
-			{
-				if (value == array_[itt]) { return itt; }
+		if (fromStart)
+			for (int itt = 0; itt < quantity_; itt++) {
+				if (array_[itt] == value) { return itt; }
 			}
-		}
 		else {
-			for (int itt = quantity_ - 1; itt > 0; itt--)
-			{
-				if (value == array_[itt]) { return itt; }
+			for (int itt = quantity_ - 1; itt >= 0; itt--) {
+				if (array_[itt] == value) { return itt; }
 			}
 		}
+
 
 		return -1;
 	}
 
 	// inserting of element
-	void InsertAt(double value, int index = -1)
+	void Insert(double value, int index = -1)
 	{
 		if (index == -1 || index >= quantity_) { ArrayMaster::push_back(value); }
-		else
-		{
+		
+		else if (quantity_ + 1 > capacity_)
+ 		{
+			// increasing of memory
+			double* array_copy; array_copy = array_;
+			delete[] array_; array_ = nullptr;
+			array_ = new double[capacity_ + 128];
+			array_ = array_copy;
 
-			for (int i = quantity_; i > index; i--)
-			{
-				array_[i] = array_[i - 1];
-			}
-			array_[index] = value;
-			quantity_++;
+			delete[] array_copy; array_copy = nullptr;
 		}
+
+		// shifting elements
+		for (int itt = quantity_; itt > index; itt--)
+		{
+			array_[itt] = array_[itt - 1];
+		}
+
+		array_[index] = value;
+		quantity_++;
 	}
 
 	// removing of element
