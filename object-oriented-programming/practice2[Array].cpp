@@ -320,8 +320,6 @@ public:
 		cout << "}";
 	}
 
-	
-
 };
 
 class ArrayDerived : public ArrayMaster
@@ -337,7 +335,7 @@ public:
 
 
 	// --> return index of value if its exist in array_ 
-	int IndexOf(double value, bool fromStart = true)
+	virtual int IndexOf(double value, bool fromStart = true)
 	{
 		if (fromStart)
 			for (int itt = 0; itt < quantity_; itt++) {
@@ -354,7 +352,7 @@ public:
 	}
 
 	// inserting of element
-	void Insert(double value, int index = -1)
+	virtual void Insert(double value, int index = -1)
 	{
 		if (index == -1 || index >= quantity_) { ArrayMaster::push_back(value); }
 		
@@ -380,19 +378,42 @@ public:
 	}
 
 	// removing of element
-	void removeElement(int index = -1)
+	virtual void removeElement(int index = -1)
 	{
-		if (index > quantity_)
-		{
-			(*this).removeElement(quantity_ - 1);
-		} else {
+		// if (index > quantity_) { throw OutOfBounds();  (*this).removeElement(quantity_ - 1); }
+		if (index > quantity_) { throw OutOfBounds(); (*this).remove_last_element(); }
+		else {
 			for (int itt = index; itt < quantity_ - 1; itt++)
 			{
 				array_[itt] = array_[itt + 1];
 			}
+			array_[quantity_ - 1] = 0;
 			quantity_--;
-			capacity_--;
 		}
+	}
+
+
+	virtual int SumOfIndex()
+	{
+		int result = 0;
+		for (int itt = 0; itt < quantity_; itt++)
+		{
+			// result += (int(array_[itt]) % 3 == 0) * array_[itt];
+			result += ( [=](int a) { return (a % 3 == 0); } )(array_[itt]) * array_[itt];
+		}
+
+
+		return result;
+	}
+
+
+
+
+	// operator + <=> Insert(in the end) <=> ArrayMaster::push_back()
+	void operator+(double value)
+	{
+		(*this).push_back(value);
+		// push_back(value);
 	}
 
 };
@@ -401,8 +422,53 @@ public:
 //выделение подпоследовательности
 //ArrayDerived SubSequence(int StartIndex = 0, int Length = -1)
 
-//добавление элемента в конец
-//operator + ?
+class ArrayDerived_sorted : public ArrayDerived
+{
+private: 
+	int bin_seach(double value)
+	{
+		int value_new = value;
+		while (value_new-- > 0) {
+			int itt_middle = quantity_ / 2;
+			int itt_right = quantity_ - 1;
+			int itt_left = 0;
+
+			if (array_[itt_left] == value) { return itt_left; }
+			if (array_[itt_right] == value) { return itt_right; }
+
+			while (itt_left < itt_right) {
+				if (array_[itt_middle] == value) { return itt_middle; }
+				else if (array_[itt_middle] > value) { itt_right = itt_middle; itt_middle /= 2; }
+				else { itt_left = itt_middle; itt_middle = (itt_right - itt_left) / 2; }
+			}
+		}
+		while (value_new++ < array_[quantity_ - 1]) {
+			int itt_middle = quantity_ / 2;
+			int itt_right = quantity_ - 1;
+			int itt_left = 0;
+
+			if (array_[itt_left] == value) { return itt_left; }
+			if (array_[itt_right] == value) { return itt_right; }
+
+			while (itt_left < itt_right) {
+				if (array_[itt_middle] == value) { return itt_middle; }
+				else if (array_[itt_middle] > value) { itt_right = itt_middle; itt_middle /= 2; }
+				else { itt_left = itt_middle; itt_middle = (itt_right - itt_left) / 2; }
+			}
+		}
+	}
+
+		
+public:
+
+	// default constructor --> `capacity_` = 128; `quantity_` = 0;
+	ArrayDerived_sorted(int Demension = 128) : ArrayDerived(Demension) { cout << '\n' << "ArrayDerived_sorted has been created" << '\n'; }
+
+	// destructor
+	~ArrayDerived_sorted() { cout << '\n' << "ArrayDerived_sorted has been deleted" << '\n'; }
+
+
+};
 
 
 
