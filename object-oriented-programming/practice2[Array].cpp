@@ -317,7 +317,7 @@ public:
 			cout << array_[itt]; 
 			if (itt != quantity_ - 1) { cout << " : "; }
 		}
-		cout << "}";
+		cout << "}" << '\n';
 	}
 
 };
@@ -381,7 +381,7 @@ public:
 	virtual void removeElement(int index = -1)
 	{
 		// if (index > quantity_) { throw OutOfBounds();  (*this).removeElement(quantity_ - 1); }
-		if (index > quantity_) { throw OutOfBounds(); (*this).remove_last_element(); }
+		if (index >= quantity_) { throw OutOfBounds(); (*this).remove_last_element(); }
 		else {
 			for (int itt = index; itt < quantity_ - 1; itt++)
 			{
@@ -425,10 +425,10 @@ public:
 class ArrayDerived_sorted : public ArrayDerived
 {
 private: 
-	int bin_seach(double value)
+	int bin_search(double value)
 	{
 		int value_new = value;
-		while (value_new-- > 0) {
+		while (value_new --> 0) {
 			int itt_middle = quantity_ / 2;
 			int itt_right = quantity_ - 1;
 			int itt_left = 0;
@@ -442,6 +442,7 @@ private:
 				else { itt_left = itt_middle; itt_middle = (itt_right - itt_left) / 2; }
 			}
 		}
+		/*
 		while (value_new++ < array_[quantity_ - 1]) {
 			int itt_middle = quantity_ / 2;
 			int itt_right = quantity_ - 1;
@@ -456,6 +457,7 @@ private:
 				else { itt_left = itt_middle; itt_middle = (itt_right - itt_left) / 2; }
 			}
 		}
+		*/
 	}
 
 		
@@ -468,27 +470,28 @@ public:
 	~ArrayDerived_sorted() { cout << '\n' << "ArrayDerived_sorted has been deleted" << '\n'; }
 
 
+	// inserting of element
+	virtual void Insert(double value, int index = -1)
+	{
+		if (value >= array_[quantity_ - 1]) { (*this).ArrayMaster::push_back(value); }
+		else { 
+			int index_new = (*this).bin_search(value) + 1;
+			(*this).ArrayDerived::Insert(value, index_new);
+		}
+	}
+
 };
 
 
 
 int main()
 {
-	ArrayMaster arr;
-	if (true)
-	{
-		ArrayDerived arr;
-		int i = 0;
-		for (i = 0; i < 10; i++)
-		{
-			// arr.ArrayMaster::push_back(i + 1);
-			arr.push_back(i + 1);
-		}
-		arr.print();
-		cout << "\n";
-		//cout << "\n" << sp << "\n";
-	}
-	char c; cin >> c;
+	
+
+
+
+
+
 	return 0;
 }
 
