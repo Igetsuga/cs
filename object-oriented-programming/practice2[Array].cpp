@@ -254,49 +254,36 @@ public:
 	{
 		quantity_ = vector.size();
 
-		if ( capacity_ < sizeof(vector) )
+		if ( capacity_ < vector.size() )
 		{
-			double* array_copy;
-			array_copy = new double( sizeof(vector) );
-
-			for (int itt = 0; itt < quantity_; itt++)
-			{
-				array_copy[itt] = vector[itt];
-			}
-
 			delete[] array_; array_ = nullptr;
 			
-			array_ = new double[sizeof(vector)];
-			for (int itt = 0; itt < quantity_; itt++)
-			{
-				array_[itt] = array_[itt];
-			}
+			array_ = new double[vector.size()];
 
-			delete[] array_copy; array_copy = nullptr;
+			capacity_ = vector.size();
 
-		} else {
-			for (int itt = 0; itt < capacity_; itt++) {
-				array_[itt] = ( itt < quantity_ ) ? vector[itt] : 0;
-			}
 		}
 
-		capacity_ = sizeof(vector);
+		for (int itt = 0; itt < capacity_; itt++) {
+			array_[itt] = ( itt < vector.size() ) ? vector[itt] : 0;
+		}
+		
 
 		return (*this);
 	}
 
-	// array::ArrayMaster = array::C --> array(=vector)::ArrayMaster
+	// array::ArrayMaster = array_existing::ArrayMaster
+	// --> array(=array_existing)::ArrayMaster
 	ArrayMaster operator=(const ArrayMaster& array_existing) //ArrayMaster& operator=(const ArrayMaster& P)
 	{
 		quantity_ = array_existing.quantity_;
 
-		if (capacity_ != array_existing.capacity_)
+		if (capacity_ < array_existing.capacity_)
 		{
 			delete[] array_; array_ = nullptr;
 			array_ = new double[array_existing.capacity_];
+			capacity_ = array_existing.capacity_;
 		}
-		
-		capacity_ = array_existing.capacity_;
 
 		for (int itt = 0; itt < quantity_; itt++)
 		{
@@ -318,7 +305,7 @@ public:
 			// cout << ': ' << array_[itt];
 			cout << ": " << array_[itt] << " ";
 		}
-		cout << "<< }" << '\n';
+		cout << ": << }" << '\n';
 	}
 
 };
@@ -328,10 +315,13 @@ class ArrayDerived : public ArrayMaster
 public:
 
 	// default constructor --> `capacity_` = 128; `quantity_` = 0;
-	ArrayDerived(int Dimension = 128) : ArrayMaster(Dimension) { cout << '\n' << "ArrayDerived constructor" << '\n'; }
+	ArrayDerived(int Dimension = 128) : ArrayMaster(Dimension) { cout << '\n' << "ArrayDerived has been created" << '\n'; }
+
+	// constructor_2 : vector::vector --> ArrayDerived::result
+	ArrayDerived(const vector<double>& vector) : ArrayMaster(vector) {}
 
 	// destructor
-	~ArrayDerived() { cout << '\n' << "ArrayDerived destructor" << '\n'; }
+	~ArrayDerived() { cout << '\n' << "ArrayDerived has been deleted" << '\n'; }
 
 
 
@@ -368,14 +358,18 @@ public:
 			delete[] array_copy; array_copy = nullptr;
 		}
 
-		// shifting elements
-		for (int itt = quantity_; itt > index; itt--)
+		if (!(index == -1 || index >= quantity_))
 		{
-			array_[itt] = array_[itt - 1];
-		}
+			// shifting elements
+			for (int itt = quantity_; itt > index; itt--)
+			{
+				array_[itt] = array_[itt - 1];
+			}
 
-		array_[index] = value;
-		quantity_++;
+			array_[index] = value;
+			quantity_++;
+		}
+	
 	}
 
 	// removing of element
@@ -406,7 +400,7 @@ public:
 
 		return result;
 	}
-
+	
 
 
 
@@ -418,10 +412,6 @@ public:
 	}
 
 };
-
-
-//выделение подпоследовательности
-//ArrayDerived SubSequence(int StartIndex = 0, int Length = -1)
 
 class ArrayDerived_sorted : public ArrayDerived
 {
@@ -467,6 +457,23 @@ public:
 	// default constructor --> `capacity_` = 128; `quantity_` = 0;
 	ArrayDerived_sorted(int Demension = 128) : ArrayDerived(Demension) { cout << '\n' << "ArrayDerived_sorted has been created" << '\n'; }
 
+	// constructor_2 : vector::vector --> ArrayDerived_sorted::result
+	ArrayDerived_sorted(const vector<double>& vector)
+	{
+		cout << "\n" << "constructor_2";
+		capacity_ = (vector.size() > 128) ? vector.size() : 128;
+		quantity_ = vector.size();
+		array_ = new double[capacity_];
+
+
+		// std::sort(vector.begin(), vector.end());
+
+		for (int itt = 0; itt < quantity_; itt++)
+		{
+			array_[itt] = double(vector[itt]);
+		}
+	}
+
 	// destructor
 	~ArrayDerived_sorted() { cout << '\n' << "ArrayDerived_sorted has been deleted" << '\n'; }
 
@@ -481,15 +488,24 @@ public:
 		}
 	}
 
+	// remove value
+	virtual bool RemoveValue(double value)
+	{
+		int index = bin_search(value);
+
+		if (index) { (*this).removeElement(index); return true; }
+		
+		return false;
+	}
 };
 
 
 
 int main()
 {
+	/*
 	// test of default constructor
-	ArrayMaster array_master(100);
-	array_master.print();
+	ArrayMaster array_master(100); array_master.print();
 
 	vector<double> vv(10, 4);
 	ArrayMaster array_master_2(vv);
@@ -544,6 +560,72 @@ int main()
 
 	cout << '\n' << "///////////////////////////////////////////////"
 		<< "//////////////////" << '\n';
+
+	array_master_4 = vv; array_master_4.print();
+	array_master_4 = array_master_3; array_master_4.print();
+
+	vector<double> vv_t(40, 16);
+	array_master_4 = vv = vv_t; array_master_4.print();
+
+	cout << '\n' << "///////////////////////////////////////////////"
+		<< "//////////////////" << '\n';
+
+	array_master_4[0] = 99; array_master_4.print();
+	// array_master_4[-1] = 99; array_master_4.print();
+
+	cout << '\n' << "///////////////////////////////////////////////"
+		<< "//////////////////" << '\n';
+		*/
+	ArrayDerived array_derived; array_derived.print();
+
+	std::vector<double> frog = { 234, 76.3, 14, 0.18, 23, 49, 96.152, 6, 22, 51 };;
+	ArrayDerived array_derived_2(frog); array_derived_2.print();
+	cout << "Index of value = 76.3 in array_derived_2 is " << array_derived_2.IndexOf(76.3) << '\n';
+	
+	cout << '\n' << "///////////////////////////////////////////////"
+		<< "//////////////////" << '\n';
+	
+	array_derived_2.Insert(54, 2); array_derived_2.print();
+	array_derived_2.removeElement(6); array_derived_2.print();
+	
+	// ответ: 234 + 54 + 6 + 51 + 96 = 441;
+	cout << array_derived_2.SumOfIndex() << '\n';
+	
+	array_derived_2 + 89; array_derived_2.print();
+
+	cout << '\n' << "///////////////////////////////////////////////"
+		<< "//////////////////" << '\n';
+
+	ArrayDerived_sorted array_sorted;
+	
+	for (int itt = 0; itt < 101; itt += 2) { array_sorted.push_back(itt); }
+
+	array_sorted.Insert(12); array_sorted.print();
+	array_sorted.RemoveValue(24); array_sorted.print();
+
+	cout << '\n' << "///////////////////////////////////////////////"
+		<< "//////////////////" << '\n';
+
+	ArrayDerived* ptr;
+	// array_derived_2.print();
+	ptr = &array_derived_2; ptr->Insert(31); array_derived_2.print();
+	array_sorted.Insert(31); array_sorted.print();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	return 0;
 }
