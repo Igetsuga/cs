@@ -609,7 +609,7 @@ int main()
 	ArrayDerived* ptr;
 	// array_derived_2.print();
 	ptr = &array_derived_2; ptr->Insert(31); array_derived_2.print();
-	array_sorted.Insert(31); array_sorted.print();
+	array_sorted.Insert(32); array_sorted.print();
 
 
 
