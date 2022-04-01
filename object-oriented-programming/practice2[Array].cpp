@@ -420,35 +420,40 @@ private:
 	{
 		int value_new = value;
 		while (value_new --> 0) {
-			int itt_middle = quantity_ / 2;
 			int itt_right = quantity_ - 1;
 			int itt_left = 0;
+			int itt_middle = 0;
 
-			if (array_[itt_left] == value) { return itt_left; }
-			if (array_[itt_right] == value) { return itt_right; }
+			if (array_[itt_left] == value_new) { return itt_left; }
+			if (array_[itt_right] == value_new) { return itt_right; }
 
-			while (itt_left < itt_right) {
-				if (array_[itt_middle] == value) { return itt_middle; }
-				else if (array_[itt_middle] > value) { itt_right = itt_middle; itt_middle /= 2; }
-				else { itt_left = itt_middle; itt_middle = (itt_right - itt_left) / 2; }
+			while (itt_left <= itt_right) {
+
+				itt_middle = itt_left + ((itt_right - itt_left) / 2);
+
+				if (array_[itt_middle] == value_new) { return itt_middle; }
+				else if (array_[itt_middle] > value_new) { itt_right = itt_middle - 1; }
+				else { itt_left = itt_middle + 1; }
 			}
 		}
-		/*
+		
+		value_new = value;
+
 		while (value_new++ < array_[quantity_ - 1]) {
 			int itt_middle = quantity_ / 2;
 			int itt_right = quantity_ - 1;
 			int itt_left = 0;
 
-			if (array_[itt_left] == value) { return itt_left; }
-			if (array_[itt_right] == value) { return itt_right; }
+			if (array_[itt_left] == value_new) { return itt_left; }
+			if (array_[itt_right] == value_new) { return itt_right; }
 
 			while (itt_left < itt_right) {
-				if (array_[itt_middle] == value) { return itt_middle; }
-				else if (array_[itt_middle] > value) { itt_right = itt_middle; itt_middle /= 2; }
+				if (array_[itt_middle] == value_new) { return itt_middle; }
+				else if (array_[itt_middle] > value_new) { itt_right = itt_middle; itt_middle /= 2; }
 				else { itt_left = itt_middle; itt_middle = (itt_right - itt_left) / 2; }
 			}
 		}
-		*/
+		
 	}
 
 		
@@ -575,7 +580,8 @@ int main()
 
 	cout << '\n' << "///////////////////////////////////////////////"
 		<< "//////////////////" << '\n';
-		*/
+	*/
+
 	ArrayDerived array_derived; array_derived.print();
 
 	std::vector<double> frog = { 234, 76.3, 14, 0.18, 23, 49, 96.152, 6, 22, 51 };;
@@ -600,28 +606,21 @@ int main()
 	
 	for (int itt = 0; itt < 101; itt += 2) { array_sorted.push_back(itt); }
 
-	array_sorted.Insert(12); array_sorted.print();
+	array_sorted.Insert(32); array_sorted.print();
 	array_sorted.RemoveValue(24); array_sorted.print();
 
 	cout << '\n' << "///////////////////////////////////////////////"
 		<< "//////////////////" << '\n';
 
 	ArrayDerived* ptr;
-	// array_derived_2.print();
+	array_derived_2.print();
 	ptr = &array_derived_2; ptr->Insert(31); array_derived_2.print();
-	array_sorted.Insert(32); array_sorted.print();
-
-
-
-
-
-
-
-
-
-
-
-
+	
+	// WORK ONLY WITH <int> :) 
+	array_sorted.Insert(99); array_sorted.print();
+	
+	cout << '\n' << "///////////////////////////////////////////////"
+		<< "//////////////////" << '\n';
 
 
 
