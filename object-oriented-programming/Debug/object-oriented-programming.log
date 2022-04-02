@@ -1,9 +1,2 @@
-﻿  practice2[Array].cpp
-C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(257,18): warning C4018: <: несоответствие типов со знаком и без знака
-C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(268,24): warning C4018: <: несоответствие типов со знаком и без знака
-C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(397,64): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
-C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(397,1): warning C4244: +=: преобразование "double" в "int", возможна потеря данных
-C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(421,17): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
-C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(440,15): warning C4244: =: преобразование "double" в "int", возможна потеря данных
-C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice2[Array].cpp(457): warning C4715: ArrayDerived_sorted::bin_search: значение возвращается не при всех путях выполнения
+﻿  practice3[Inheritance].cpp
   object-oriented-programming.vcxproj -> C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\Debug\object-oriented-programming.exe
