@@ -24,7 +24,9 @@ public:
 	}
 
 	void GetMainValue() { std::cout << "The Main Value is >> " << a_ << " <<" << '\n'; }
+	void SetMainValue(int value) { a_ = value; }
 
+	
 };
 
 class class_B1 : public virtual class_A
@@ -129,11 +131,6 @@ public:
 		std::cout << "Protected d2_ is equal: " << d2_ << '\n';
 	}
 
-	virtual void print()
-	{
-		std::cout << "\n" << typeid(*this).name() << '\n';
-		std::cout << "Protected d1_ is equal: " << d2_ << '\n';
-	}
 
 	void show()
 	{
@@ -147,10 +144,15 @@ public:
 
 int main()
 {
-
+	// “естирование множественного наследовани€
+	
+	// —оздание прародител€
 	class_A parrent(56); parrent.print();
 
+	// —оздание наследника первого уровн€ от прародител€
 	class_B1 class_B1; class_B1.print();
+
+
 
 
 	return 0;
