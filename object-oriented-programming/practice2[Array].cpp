@@ -509,19 +509,22 @@ public:
 int main()
 {
 	/*
-	// test of default constructor
+	// Создание и вывод в консоль объекта типа `ArrayMaster`
 	ArrayMaster array_master(100); array_master.print();
 
+	// Тестирование конструктора, принимающего вектор
 	vector<double> vv(10, 4);
 	ArrayMaster array_master_2(vv);
 	array_master_2.print();
 	
+	// Тестирование функций `get_capacity_` и `get_size_`
 	cout << '\n' << "get_capacity: " << array_master_2.get_сapacity();
 	cout << '\n' << "get_size: " << array_master_2.get_size() << '\n';
 
 	cout << '\n' << "///////////////////////////////////////////////"
 		<<  "//////////////////" << '\n';
 
+	// Тестирование конструктора, принимающего существующий массив
 	double array_C[10] = { 10, 45, 64, 865, 2, 8, 1, 9.45, 11.12, 88 };
 	ArrayMaster array_master_3(array_C, 10);
 	array_master_3.print();
@@ -529,9 +532,11 @@ int main()
 	cout << '\n' << "///////////////////////////////////////////////"
 		<< "//////////////////" << '\n';
 
+	// Тестирование функциb `set_element`
 	array_master_3.set_element(9, 99);
 	array_master_3.print();
 
+	// Получение ответа на вопрос: Что будет, если я здесь напишу `throw OutOfBounds`?
 	// throw OutOfBounds
 	// array_master_3.set_element(11, 99);
 	// array_master_3.print();
@@ -539,6 +544,7 @@ int main()
 	cout << '\n' << "///////////////////////////////////////////////"
 		<< "//////////////////" << '\n';
 
+	// Не помню, что это и зачем оно тут 
 	cout << '\n' << "get_capacity: " << array_master_3.get_сapacity();
 	cout << '\n' << "get_size: " << array_master_3.get_size() << '\n';
 	array_master_3.push_back(76.2);
@@ -560,12 +566,14 @@ int main()
 	
 	cout << '\n' << "///////////////////////////////////////////////"
 		<< "//////////////////" << '\n';
-
+	
+	// Тестирование функции `remove_last_element`
 	array_master_4.remove_last_element(); array_master_4.print();
 
 	cout << '\n' << "///////////////////////////////////////////////"
 		<< "//////////////////" << '\n';
 
+	// Тестирование оператора =
 	array_master_4 = vv; array_master_4.print();
 	array_master_4 = array_master_3; array_master_4.print();
 
@@ -582,8 +590,10 @@ int main()
 		<< "//////////////////" << '\n';
 	*/
 
+	// Создание и вывод в консоль объекта типа `ArrayDerived`
 	ArrayDerived array_derived; array_derived.print();
 
+	// Тестирование конструктора, принимающего сущесвтующий массив
 	std::vector<double> frog = { 234, 76.3, 14, 0.18, 23, 49, 96.152, 6, 22, 51 };;
 	ArrayDerived array_derived_2(frog); array_derived_2.print();
 	cout << "Index of value = 76.3 in array_derived_2 is " << array_derived_2.IndexOf(76.3) << '\n';
@@ -591,29 +601,40 @@ int main()
 	cout << '\n' << "///////////////////////////////////////////////"
 		<< "//////////////////" << '\n';
 	
+	// Тестирование функции вставки элемента в определенное место массива
 	array_derived_2.Insert(54, 2); array_derived_2.print();
+	// Тестирование функции удаления элемента по индексу
 	array_derived_2.removeElement(6); array_derived_2.print();
 	
+	// Тестирование функции, возвращающей сумму элементов кратных трем
 	// ответ: 234 + 54 + 6 + 51 + 96 = 441;
 	cout << array_derived_2.SumOfIndex() << '\n';
 	
+	// Тестирование оператора +
 	array_derived_2 + 89; array_derived_2.print();
 
 	cout << '\n' << "///////////////////////////////////////////////"
 		<< "//////////////////" << '\n';
 
+	// Создание объекта типа `ArrayDerived_sorted`
 	ArrayDerived_sorted array_sorted;
 	
+
+	// Тестирование родительской функции push_back(не переопределена в производном)
 	for (int itt = 0; itt < 101; itt += 2) { array_sorted.push_back(itt); }
 
+	// Тестирование функции вставки элемента через bin_search
 	array_sorted.Insert(32); array_sorted.print();
+	// Тестирование функции удаления элемента через bin_search
 	array_sorted.RemoveValue(24); array_sorted.print();
 
 	cout << '\n' << "///////////////////////////////////////////////"
 		<< "//////////////////" << '\n';
-
+	
+	// Демонстрация работы указателя на базовый класс
 	ArrayDerived* ptr;
 	array_derived_2.print();
+
 	ptr = &array_derived_2; ptr->Insert(31); array_derived_2.print();
 	
 	// WORK ONLY WITH <int> :) 
@@ -621,8 +642,6 @@ int main()
 	
 	cout << '\n' << "///////////////////////////////////////////////"
 		<< "//////////////////" << '\n';
-
-
 
 
 

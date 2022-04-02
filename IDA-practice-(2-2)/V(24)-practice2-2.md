@@ -10,7 +10,7 @@ ___
 
 - `model_1` = `no_critical_model_log_2` = `lm(rating ~ I(log(raises)) + I(log(advance)), data)`
 
-которая выдвала следующую зависимость:
+которая выдовала следующую зависимость:
 $$rating = (-115.572) + 5.55.004 * I(log(raises)) + (-12.963) * I(log(advance))$$
 
 с показателями: **Multiple R-squared**:  0.4074,	 **Adjusted R-squared**:  0.3635, **p-value**: 0.0008557
