@@ -298,7 +298,7 @@ public:
 
 	void print()
 	{
-		cout << "\n" << typeid(*this).name() << " size: " << quantity_ << ", capacity: " << capacity_ 
+		cout << "\n" << "(" << typeid(*this).name() << ") size: " << quantity_ << ", capacity : " << capacity_
 			<< '\n' <<"elements: { >> ";
 		for (int itt = 0; itt < quantity_; itt++)
 		{
@@ -373,7 +373,7 @@ public:
 	}
 
 	// removing of element
-	virtual void removeElement(int index = -1)
+	virtual void RemoveElement(int index = -1)
 	{
 		// if (index > quantity_) { throw OutOfBounds();  (*this).removeElement(quantity_ - 1); }
 		if (index >= quantity_) { throw OutOfBounds(); (*this).remove_last_element(); }
@@ -419,7 +419,7 @@ private:
 	int bin_search(double value)
 	{
 		int value_new = value;
-		while (value_new --> 0) {
+		while (value_new) {
 			int itt_right = quantity_ - 1;
 			int itt_left = 0;
 			int itt_middle = 0;
@@ -431,15 +431,16 @@ private:
 
 				itt_middle = itt_left + ((itt_right - itt_left) / 2);
 
-				if (array_[itt_middle] == value_new) { return itt_middle; }
+				if (array_[itt_middle] == value_new) { cout << "\n>>>>>>>" << itt_middle << "<<<<<<<\n"; return itt_middle; }
 				else if (array_[itt_middle] > value_new) { itt_right = itt_middle - 1; }
 				else { itt_left = itt_middle + 1; }
 			}
+			value_new--;
 		}
 		
 		value_new = value;
 
-		while (value_new++ < array_[quantity_ - 1]) {
+		while (value_new < array_[quantity_ - 1]) {
 			int itt_middle = quantity_ / 2;
 			int itt_right = quantity_ - 1;
 			int itt_left = 0;
@@ -452,6 +453,7 @@ private:
 				else if (array_[itt_middle] > value_new) { itt_right = itt_middle; itt_middle /= 2; }
 				else { itt_left = itt_middle; itt_middle = (itt_right - itt_left) / 2; }
 			}
+			value_new++;
 		}
 		
 	}
@@ -484,7 +486,7 @@ public:
 
 
 	// inserting of element
-	virtual void Insert(double value, int index = -1)
+	void Insert(double value, int index = -1)
 	{
 		if (value >= array_[quantity_ - 1]) { (*this).ArrayMaster::push_back(value); }
 		else { 
@@ -494,11 +496,11 @@ public:
 	}
 
 	// remove value
-	virtual bool RemoveValue(double value)
+	bool RemoveElement(double value)
 	{
 		int index = bin_search(value);
 
-		if (index) { (*this).removeElement(index); return true; }
+		if (index) { (*this).ArrayDerived::RemoveElement(index); return true; }
 		
 		return false;
 	}
@@ -590,55 +592,69 @@ int main()
 		<< "//////////////////" << '\n';
 	*/
 
-	// Создание и вывод в консоль объекта типа `ArrayDerived`
-	ArrayDerived array_derived; array_derived.print();
+	
+	ArrayDerived* ptr;
 
-	// Тестирование конструктора, принимающего сущесвтующий массив
+	// Создание и вывод в консоль объекта типа `ArrayDerived`
+	ArrayDerived array_derived; ptr = &array_derived;
+	
+	ptr->print();
+
+	// Тестирование конструктора, принимающего сущесвтующий вектор
 	std::vector<double> frog = { 234, 76.3, 14, 0.18, 23, 49, 96.152, 6, 22, 51 };;
-	ArrayDerived array_derived_2(frog); array_derived_2.print();
-	cout << "Index of value = 76.3 in array_derived_2 is " << array_derived_2.IndexOf(76.3) << '\n';
+	ArrayDerived array_derived_2(frog); 
+	
+	ptr = &array_derived_2;
+	
+	ptr->print();
+
+	cout << "Index of value = 76.3 in array_derived_2 is " << ptr->IndexOf(76.3) << '\n';
 	
 	cout << '\n' << "///////////////////////////////////////////////"
 		<< "//////////////////" << '\n';
 	
 	// Тестирование функции вставки элемента в определенное место массива
-	array_derived_2.Insert(54, 2); array_derived_2.print();
+	ptr->Insert(54, 2); ptr->print();
 	// Тестирование функции удаления элемента по индексу
-	array_derived_2.removeElement(6); array_derived_2.print();
+	ptr->RemoveElement(6); ptr->print();
 	
 	// Тестирование функции, возвращающей сумму элементов кратных трем
 	// ответ: 234 + 54 + 6 + 51 + 96 = 441;
-	cout << array_derived_2.SumOfIndex() << '\n';
+	cout << ptr->SumOfIndex() << '\n';
 	
 	// Тестирование оператора +
-	array_derived_2 + 89; array_derived_2.print();
+	*ptr + 89; ptr->print();
 
 	cout << '\n' << "///////////////////////////////////////////////"
 		<< "//////////////////" << '\n';
 
 	// Создание объекта типа `ArrayDerived_sorted`
-	ArrayDerived_sorted array_sorted;
+	ArrayDerived_sorted array_sorted; ptr = &array_sorted;
 	
 
 	// Тестирование родительской функции push_back(не переопределена в производном)
-	for (int itt = 0; itt < 101; itt += 2) { array_sorted.push_back(itt); }
+	for (int itt = 0; itt < 101; itt += 2) { ptr->push_back(itt); }
 
 	// Тестирование функции вставки элемента через bin_search
-	array_sorted.Insert(32); array_sorted.print();
+	ptr->Insert(32); ptr->print();
 	// Тестирование функции удаления элемента через bin_search
-	array_sorted.RemoveValue(24); array_sorted.print();
+	ptr->RemoveElement(20); ptr->print();
 
 	cout << '\n' << "///////////////////////////////////////////////"
 		<< "//////////////////" << '\n';
 	
 	// Демонстрация работы указателя на базовый класс
-	ArrayDerived* ptr;
-	array_derived_2.print();
-
-	ptr = &array_derived_2; ptr->Insert(31); array_derived_2.print();
+	
+	ptr = &array_derived_2;
+	
+	ptr->print();
+	ptr->Insert(31); ptr->print();
 	
 	// WORK ONLY WITH <int> :) 
-	array_sorted.Insert(99); array_sorted.print();
+	ptr = &array_sorted;
+	
+	ptr->print();
+	ptr->Insert(81); ptr->print();
 	
 	cout << '\n' << "///////////////////////////////////////////////"
 		<< "//////////////////" << '\n';
