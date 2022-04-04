@@ -403,7 +403,7 @@ int main()
 
 	for (int itt = 0; itt < test.size(); itt++)
 	{
-		cout << "Case #" << itt << " : answer = " << str.foo(test[itt]) << '\n';
+		cout << "Case #" << itt << " current value is " << test[itt] << " : answer = " << str.foo(test[itt]) << '\n';
 	}
 
 	cout << '\n' << "///////////////////////////////////////////////"
