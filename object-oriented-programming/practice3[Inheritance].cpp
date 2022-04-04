@@ -57,7 +57,7 @@ public:
 	void show()
 	{
 		cout << '\n' << "That object  " << typeid(*this).name() << " have access to: " << "a_ = " << a_ << '\n';
-		cout << "                                          b1_ = " << b1_ << '\n';
+		cout << "                                           b1_ = " << b1_ << '\n';
 	}
 
 	
@@ -80,7 +80,7 @@ public:
 	void show()
 	{
 		cout << '\n' << "That object  " << typeid(*this).name() << " have access to: " << "a_ = " << a_ << '\n';
-		cout << "                                          b2_ = " << b2_ << '\n';
+		cout << "                                           b2_ = " << b2_ << '\n';
 	}
 
 
