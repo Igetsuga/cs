@@ -13,11 +13,11 @@ ds_0 <- rlms_read("r20i_os26c.sav")
 
 ds = select(ds_0, pj13.2, p_age, ph5, p_marst, p_diplom, status, pj6.2, pj1.1.1, pj11.1, pj23)
 
-# èñêëþ÷åíèå ñòðîê ñî çíà÷åíèåì NA
+# Ð¸ÑÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ðµ ÑÑ‚Ñ€Ð¾Ðº ÑÐ¾ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸ÐµÐ¼ NA
 ds = na.omit(ds)
 
 #######################################################################
-# Cåìåéíîå ïîëîæåíèå
+# CÐµÐ¼ÐµÐ¹Ð½Ð¾Ðµ Ð¿Ð¾Ð»Ð¾Ð¶ÐµÐ½Ð¸Ðµ
 ds["wed"] = ds$p_marst
 ds["wed"] = lapply(ds["wed"], as.character)
 ds$wed1 = 0
@@ -42,7 +42,7 @@ ds$wed3 = as.numeric(ds$wed3)
 
 
 #######################################################################
-# Ïîë
+# ÐŸÐ¾Ð»
 ds["sex"] = ds$ph5
 ds["sex"] = lapply(ds["sex"], as.character)
 
@@ -51,7 +51,7 @@ ds$sex[which(ds$sex == '2')] <- 0
 ds$sex = as.numeric(ds$sex)
 
 #######################################################################
-# Íàñåëåííûé ïóíêò
+# ÐÐ°ÑÐµÐ»ÐµÐ½Ð½Ñ‹Ð¹ Ð¿ÑƒÐ½ÐºÑ‚
 ds["status1"] = ds$status
 ds["status1"] = lapply(ds["status1"], as.character)
 ds["city_status"] = 0
@@ -60,14 +60,14 @@ ds$city_status[which(ds$status1 == '2')] <- 1
 ds$city_status = as.numeric(ds$city_status)
 
 #######################################################################
-# Íàëè÷èå âûñøåãî îáðàçîâàíèÿ
+# ÐÐ°Ð»Ð¸Ñ‡Ð¸Ðµ Ð²Ñ‹ÑÑˆÐµÐ³Ð¾ Ð¾Ð±Ñ€Ð°Ð·Ð¾Ð²Ð°Ð½Ð¸Ñ
 ds["higher_educ"] = ds$p_diplom
 ds["higher_educ"] = lapply(ds["higher_educ"], as.character)
 ds["h_educ"] = ds$p_diplom
 ds["h_educ"] = 0
 ds$h_educ[which(ds$higher_educ == '6')] <- 1
 
-# Îáðàçîâàíèå
+# ÐžÐ±Ñ€Ð°Ð·Ð¾Ð²Ð°Ð½Ð¸Ðµ
 # ds["higher_educ"] = ds$s_educ
 # ds["higher_educ"] = lapply(ds["higher_educ"], as.character)
 # ds["h_educ"] = ds$s_educ
@@ -77,7 +77,7 @@ ds$h_educ[which(ds$higher_educ == '6')] <- 1
 # ds$h_educ[which(ds$higher_educ=='23')] <- 1
 
 #######################################################################
-# Çàðïëàòà: ïðåîáðàçîâàíèå â âåùåñòâåííóþ è íîðìàëèçàöèÿ
+# Ð—Ð°Ñ€Ð¿Ð»Ð°Ñ‚Ð°: Ð¿Ñ€ÐµÐ¾Ð±Ñ€Ð°Ð·Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð² Ð²ÐµÑ‰ÐµÑÑ‚Ð²ÐµÐ½Ð½ÑƒÑŽ Ð¸ Ð½Ð¾Ñ€Ð¼Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ
 sal1 = as.character(ds$pj13.2)
 sal2 = lapply(sal1, as.integer)
 sal = as.numeric(unlist(sal2))
@@ -88,7 +88,7 @@ ds["salary"] = (sal - mean(sal)) / sqrt(var(sal))
 ds["salary"]
 
 #######################################################################
-# Ïðîäîëæèòåëüíîñòü ðàáî÷åé íåäåëè: ïðåîáðàçîâàíèå â âåùåñòâåííóþ è íîðìàëèçàöèÿ
+# ÐŸÑ€Ð¾Ð´Ð¾Ð»Ð¶Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ÑÑ‚ÑŒ Ñ€Ð°Ð±Ð¾Ñ‡ÐµÐ¹ Ð½ÐµÐ´ÐµÐ»Ð¸: Ð¿Ñ€ÐµÐ¾Ð±Ñ€Ð°Ð·Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð² Ð²ÐµÑ‰ÐµÑÑ‚Ð²ÐµÐ½Ð½ÑƒÑŽ Ð¸ Ð½Ð¾Ñ€Ð¼Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ
 dur1 = as.character(ds$pj6.2)
 dur2 = lapply(dur1, as.integer)
 dur3 = as.numeric(unlist(dur2))
@@ -99,7 +99,7 @@ ds["dur"] = (dur3 - mean(dur3)) / sqrt(var(dur3))
 ds["dur"]
 
 #######################################################################
-# Âîçðàñò: ïðåîáðàçîâàíèå â âåùåñòâåííóþ è íîðìàëèçàöèÿ
+# Ð’Ð¾Ð·Ñ€Ð°ÑÑ‚: Ð¿Ñ€ÐµÐ¾Ð±Ñ€Ð°Ð·Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð² Ð²ÐµÑ‰ÐµÑÑ‚Ð²ÐµÐ½Ð½ÑƒÑŽ Ð¸ Ð½Ð¾Ñ€Ð¼Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ
 age1 = as.character(ds$p_age)
 age2 = lapply(age1, as.integer)
 age3 = as.numeric(unlist(age2))
@@ -110,7 +110,7 @@ ds["age"]= (age3 - mean(age3)) / sqrt(var(age3))
 ds["age"]
 
 #######################################################################
-# Óäîâëåòâîðåííîñòü ðàáîòîé â öåëîì
+# Ð£Ð´Ð¾Ð²Ð»ÐµÑ‚Ð²Ð¾Ñ€ÐµÐ½Ð½Ð¾ÑÑ‚ÑŒ Ñ€Ð°Ð±Ð¾Ñ‚Ð¾Ð¹ Ð² Ñ†ÐµÐ»Ð¾Ð¼
 ds["sat"] = ds$pj1.1.1
 ds["sat"] = lapply(ds["sat"], as.character)
 ds["satisfy"] = 0
@@ -120,7 +120,7 @@ ds$satisfy[which(ds$sat == '3')] <- 1
 ds$satisfy = as.numeric(ds$satisfy)
 
 #######################################################################
-# Îôèöèàëüíîå òðóäîóñòðîéñòâî
+# ÐžÑ„Ð¸Ñ†Ð¸Ð°Ð»ÑŒÐ½Ð¾Ðµ Ñ‚Ñ€ÑƒÐ´Ð¾ÑƒÑÑ‚Ñ€Ð¾Ð¹ÑÑ‚Ð²Ð¾
 ds["of_w"] = ds$pj1.1.1
 ds["of_w"] = lapply(ds["of_w"], as.character)
 ds["of"] = 0
@@ -128,7 +128,7 @@ ds$of[which(ds$of_w == '1')] <- 1
 ds$of = as.numeric(ds$of)
 
 #######################################################################
-# ßâëÿåòñÿ ãîñóäàðñòâî âëàäåëüöåì èëè ñîâëàäåëüöåì Âàøåãî ïðåäïðèÿòèÿ, îðãàíèçàöèè?
+# Ð¯Ð²Ð»ÑÐµÑ‚ÑÑ Ð³Ð¾ÑÑƒÐ´Ð°Ñ€ÑÑ‚Ð²Ð¾ Ð²Ð»Ð°Ð´ÐµÐ»ÑŒÑ†ÐµÐ¼ Ð¸Ð»Ð¸ ÑÐ¾Ð²Ð»Ð°Ð´ÐµÐ»ÑŒÑ†ÐµÐ¼ Ð’Ð°ÑˆÐµÐ³Ð¾ Ð¿Ñ€ÐµÐ´Ð¿Ñ€Ð¸ÑÑ‚Ð¸Ñ, Ð¾Ñ€Ð³Ð°Ð½Ð¸Ð·Ð°Ñ†Ð¸Ð¸?
 ds["gov_1"] = ds$pj11.1
 ds["gov_1"] = lapply(ds["gov_1"], as.character)
 ds["gov"] = 0
@@ -139,138 +139,138 @@ ds$gov = as.numeric(ds$gov)
 ds = na.omit(ds)
 
 #######################################################################
-# Ïîñòðîåíèå ëèíåéíîé ðåãðåññèè çàâèñèìîòñòè ïåðåìåííîé `salary` îò
-# âñåõ ââåäåíûõ ðåãðåññîðîâ
+# ÐŸÐ¾ÑÑ‚Ñ€Ð¾ÐµÐ½Ð¸Ðµ Ð»Ð¸Ð½ÐµÐ¹Ð½Ð¾Ð¹ Ñ€ÐµÐ³Ñ€ÐµÑÑÐ¸Ð¸ Ð·Ð°Ð²Ð¸ÑÐ¸Ð¼Ð¾Ñ‚ÑÑ‚Ð¸ Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ð¾Ð¹ `salary` Ð¾Ñ‚
+# Ð²ÑÐµÑ… Ð²Ð²ÐµÐ´ÐµÐ½Ñ‹Ñ… Ñ€ÐµÐ³Ñ€ÐµÑÑÐ¾Ñ€Ð¾Ð²
 
 ds_2 = select(ds, salary, age, sex, h_educ, city_status, dur, wed1, wed2, wed3, satisfy, of, gov)
 
-# ìîäåëü_1 - `model_def`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_1 - `model_def`
 model_def = lm(data = ds_2, salary ~ age + sex + h_educ + city_status +
                  dur + wed1 + wed2 + wed3 + satisfy + of + gov)
 summary(model_def)
 vif(model_def)
 
-# ìîäåëü_2 - `model_2`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_2 - `model_2`
 model_2 = lm(data = ds_2, salary ~ age + sex + h_educ + city_status +
                  dur + wed2 + wed3 + satisfy + of + gov)
 summary(model_2)
 vif(model_2)
 
-# ìîäåëü_3 - `model_3`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_3 - `model_3`
 model_3 = lm(data = ds_2, salary ~ age + sex + h_educ + city_status +
                dur + wed3 + satisfy + of + gov)
 summary(model_3)
 vif(model_3)
 
-# ìîäåëü_4 - `model_4`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_4 - `model_4`
 model_4 = lm(data = ds_2, salary ~ log(age) + sex + h_educ + city_status +
                dur + wed3 + satisfy + of + gov)
 summary(model_4)
 vif(model_4)
 
-# ìîäåëü_5 - `model_5`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_5 - `model_5`
 model_5 = lm(data = ds_2, salary ~ log(age) + sex + h_educ + city_status +
                log(dur) + wed3 + satisfy + of + gov)
 summary(model_5)
 vif(model_5)
 
-# ìîäåëü_6 - `model_6`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_6 - `model_6`
 model_6 = lm(data = ds_2, salary ~ log(age) + sex + h_educ + city_status +
                log(dur) + wed3 + satisfy + of + gov)
 summary(model_6)
 vif(model_6)
 
-# ìîäåëü_7 - `model_7`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_7 - `model_7`
 model_7 = lm(data = ds_2, salary ~ I(age^2) + sex + h_educ + city_status +
                log(dur) + wed3 + satisfy + of + gov)
 summary(model_7)
 vif(model_7)
 
-# ìîäåëü_8 - `model_8`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_8 - `model_8`
 model_8 = lm(data = ds_2, salary ~ I(age^2) + sex + h_educ + city_status +
                I(dur^2) + wed3 + satisfy + of + gov)
 summary(model_8)
 vif(model_8)
 
-# ìîäåëü_9 - `model_9`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_9 - `model_9`
 model_9 = lm(data = ds_2, salary ~ I(age^2) + sex + h_educ + city_status +
                I(dur^2) + wed3 + I(satisfy^2) + of + gov)
 summary(model_9)
 vif(model_9)
 
-# ìîäåëü_10 - `model_10`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_10 - `model_10`
 model_10 = lm(data = ds_2, salary ~ I(age^2) + sex + h_educ + city_status +
                log(dur) + wed3 + I(satisfy^2) + of + gov)
 summary(model_10)
 vif(model_10)
 
-# ìîäåëü_11 - `model_11`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_11 - `model_11`
 model_11 = lm(data = ds_2, salary ~ I(age^2) + sex + h_educ + city_status +
                log(dur) + wed3 + I(satisfy^2) + of + gov)
 summary(model_11)
 vif(model_11)
 
-# ìîäåëü_12 - `model_12`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_12 - `model_12`
 model_12 = lm(data = ds_2, salary ~ I(age^0.1) + sex + h_educ + city_status +
                 dur + I(satisfy^2) + of + gov)
 summary(model_12)
 vif(model_12)
 
-# ìîäåëü_13 - `model_13`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_13 - `model_13`
 model_13 = lm(data = ds_2, salary ~ I(age^0.5) + sex + h_educ + city_status +
                 dur + I(satisfy^2) + of + gov)
 summary(model_13)
 vif(model_13)
 
-# ìîäåëü_14 - `model_14`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_14 - `model_14`
 model_14 = lm(data = ds_2, salary ~ log(age) + sex + h_educ + city_status +
                 log(dur) + I(satisfy^2) + of + gov)
 summary(model_14)
 vif(model_14)
 
-# ìîäåëü_15 - `model_15`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_15 - `model_15`
 model_15 = lm(data = ds_2, salary ~ log(age) + sex + h_educ + city_status +
                 log(dur) + I(satisfy^0.5) + of + gov)
 summary(model_15)
 vif(model_15)
 
-# ìîäåëü_16 - `model_16`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_16 - `model_16`
 model_16 = lm(data = ds_2, salary ~ log(age) + sex + h_educ + city_status +
                 log(dur)  + I(satisfy^1.5) + of + gov)
 summary(model_16)
 vif(model_16)
 
-# ìîäåëü_17 - `model_17`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_17 - `model_17`
 model_17 = lm(data = ds_2, salary ~ age + sex + h_educ + city_status +
                 log(dur) + I(satisfy^2) + of + gov)
 summary(model_17)
 vif(model_17)
 
-# ìîäåëü_18 - `model_18`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_18 - `model_18`
 model_18 = lm(data = ds_2, salary ~ log(age) + sex + h_educ + city_status +
                 I(dur^2) + I(satisfy^2) + of + gov)
 summary(model_18)
 vif(model_18)
 
-# ìîäåëü_19 - `model_19`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_19 - `model_19`
 model_19 = lm(data = ds_2, salary ~ age + sex + h_educ + city_status +
                 I(dur^0.1) + satisfy + of + gov)
 summary(model_19)
 vif(model_19)
 
-# ìîäåëü_20 - `model_20`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_20 - `model_20`
 model_20 = lm(data = ds_2, salary ~ I(age^2) + sex + h_educ + city_status +
                 I(dur^0.5) + satisfy + of + gov)
 summary(model_20)
 vif(model_20)
 
-# ìîäåëü_21 - `model_21`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_21 - `model_21`
 model_21 = lm(data = ds_2, salary ~ I(age^2) + sex + h_educ + city_status +
                 I(dur^2) + satisfy + of + gov)
 summary(model_21)
 vif(model_21)
 
-# ìîäåëü_22 - `model_22`
+# Ð¼Ð¾Ð´ÐµÐ»ÑŒ_22 - `model_22`
 model_22 = lm(data = ds_2, salary ~ age + sex + h_educ + city_status +
                 log(dur) + satisfy + of + gov)
 summary(model_22)
@@ -279,7 +279,7 @@ vif(model_22)
 #######################################################################
 
 
-# Íå âñòóïàâøèå â áðàê ìóæ÷èíû, áåç âûñøåãî îáðàçîâàíèÿ;
+# ÐÐµ Ð²ÑÑ‚ÑƒÐ¿Ð°Ð²ÑˆÐ¸Ðµ Ð² Ð±Ñ€Ð°Ðº Ð¼ÑƒÐ¶Ñ‡Ð¸Ð½Ñ‹, Ð±ÐµÐ· Ð²Ñ‹ÑÑˆÐµÐ³Ð¾ Ð¾Ð±Ñ€Ð°Ð·Ð¾Ð²Ð°Ð½Ð¸Ñ;
 
 data5_1 = subset(ds_2, sex = 1)
 data5_2 = subset(data5_1, wed3 = 1)
@@ -292,7 +292,7 @@ summary(model_5_1)
 
 #######################################################################
 
-# Ãîðîäñêèå æèòåëè, ìóæ÷èíû ñîñòîÿùèå â áðàêå
+# Ð“Ð¾Ñ€Ð¾Ð´ÑÐºÐ¸Ðµ Ð¶Ð¸Ñ‚ÐµÐ»Ð¸, Ð¼ÑƒÐ¶Ñ‡Ð¸Ð½Ñ‹ ÑÐ¾ÑÑ‚Ð¾ÑÑ‰Ð¸Ðµ Ð² Ð±Ñ€Ð°ÐºÐµ
 
 data5_1 = subset(ds_2, sex = 1)
 data5_2 = subset(data5_1, city_status = 1)
@@ -305,11 +305,3 @@ summary(model_5_2)
 
 #######################################################################
 #######################################################################
-
-
-
-
-
-
-
-
