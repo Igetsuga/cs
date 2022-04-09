@@ -1,8 +1,8 @@
 ﻿#include <iostream>
 // Сиразетдинов Рустем КМБО-01-21 Вариант- 24
 
-#include <iostream>
-
+#include <ostream>
+using namespace std;
 using std::cin;
 using std::cout;
 // using std::vector;
@@ -197,7 +197,7 @@ public:
 		cout << "\"" << '\n';
 	}
 
-	// friend ostream& operator<<(ostream& os, const StringBase& str);
+	friend ostream& operator<<(ostream& os, const StringBase& str);
 
 
 };
@@ -322,21 +322,47 @@ public:
 		return (*this) = array_char_copy;
 	}
 
-	int foo(char c)
+	int tolower(char c)
 	{
-		int value = int(tolower(c));
+		int c_int = int(c);
+		
+		if ( (c_int >= 65 && c_int <= 90) || (c_int >= 97 && c_int <= 122) ) // if ( isalpha(c) )
+		{
+			return ((c_int >= 97) ? (c_int - 32) : c_int);
+		}
+		
+		return c_int;
+	}
+
+	int foo_1(char c)
+	{
+		int value = int(StringBaseSub::tolower(c));
 
 		int result = 0;
 
 		for (int itt = 0; itt < length_; itt++)
 		{
-			result += 1 * ( int(tolower(string_[itt])) > value && int(tolower(string_[itt])) < 123 );
+			result += 1 * ( int(StringBaseSub::tolower(string_[itt])) > value && int(StringBaseSub::tolower(string_[itt])) < 123 );
 		}
 
 
 		return result;
 	}
 
+	int foo_2(char c)
+	{
+		int value = int(std::tolower(c));
+
+		int result = 0;
+
+		for (int itt = 0; itt < length_; itt++)
+		{
+			result += 1 * (int(std::tolower(string_[itt])) > value && int(std::tolower(string_[itt])) < 123);
+		}
+
+
+		return result;
+	}
 
 	virtual void print()
 	{
@@ -348,17 +374,19 @@ public:
 		}
 		cout << "\"" << '\n';
 	}
+
+
 };
 
 //ostream& operator<<(ostream& os, const StringBase& str)
 //{
 //	for (int itt = 0; itt < str.GetLength(); itt++)
 //	{
-//		out << str[itt];
+//		os << str[itt];
 //	}
 //
-//
-//	return out;
+//		
+//	return os;
 //}
 
 int main()
@@ -403,7 +431,7 @@ int main()
 
 	for (int itt = 0; itt < test.size(); itt++)
 	{
-		cout << "Case #" << itt << " current value is " << test[itt] << " : answer = " << str.foo(test[itt]) << '\n';
+		cout << "Case #" << itt << " current value is " << test[itt] << " : answer = " << str.foo_1(test[itt]) << " == " << str.foo_2(test[itt]) << '\n';
 	}
 
 	cout << '\n' << "///////////////////////////////////////////////"
