@@ -3,8 +3,8 @@ library("GGally")
 library("car")
 
 data = na.omit(attitude) # insertion database exclude NA answers
-      # rating- объясняемая переменная
-      # {raises, critical, advance}- регрессоры
+      # rating- РѕР±СЉСЏСЃРЅСЏРµРјР°СЏ РїРµСЂРµРјРµРЅРЅР°СЏ
+      # {raises, critical, advance}- СЂРµРіСЂРµСЃСЃРѕСЂС‹
 
 help(attitude)
 
