@@ -1,5 +1,3 @@
-﻿  practice4[String].cpp
-C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice4[String].cpp(162,17): warning C4018: <: несоответствие типов со знаком и без знака
-C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice4[String].cpp(299,17): warning C4018: <: несоответствие типов со знаком и без знака
-C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice4[String].cpp(432,24): warning C4018: <: несоответствие типов со знаком и без знака
+﻿  practice5[MultidimensionalArray].cpp
+C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\practice5[MultidimensionalArray].cpp(218,21): warning C4244: аргумент: преобразование "const double" в "const int", возможна потеря данных
   object-oriented-programming.vcxproj -> C:\Users\averu\Documents\gitlocalReps\programming-practice\object-oriented-programming\Debug\object-oriented-programming.exe
