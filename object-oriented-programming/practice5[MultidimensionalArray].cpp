@@ -6,7 +6,7 @@
 using std::cin;
 using std::cout;
 
-#define watch(variable) cout << (#variable)
+#define watch(variable) cout << "Matix: " << (#variable)
 
 // есть ли разница в скорости при выделении памяти? Т.е. быстрее выделится меньше памяти? 
 // Как много памяти можно выделять за 1 раз.
@@ -15,18 +15,18 @@ using std::cout;
 class Matrix
 {
 protected:
-	double** matrix_;
+	double **matrix_;
 	int rows_;
 	int columns_;
 public:
 
 	// default constructor --> { rows_ = 2; columns_ = 2; each element = 1; } 
-	Matrix(const int& rows = 2, const int& columns = 2)
+	Matrix(const int &rows = 2, const int &columns = 2)
 	{
 
 		rows_ = rows; columns_ = columns;
 
-		matrix_ = new double* [rows_];
+		matrix_ = new double *[rows_];
 		for (int itt = 0; itt < rows_; itt++)
 		{
 			matrix_[itt] = new double[columns_];
@@ -47,7 +47,7 @@ public:
 	}
 
 	// constructor_copy : create a copy of existing `matrix`;
-	Matrix(const Matrix& matrix)
+	Matrix(const Matrix &matrix)
 	{
 
 		rows_ = matrix.rows_; columns_ = matrix.columns_;
@@ -79,7 +79,7 @@ public:
 	}
 
 	// operator = : A = B
-	Matrix& operator= (const Matrix& matrix) // NOT CONSTANT
+	Matrix& operator= (const Matrix &matrix) // NOT CONSTANT
 	{
 
 		if (rows_ != matrix.rows_)
@@ -152,7 +152,7 @@ public:
 	}
 
 	// matrix_1 += matrix_2
-	Matrix operator+= (const Matrix& matrix) const
+	Matrix operator+= (const Matrix &matrix) const
 	{
 
 		/*if (rows_ != matrix.rows_)
@@ -173,7 +173,7 @@ public:
 	}
 
 	// matrix_1 + matrix_2 = matrix_3; return matrix_3
-	Matrix operator+ (const Matrix& matrix) const
+	Matrix operator+ (const Matrix &matrix) const
 	{
 		// почему я должен здесь создавать матрицу `res`
 		// возвращать именно её, не изменяя первую матрицу?
@@ -192,7 +192,7 @@ public:
 	}
 
 	// matrix += double
-	Matrix operator+= (const double& value)
+	Matrix operator+= (const double &value)
 	{
 
 		for (int itt, utt = 0; itt < rows_, utt < columns_; itt++, utt++)
@@ -205,7 +205,7 @@ public:
 	}
 
 	// matrix + double 
-	Matrix operator+ (const double& value) const
+	Matrix operator+ (const double &value) const
 	{
 		Matrix result(*this);
 
@@ -213,12 +213,12 @@ public:
 		return (result += value);
 	}
 
-	Matrix operator-= (const double& value) const
+	Matrix operator-= (const double &value) const
 	{
 		return (*this += (-value));
 	}
 
-	Matrix operator- (const double& value) const
+	Matrix operator- (const double &value) const
 	{
 		return (*this -= value);
 	}
@@ -239,16 +239,16 @@ public:
 		return result;
 	}
 
-	Matrix operator-= (const Matrix& matrix)
+	Matrix operator-= (const Matrix &matrix)
 	{
 		return (*this += (-matrix));
 	}
 
-	Matrix operator- (const Matrix& matrix) const
+	Matrix operator- (const Matrix &matrix) const
 	{
 		return (*this + (-matrix));
 	}
-	
+
 	int GetMatrixColumns() { return columns_; }
 	int GetMatrixRows() { return rows_; }
 
@@ -284,38 +284,60 @@ public:
 class subMatrix : public Matrix
 {
 public:
-	// subMatrix(int rows = 2, int columns = 2) : Matrix(rows, columns) {}
-	
+
 	// default_constructor
-	subMatrix(int rows = 2, int columns = 2, bool RAND = false) : Matrix(rows, columns) // если я здесь уберу 
-																						// наследование от родительского 
-																						// конструктора, тогда какой конструтор
-																						// будет вызываться?
+	subMatrix(const int &rows = 2, const int &columns = 2) : Matrix(rows, columns) {}
+
+	// constructor_copy: subMatrix::sub_matrix --> subMatrix::(copy of matrix)
+	subMatrix(const subMatrix &sub_matrix) : Matrix(sub_matrix) {}
+
+	// constructor_copy: Matrix::matrix --> subMatrix::(copy of matrix) 
+	subMatrix(const Matrix &matrix) : Matrix(matrix) {}
+	
+	// filling matrix of random values NOT CONST
+	Matrix RandFill()  // если я здесь уберу 
+					   // наследование от родительского 
+					   // конструктора, тогда какой конструтор
+					   // будет вызываться?
 	{
 
-		if (RAND)
+		for (int itt = 0; itt < rows_; itt++)
 		{
-			for (int itt = 0; itt < rows_; itt++)
+			for (int jtt = 0; jtt < columns_; jtt++)
 			{
-				for (int jtt = 0; jtt < columns_; jtt++)
+				matrix_[itt][jtt] = std::rand();
+			}
+		}
+		
+
+		return (*this);
+	}
+	
+	Matrix Smoothing(const subMatrix &sub_matrix) const
+	{
+		for (int itt = 0; itt < rows_; itt++)
+		{
+			for (int jtt = 0; jtt < columns_; jtt++)
+			{
+				if (jtt == 0)
 				{
-					matrix_[itt][jtt] = std::rand();
+					matrix_[itt][jtt] = ( matrix_[itt][jtt] + matrix_[itt][jtt + 1] ) / 2;
+				}
+				else if (jtt == columns_ - 1)
+				{
+					matrix_[itt][jtt] = (matrix_[itt][jtt] + matrix_[itt][jtt - 1]) / 2;
+				}
+				else 
+				{
+					matrix_[itt][jtt] = (matrix_[itt][jtt - 1] + matrix_[itt][jtt + 1]) / 2;
 				}
 			}
 		}
 	}
 	
-	// copy_condtructor 
-	subMatrix(subMatrix& sub_matrix)
-	{
-
-	}
 
 
-	subMatrix& (const subMatrix& matrix) const
-	{
-		subMatrix result(rows_, columns_);
-	}
+	
 };
 
 
@@ -339,6 +361,16 @@ int main()
 
 	watch(test);
 	test.print_();
+
+	subMatrix sub_test(test);
+	sub_test.RandFill();
+	watch(sub_test);
+	sub_test.print_();
+
+	sub_test[2][2] = 99999;
+	watch(sub_test);
+	sub_test.print_();
+
 
 	return 0;
 }
