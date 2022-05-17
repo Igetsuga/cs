@@ -61,7 +61,7 @@ public:
 class StringBase
 {
 protected:
-	char* string_;
+	char* string_;    // array of chars
 	int length_;
 	int capacity_;
 public:
@@ -113,7 +113,7 @@ public:
 	}
 
 	// constructor_copy
-	StringBase(const StringBase& string)
+	StringBase(const StringBase& string) 
 	{
 		string_ = new char[string.capacity_];
 		
@@ -250,7 +250,7 @@ public:
 	}
 
 	// constructor_copy
-	StringBaseSub(const StringBaseSub& string)
+	StringBaseSub(const StringBaseSub &string)
 	{
 		string_ = new char[string.capacity_];
 
@@ -264,6 +264,8 @@ public:
 		}
 		string_[length_] = '\0';
 	}
+
+	// StringBaseSub(const StringBaseSub& string) : StringBase(string) {}
 
 	int GetLenght() { return length_; }
 	int GetCapacity() { return capacity_; }
