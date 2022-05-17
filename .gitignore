@@ -32,3 +32,7 @@
 *.app
 object-oriented-programming/.vs
 object-oriented-programming/Debug
+object-oriented-programming/object-oriented-programming.sln
+object-oriented-programming/object-oriented-programming.vcxproj
+object-oriented-programming/object-oriented-programming.vcxproj.filters
+object-oriented-programming/object-oriented-programming.vcxproj.user
