@@ -202,10 +202,17 @@ template<class Type> class List
 
 
 
-    ~List<Type>()
-    {
-        if (amount_ == 0);
-    }
+    //~List<Type>()
+    //{
+    //    if (list.head_ != nullptr) // <=> if (list.amount_ != 0) 
+    //    {
+    //        for (Object<Type>* ptr1 = ptr2 = head_, ; ptr1 != tail; ptr1 = ptr2;) // ptr1 = ptr1->ptr2
+    //        { 
+    //            ptr2 = ptr1->sucessor;
+    //            delete ptr1;
+    //        }
+    //    }
+    //}
 protected:
     Object<Type> *head_;
     Object<Type> *tail_;
