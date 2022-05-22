@@ -141,7 +141,7 @@ public:
 
 		rows_ = rows; columns_ = columns;
 
-		matrix_ = new Type* [rows_ + 1]; matrix_[0] = nullptr;
+		matrix_ = new Type *[rows_ + 1]; matrix_[0] = nullptr;
 		for (int itt = 1; itt <= rows_; itt++)
 		{
 			matrix_[itt] = new Type[columns_ + 1];
@@ -162,7 +162,7 @@ public:
 	}
 
 	// constructor_copy : create a copy of existing `matrix`;
-	template<typename T> Matrix<Type>(const Matrix<T> &matrix)
+	Matrix<Type>(const Matrix<Type> &matrix)
 	{
 
 		rows_ = matrix.rows_; columns_ = matrix.columns_;
@@ -179,7 +179,7 @@ public:
 
 	}
 
-	~Matrix()
+	~Matrix<Type>()
 	{
 
 		if (matrix_ != nullptr)
@@ -189,6 +189,7 @@ public:
 														   // matrix[itt] = nullptr;	             
 			delete[] matrix_; matrix_ = nullptr;
 		}
+		else { continue; }
 
 	}
 
@@ -422,6 +423,7 @@ public:
 		std::cout  << '\n';
 	}
 
+	// find amount of symbols in num from method Matrix<Type>::dog
 	int human(const int &value) const
 	{
 		int value_copy = value;
@@ -435,6 +437,7 @@ public:
 		return length;
 	}
 
+	// find max value in row
 	int dog(const int &column) const
 	{
 		int result = 0;
@@ -449,7 +452,7 @@ public:
 	
 	void printf_() const	
 	{
-		std::cout  << '\n';
+		std::cout << '\n';
 
 		for (int itt = 1; itt <= rows_; itt++)
 		{
@@ -485,7 +488,7 @@ public:
 	}
 
 
-	friend std::ostream& operator<< (std::ostream& output, const Matrix& matrix);
+	friend std::ostream& operator<< (std::ostream &output, const Matrix &matrix);
 	friend std::istream& operator>> (std::istream &input, Matrix &matrix);
 	
 
@@ -595,11 +598,11 @@ public:
 	subMatrix<Type> RandFill()
 	{
 
-		for (int itt = 1; itt <= rows_; itt++)
+		for (int itt = 1; itt <= Matrix<Type>::rows_; itt++)
 		{
-			for (int jtt = 1; jtt <= columns_; jtt++)
+			for (int jtt = 1; jtt <= Matrix<Type>::columns_; jtt++)
 			{
-				matrix_[itt][jtt] = std::rand();
+				Matrix<Type>::matrix_[itt][jtt] = std::rand();
 			}
 		}
 		
@@ -617,15 +620,15 @@ public:
 			{
 				if (jtt == 1)
 				{
-					result.matrix_[itt][jtt] = ( matrix_[itt][jtt] + matrix_[itt][jtt + 1] ) / 2;
+					result.matrix_[itt][jtt] = (Matrix<Type>::matrix_[itt][jtt] + Matrix<Type>::matrix_[itt][jtt + 1] ) / 2;
 				}
-				else if (jtt == result.columns_)
+				else if (jtt == result.Matrix<Type>::columns_)
 				{
-					result.matrix_[itt][jtt] = (matrix_[itt][jtt] + matrix_[itt][jtt - 1]) / 2;
+					result.matrix_[itt][jtt] = (Matrix<Type>::matrix_[itt][jtt] + Matrix<Type>::matrix_[itt][jtt - 1]) / 2;
 				}
 				else 
 				{
-					result.matrix_[itt][jtt] = (matrix_[itt][jtt - 1] + matrix_[itt][jtt + 1]) / 2;
+					result.matrix_[itt][jtt] = (Matrix<Type>::matrix_[itt][jtt - 1] + Matrix<Type>::matrix_[itt][jtt + 1]) / 2;
 				}
 			}
 		}
@@ -642,7 +645,7 @@ public:
 int main()
 {
 
-	// Задание 5.1: Общая проверка работоспособности системы.
+	// Задание 5.1: Проверка общей работоспособности системы.
 	//////////////////////////////////////////////////////////////////////////////
 	Matrix<double> test(5, 5);
 	int rows = test.GetMatrixRows();
@@ -700,7 +703,7 @@ int main()
 	sub_test_smothed.printf_();
 	//////////////////////////////////////////////////////////////////////////////
 
-	// Задание 5.2: Ловля и обработка исключений.
+	// Задание 5.2: Поимка и обработка исключений.
 	//////////////////////////////////////////////////////////////////////////////
 	Matrix<double> matrix(4, 4);
 	try
