@@ -241,28 +241,58 @@ public:
     // destructor.
     ~LinkedList()
     {
+        size_ = 0;
         forceObjectdelete(head_);
     }
 
-    void forceObjectDelete(Object *object)
+    void forceObjectDelete (Object *object)
     {
-    
+        if (object == nullptr) { return; }
+        
+        Object *nextObjectDelete = object->sucessor_;
+        delete object;
+
+        forceObjectDelete(nextObjectDelete);
     }
     
-
     size_t size() const 
     {
         return size_;
     }
 
-    void clear()
-    {
-        while
-        {
+    //void clear() 
+    //{
+    //    Object *nextObjectClear = head_;
+    //    while
+    //    {
+    //        nextObjectClear;
+    //    }
+    //    size_ = 0;
+    //}
 
+    LinkedList::Object* GetObject(const int &pos) const 
+    {
+        if (pos < 0 || pos >= size_) { std::cout << "index out of range"; }
+        else {
+            size_t position = static_cast<size_t>(pos);
+
+            Object *ptr_current = this->head_;
+            for (int pos_current = 0; pos_current < position; pos_current++)
+            {
+                ptr_current = ptr_current->sucessor_;
+            }
+
+            
+            return ptr_current;
         }
-        size_ = 0;
+        
     }
+
+    const Type& operator[] (const int &pos) const
+    {
+            return GetObject(pos)->data_;
+    }
+
 protected:
     Object *head_;
     size_t  size_;
