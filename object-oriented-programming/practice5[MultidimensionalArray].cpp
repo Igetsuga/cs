@@ -241,27 +241,39 @@ public:
 		return *this;
 	}
 
-	// oparatror[][]
-	Type* operator[] (int row)
+	class Row
 	{
-		if (row <= rows_ && row > 0) { return matrix_[row]; }
+	public:
+		// constructor
+		Row(const int &row)
+		{
+			row_ = new Type[Matrix<Type>::columns_ + 1];
+
+			for (int itt = 1; itt <= Matrix<Type>::columns_; itt++)
+			{
+				row_[itt] = Matrix<Type>::matrix_[row][itt];
+			}
+		}
+
+		// copy constructor
+		
+
+		// destructor
+		~Row() { delete[] row_; }
+
+		Type operator[] (const int& pos) { return row_[pos]; }
+	protected:
+		Type* row_;
+		// int cols_ = columns_;
+	};
+
+	// oparatror[][]
+	Row operator[] (const int &row)
+	{
+		if (row <= rows_ && row > 0) { Row row_current(row); return row_current; }
 		else { throw IndexOutOfBounds("operator[]: Index out of bounds", rows_, columns_); }
 		
 	}
-
-	/*class Proxy
-	{
-	protected:
-		int* Proxy_array;
-	public:
-		Proxy(int* _array) : Proxy_array(Proxy_array) { }
-
-		int operator[](int index) { return Proxy_array[index]; }
-	};
-
-	Proxy operator[](int index) {
-		return Proxy(matrix_[index]);
-	}*/
 
 	// transposing 
 	Matrix<Type> operator! () const
@@ -387,6 +399,7 @@ public:
 
 	int GetMatrixColumns() { return columns_; } const 
 	int GetMatrixRows() { return rows_; } const
+	// Type* GetRow() { return Matrix<Type>::Row.row_; } const
 	void SetValue(const int &row, const int &column, int value)
 	{
 		if ( (row <= 0 || row > rows_) || (column <= 0 || column > columns_ ) )
@@ -490,12 +503,14 @@ public:
 	template <class Type> friend std::ostream& operator<< (std::ostream &output, const Matrix<Type> &matrix);
 	template <class Type> friend std::istream& operator>> (std::istream &input, Matrix<Type> &matrix);
 	
-
+	
 
 protected:
 	Type** matrix_;
 	int rows_;
 	int columns_;
+
+	
 };
 
 template<class Type> std::ostream& operator<< (std::ostream &output, const Matrix<Type> &matrix)
@@ -812,6 +827,8 @@ int main()
 			std::cout << '\n' << "Exception: failed to read file";
 		}
 	}
+
+	std::cout << '\n' << cc1[1][1];
 	
 
 	//////////////////////////////////////////////////////////////////////////////
