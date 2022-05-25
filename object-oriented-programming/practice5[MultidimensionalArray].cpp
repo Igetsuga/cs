@@ -97,7 +97,7 @@ private:
 	int index_row_; int index_column_;
 	int index_row_other_; int index_column_other_;
 public:
-	WrongSize(const char* message, const int &index_row, const int &index_column, const int &index_row_other, const int &index_column_other) : WrongDimension(message)
+	WrongSize(const char *message, const int &index_row, const int &index_column, const int &index_row_other, const int &index_column_other) : WrongDimension(message)
 	{
 		index_row_ = index_row; index_column_ = index_column;
 		index_row_other_ = index_row_other; index_column_other_ = index_column_other;
@@ -116,7 +116,7 @@ class IsNotSquare : public WrongDimension
 private:
 	int index_row_; int index_column_;
 public:
-	IsNotSquare(const char* message, const int& index_row, const int& index_column) : WrongDimension(message)
+	IsNotSquare(const char *message, const int &index_row, const int &index_column) : WrongDimension(message)
 	{
 		index_row_ = index_row; index_column_ = index_column;
 	}
@@ -131,7 +131,7 @@ public:
 
 
 
-template<typename Type> class Matrix
+template<class Type> class Matrix
 {
 public:
 
@@ -184,12 +184,11 @@ public:
 
 		if (matrix_ != nullptr)
 		{
-			for (int itt = 1; itt <= rows_; itt++) { delete[] matrix_[itt]; matrix_[itt] = nullptr; } 
-			                                               // почему здесь не нужно писать
-														   // matrix[itt] = nullptr;	             
+			for (int itt = 1; itt <= rows_; itt++) { delete[] matrix_[itt]; matrix_[itt] = nullptr; } 	             
+			
 			delete[] matrix_; matrix_ = nullptr;
+			rows_ = columns_ = 0;
 		}
-		else { continue; }
 
 	}
 
@@ -270,7 +269,7 @@ public:
 
 		 if (rows_ != columns_) { throw IsNotSquare("operator!: The matrix is not square: { rows_ != columns_ }", rows_, columns_); }
 
-		Matrix result(rows_, columns_);
+		Matrix<Type> result(rows_, columns_);
 
 		for (int itt = 1; itt <= rows_; itt++)
 		{
@@ -285,7 +284,7 @@ public:
 	}
 
 	// Matrix::matrix1 += Matrix::mвtrix2
-	Matrix<Type> operator+= (const Matrix &matrix) const
+	Matrix<Type> operator+= (const Matrix &matrix) 
 	{
 
 		if (rows_ != matrix.rows_)
@@ -346,7 +345,7 @@ public:
 	}
 
 	// Matrix -= Type
-	Matrix<Type> operator-= (const Type &value) const
+	Matrix<Type> operator-= (const Type &value)
 	{
 		return (*this += (-value));
 	}
@@ -397,7 +396,7 @@ public:
 		else { matrix_[row][column] = value; }
 	}
 
-	void print_()
+	void output_() const
 	{
 		std::cout  << '\n'; 
 
@@ -450,7 +449,7 @@ public:
 		return ( human(result) );
 	}
 	
-	void printf_() const	
+	void print_() const	
 	{
 		std::cout << '\n';
 
@@ -488,8 +487,8 @@ public:
 	}
 
 
-	friend std::ostream& operator<< (std::ostream &output, const Matrix &matrix);
-	friend std::istream& operator>> (std::istream &input, Matrix &matrix);
+	template <class Type> friend std::ostream& operator<< (std::ostream &output, const Matrix<Type> &matrix);
+	template <class Type> friend std::istream& operator>> (std::istream &input, Matrix<Type> &matrix);
 	
 
 
@@ -499,27 +498,17 @@ protected:
 	int columns_;
 };
 
-
-std::ostream& manipulator_custom(std::ostream &output)
-{
-	output.fill(' ');
-	output.width(6);
-	// output.left();
-
-
-	return output;
-}
-
-
-template<typename Type> std::ostream& operator<< (std::ostream &output, const Matrix<Type> &matrix)
+template<class Type> std::ostream& operator<< (std::ostream &output, const Matrix<Type> &matrix)
 {
 	if (typeid(output).name() == typeid(std::ofstream).name())
 	{
+		output << matrix.rows_ << " " << matrix.columns_ << '\n';
+
 		for (int utt = 1; utt <= matrix.rows_; utt++)
 		{
 			for (int vtt = 1; vtt <= matrix.columns_; vtt++)
 			{
-				output << " " << matrix.matrix_[utt][vtt];
+				output << matrix.matrix_[utt][vtt] << " ";
 			}
 			output << '\n';
 		}
@@ -564,12 +553,33 @@ template<typename Type> std::ostream& operator<< (std::ostream &output, const Ma
 	return output;
 }
 
-
-template<typename Type> std::istream& operator>> (std::istream &input, Matrix<Type> &matrix)
+template<class Type> std::istream& operator>> (std::istream &input, Matrix<Type> &matrix)
 {
-	for (int itt = 1; itt <= matrix.rows_; itt++)
+	int rows, cols; input >> rows >> cols;
+
+	if (matrix.rows_ != rows || matrix.columns_ != cols)
 	{
-		for (int utt = 1; utt <= matrix.columns_; utt++)
+		for (int itt = 1; itt <= matrix.rows_; itt++)
+		{
+			delete[] matrix.matrix_[itt];
+			matrix.matrix_[itt] = nullptr;
+		}
+		delete matrix.matrix_;
+		matrix.matrix_ = nullptr;
+
+		// create matrix_ == matrix.matrix_
+		matrix.matrix_ = new Type* [rows + 1];
+		for (int itt = 1; itt <= rows; itt++)
+		{
+			matrix.matrix_[itt] = new Type[cols + 1];
+		}
+
+		matrix.rows_ = rows; matrix.columns_ = cols;
+	}
+
+	for (int itt = 1; itt <= rows; itt++)
+	{
+		for (int utt = 1; utt <= cols; utt++)
 		{
 			input >> matrix.matrix_[itt][utt];
 		}
@@ -579,20 +589,33 @@ template<typename Type> std::istream& operator>> (std::istream &input, Matrix<Ty
 	return input;
 }
 
+std::ostream& manipulator_custom(std::ostream& output)
+{
+	output.fill(' ');
+	output.width(6);
+	// output.left();
 
 
-template<typename Type> class subMatrix : public Matrix<Type>
+	return output;
+}
+
+
+
+template<class Type> class subMatrix : public Matrix<Type>
 {
 public:
 
 	// default_constructor
-	subMatrix<Type>(const int &rows = 2, const int &columns = 2) : Matrix<Type>(rows, columns) {}
+	subMatrix<Type> (const int &rows = 2, const int &columns = 2) : Matrix<Type>(rows, columns) {}
 
 	// constructor_copy: subMatrix::sub_matrix --> subMatrix::(copy of matrix)
-	subMatrix<Type>(const subMatrix<Type>& sub_matrix) : Matrix<Type>(sub_matrix) {}
+	subMatrix<Type> (const subMatrix<Type> &sub_matrix) : Matrix<Type> (sub_matrix) {}
 
 	// constructor_copy: Matrix::matrix --> subMatrix::(copy of matrix) 
-	subMatrix<Type>(const Matrix<Type> &matrix) : Matrix<Type>(matrix) {}
+	subMatrix<Type> (const Matrix<Type> &matrix) : Matrix<Type>(matrix) {}
+
+	// destructor
+	~subMatrix<Type>() {};
 	
 	// filling matrix of random values NOT CONST // ONLY double type DK HOW TO GENERALIZY
 	subMatrix<Type> RandFill()
@@ -612,7 +635,7 @@ public:
 	
 	subMatrix<Type> Smoothing() const
 	{
-		subMatrix result(*this);
+		subMatrix<Type> result(*this);
 
 		for (int itt = 1; itt <= result.rows_; itt++)
 		{
@@ -658,7 +681,7 @@ int main()
 		}
 	}
 	watch(test);
-	test.printf_();
+	test.print_();
 
 	Matrix<double> matrix_1(2, 2);
 	for (int itt = 1; itt <= matrix_1.GetMatrixRows(); itt++)
@@ -678,29 +701,29 @@ int main()
 	}
 
 
-	watch(matrix_1);  matrix_1.printf_();
-	watch(matrix_2);  matrix_2.printf_();
+	watch(matrix_1);  matrix_1.print_();
+	watch(matrix_2);  matrix_2.print_();
 
-	matrix_1 += matrix_2; watch(matrix_1);  matrix_1.printf_();
-	matrix_2 += 99; watch(matrix_2);  matrix_2.printf_();
+	matrix_1 += matrix_2; watch(matrix_1);  matrix_1.print_();
+	matrix_2 += 99; watch(matrix_2);  matrix_2.print_();
 
-	matrix_2 -= matrix_1; watch(matrix_2);  matrix_2.printf_();
+	matrix_2 -= matrix_1; watch(matrix_2);  matrix_2.print_();
 
-	(-matrix_1).printf_();
+	(-matrix_1).print_();
 
 
 	subMatrix<double> sub_test(test);
 	sub_test.RandFill();
 	watch(sub_test);
-	sub_test.printf_();
+	sub_test.print_();
 
 	sub_test.SetValue(2, 2, 99999);
 	watch(sub_test);
-	sub_test.printf_();
+	sub_test.print_();
 
 	subMatrix<double> sub_test_smothed = sub_test.Smoothing();
 	watch(sub_test_smothed);
-	sub_test_smothed.printf_();
+	sub_test_smothed.print_();
 	//////////////////////////////////////////////////////////////////////////////
 
 	// Задание 5.2: Поимка и обработка исключений.
@@ -726,7 +749,7 @@ int main()
 		else { std::cout  << "Check the correctness of the indexes. Please, try again" << '\n'; }
 	}
 
-	subMatrix<double> sub_matrix(2, 3); sub_matrix.RandFill(); sub_matrix.printf_();
+	subMatrix<double> sub_matrix(2, 3); sub_matrix.RandFill(); sub_matrix.print_();
 	try
 	{
 		// Попробуем транспонировать неквадратную матрицу.
@@ -762,29 +785,35 @@ int main()
 
 	// Задание 5.3: Чтение и запись в файл.
 	//////////////////////////////////////////////////////////////////////////////
-	std::ofstream file_out; file_out.open("C:\\Users\\averu\\Documents\\gitlocalReps\\programming-practice\\object-oriented-programming\\practice5[5.3].txt", std::ios::out);
+	subMatrix<double> cc1(9,1), cc2(8,5);
+	cc1.RandFill(); cc2.RandFill();
+
+	std::ofstream file_out; file_out.open("practice5[5.3].txt", std::ios::out);
 	if (file_out)
 	{
-		file_out << sub_test_smothed << test;
+		file_out << cc1 << cc2;
 		file_out.close();
 	}
 
-	std::ifstream file_in("C:\\Users\\averu\\Documents\\gitlocalReps\\programming-practice\\object-oriented-programming\\practice5[5.3].txt", std::ios::in);
+	std::ifstream file_in("practice5[5.3].txt", std::ios::in);
 	if (file_in)
 	{
 		try
 		{
-			Matrix<double> matrix_in1(5, 5), matrix_in2(5,5);
+			subMatrix<double> matrix_in1(2,8), matrix_in2(15,10);
+			matrix_in1.RandFill(); matrix_in2.RandFill();
+
 			file_in >> matrix_in1 >> matrix_in2;
 			file_in.close();
-			std::cout << "\n" << matrix_in1 << matrix_in2;
+			std::cout << '\n' << matrix_in1 << '\n' << matrix_in2;
 		}
 		catch (...)
 		{
-			std::cout << "\nException: failed to read file";
+			std::cout << '\n' << "Exception: failed to read file";
 		}
 	}
 	
+
 	//////////////////////////////////////////////////////////////////////////////
 	return 0;
 }
