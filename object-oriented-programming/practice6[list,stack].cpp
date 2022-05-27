@@ -334,11 +334,26 @@ public:
         
     }
 
+    void pushBack (const Type &data)
+    {
+        if (size_ == 0)
+        {
+            head_ = new Object(data, head_); // <==> head_ = new Object(data, nullptr);
+            size_++;
+        }
+        else
+        {
+            insert(size_, data)
+        }
+    }
 
+    void pushFront (const Type &data)
+    {
+        head_ = new Object(data, head_);
+        size_++;
+    }
 
-
-
-
+        
 
 
     const Type& operator[] (const int &pos) const
