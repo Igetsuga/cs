@@ -166,6 +166,19 @@ template<class Type> class LinkedList
 
         // destructor.
         ~Object() = default;
+
+        void deleteNext()
+        {
+            Object *removeObject = sucessor_;
+            sucessor_ = removeObject->sucessor_;
+            delete removeObject;
+        }
+
+        void insertNext()
+        {
+
+        }
+
     protected:
         Object *sucessor_;
         Type    data_;
@@ -208,9 +221,9 @@ public:
 
     // LinkedList::list1 = LinkedList::list2 ==> list1.
     // HELP
-    LinkedList& operator= (const LinkedList &other) const // coping, not rename other.
-                                                          // this->sucessor_ != other->sucessor_.
-                                                          // this->data_ = other->data_.
+    LinkedList& operator= (const LinkedList &other) // coping, not rename other.
+                                                    // this->sucessor_ != other->sucessor_.
+                                                    // this->data_ = other->data_.
     {
         this->clear();
 
@@ -260,17 +273,50 @@ public:
         return size_;
     }
 
-    //void clear() 
-    //{
-    //    Object *nextObjectClear = head_;
-    //    while
-    //    {
-    //        nextObjectClear;
-    //    }
-    //    size_ = 0;
-    //}
+    void clear() 
+    {
+        while (head_ != nullptr)
+        {
+            this->removeFront();
+        }
+        size_ = 0;
+    }
 
-    LinkedList::Object* GetObject(const int &pos) const 
+    void removeFront()
+    {
+        if (size_ == 1)
+        {
+            delete head_; head_ = nullptr;
+            size_ = 0;
+        }
+        else
+        {
+            Object *removeFront_next = head_->sucessor_;
+            delete head_; head_ = removeFront_next;
+            size_--;
+        }
+    }
+
+    void removeBack()
+    {
+        Object *currentObject = head_;
+        
+        int currentPosition = 1;
+        while (currentPosition < size_ - 1)
+        {
+            currentObject = currentObject->sucessor_;
+            currentPosition++;
+        }
+
+        // now: currentObject = penultimateObject
+        currentObject->deleteNext();
+        // delete (currentObject->sucessor_);
+        // currentObject->sucessor = nullptr;
+        size_--;
+
+    }
+
+    LinkedList<Type>::Object *GetObject (const int &pos) const 
     {
         if (pos < 0 || pos >= size_) { std::cout << "index out of range"; }
         else {
@@ -287,6 +333,13 @@ public:
         }
         
     }
+
+
+
+
+
+
+
 
     const Type& operator[] (const int &pos) const
     {
