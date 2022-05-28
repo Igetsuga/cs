@@ -158,9 +158,8 @@ template<class Type> class LinkedList
 {
 public:
 
-    virtual class Object
+    virtual struct Object
     {
-    public:
         // default constructor.
         Object(const Type& data, Object* sucessor = nullptr)
         {
@@ -183,7 +182,6 @@ public:
 
         }
 
-    protected:
         Object* sucessor_;
         Type    data_;
     };
@@ -322,7 +320,7 @@ public:
 
     LinkedList<Type>::Object* GetObject (const int &pos) const 
     {
-        if (pos < 0 || pos >= size_) { std::cout << "LinkedList<Type>::*GetObject: index out of range"; }
+        if (pos < 0 || pos > size_) { throw std::out_of_range("LinkedList<Type>::*GetObject: index out of range"); }
         else {
             // size_t position = static_cast<size_t>(pos);
 
@@ -418,7 +416,7 @@ public:
         return resultList;
     }
 
-    friend std::ostream& operator<< (std::ostream &output, const LinkedList<Type> &list);
+    template<class Type> friend std::ostream& operator<< (std::ostream &output, const LinkedList<Type> &list);
     
     const Type& operator[] (const int &pos) const
     {
@@ -435,7 +433,7 @@ template<class Type> std::ostream& operator<< (std::ostream &output, const Linke
     if (typeid(output).name() != typeid(std::ofstream).name())
     {
         output << '\n' << "{ ";
-        for (int object_number = 1; object_number <= LinkedList<Type>::size_; object_number++)
+        for (int object_number = 1; object_number <= list.size_; object_number++)
         {
             output << list[object_number] << " ";
         }
@@ -445,6 +443,9 @@ template<class Type> std::ostream& operator<< (std::ostream &output, const Linke
     {
 
     }
+
+
+    return output;
 }
 
 
@@ -479,6 +480,18 @@ int main()
     LinkedList<Programmer> list;
 
     list.pushBack(Rustem1); std::cout << list;
+    list.pushFront(Rustem2); std::cout << list;
+    list.insert(2, Rustem3); std::cout << list;
+    list.removeBack(); std::cout << list;
+    list.removeFront(); std::cout << list;
+
+    list.pushBack(Rustem4); list.pushBack(Rustem5); list.pushBack(Rustem6);
+    list.pushBack(Rustem7); list.pushBack(Rustem8); std::cout << list;
+
+    list.remove(2); std::cout << list;
+
+    list.clear(); std::cout << list;
+    
 
 
 
