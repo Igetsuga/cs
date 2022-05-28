@@ -114,11 +114,25 @@ public:
     // destructor
     ~Programmer() { std::cout << "Object \"Pragrammer\" was deleted" << '\n'; }
  
+    void GetInfo() const
+    {
+        std::cout << '\n' << "---------------------START--------------------" << '\n';
 
+        std::cout << "   name: " << (*this).Human::name_ << '\n'
+                  << "surname: " << (*this).Human::surname_ << '\n'
+                  << "------------------Information:----------------" << '\n';
+
+        std::cout << "     level: " << (*this).Programmer::level_ << '\n'
+                  << "      lang: " << (*this).Programmer::lang_ << '\n'
+                  << "     email: " << (*this).Programmer::email_ << '\n'
+                  << "telegramID: " << (*this).Programmer::telegramID_ << '\n'
+                  << "   skypeID: " << (*this).Programmer::skypeID_ << '\n'
+                  << "       job: " << (*this).Worker::job_ << '\n'
+                  << "----------------------END---------------------" << '\n';
+    }
 
     friend std::ostream& operator<< (std::ostream &output, const Programmer &other);
 
-    void SetLevel(int level) { level_ = level; }
 protected:
     int            level_;
     std::string    lang_;
@@ -128,21 +142,9 @@ protected:
 };
 std::ostream& operator<< (std::ostream &output, const Programmer &other)
 {
-    output << '\n' << "---------------------START--------------------" << '\n';
-
-    output << "   name: " << other.Human::name_ << '\n'
-           << "surname: " << other.Human::surname_ << '\n'
-                   <<"------------------Information:----------------" << '\n';
-
-    output << "     level: " << other.Programmer::level_ << '\n'
-           << "      lang: " << other.Programmer::lang_ << '\n'
-           << "     email: " << other.Programmer::email_ << '\n'
-           << "telegramID: " << other.Programmer::telegramID_ << '\n'
-           << "   skypeID: " << other.Programmer::skypeID_ << '\n'
-           << "       job: " << other.Worker::job_ << '\n'
-                   << "----------------------END---------------------" << '\n';
-
-
+    output << other.name_;
+    
+    
     return output;
 }
 
@@ -154,11 +156,13 @@ std::ostream& operator<< (std::ostream &output, const Programmer &other)
 // LinkedList.
 template<class Type> class LinkedList
 {
-    class Object
+public:
+
+    virtual class Object
     {
     public:
         // default constructor.
-        Object (const Type &data, Object *sucessor = nullptr)
+        Object(const Type& data, Object* sucessor = nullptr)
         {
             sucessor_ = sucessor;
             data_ = data;
@@ -167,9 +171,9 @@ template<class Type> class LinkedList
         // destructor.
         ~Object() = default;
 
-        void deleteNext()
+        void removeNext()
         {
-            Object *removeObject = sucessor_;
+            Object* removeObject = sucessor_;
             sucessor_ = removeObject->sucessor_;
             delete removeObject;
         }
@@ -180,10 +184,10 @@ template<class Type> class LinkedList
         }
 
     protected:
-        Object *sucessor_;
+        Object* sucessor_;
         Type    data_;
     };
-public:
+
     // default constructor.
     LinkedList()
     {
@@ -255,7 +259,7 @@ public:
     ~LinkedList()
     {
         size_ = 0;
-        forceObjectdelete(head_);
+        forceObjectDelete(head_);
     }
 
     void forceObjectDelete (Object *object)
@@ -309,21 +313,21 @@ public:
         }
 
         // now: currentObject = penultimateObject
-        currentObject->deleteNext();
+        currentObject->removeNext();
         // delete (currentObject->sucessor_);
         // currentObject->sucessor = nullptr;
         size_--;
 
     }
 
-    LinkedList<Type>::Object *GetObject (const int &pos) const 
+    LinkedList<Type>::Object* GetObject (const int &pos) const 
     {
-        if (pos < 0 || pos >= size_) { std::cout << "index out of range"; }
+        if (pos < 0 || pos >= size_) { std::cout << "LinkedList<Type>::*GetObject: index out of range"; }
         else {
-            size_t position = static_cast<size_t>(pos);
+            // size_t position = static_cast<size_t>(pos);
 
             Object *ptr_current = this->head_;
-            for (int pos_current = 0; pos_current < position; pos_current++)
+            for (int pos_current = 1; pos_current < pos; pos_current++)
             {
                 ptr_current = ptr_current->sucessor_;
             }
@@ -333,7 +337,7 @@ public:
         }
         
     }
-
+    
     void pushBack (const Type &data)
     {
         if (size_ == 0)
@@ -343,7 +347,7 @@ public:
         }
         else
         {
-            insert(size_, data)
+            insert(size_, data);
         }
     }
 
@@ -353,9 +357,69 @@ public:
         size_++;
     }
 
-        
+    void insert (const int &pos, const Type &data)
+    {
+        if (pos <= 0) { throw std::out_of_range("LinkedList<Type>::insert: pos < 0"); }
+        else if (pos > size_ && (pos != 1 && size_ != 0)) { throw std::out_of_range("LinkedList<Type>::insert: pos > size"); }
+
+        if (pos == 1)
+        {
+            this->pushFront(data);
+        }
+        else
+        {
+            Object* currentObject = head_;
+
+            for (int position = 1; position < pos - 1; position++)
+            {
+                currentObject->sucessor_;
+            }
+
+            currentObject->sucessor_ = new Object(data, currentObject->sucessor_);
+            size_++;
+        }
+    }
+
+    void remove (const int &pos)
+    {
+        if (pos <= 0) { throw std::out_of_range("LinkedList<Type>::remove: pos < 0"); }
+        else if (pos > size_) { throw std::out_of_range("LinkedList<Type>::remove: pos > size"); }
+
+        if (pos == 1) 
+        {
+            this->removeFront();
+        }
+        else 
+        {
+            Object* currentObject = head_;
+
+            for (int position = 1; position < pos - 1; position++)
+            {
+                currentObject->sucessor_;
+            }
+
+            currentObject->removeNext();
+            size_--;
+        }
+    }
+    
+    LinkedList<Type> filter ( bool (*fn)(Type) )
+    {
+        LinkedList<Type> resultList;
+        for (int i = 1; i <= size_; i++)
+        {
+            if ( fn( (*this)[i] ) ) // if (fn (this->GetObject(pos)->data_) )
+            {
+                resultList.pushBack( (*this)[i] );
+            }
+        }
 
 
+        return resultList;
+    }
+
+    friend std::ostream& operator<< (std::ostream &output, const LinkedList<Type> &list);
+    
     const Type& operator[] (const int &pos) const
     {
             return GetObject(pos)->data_;
@@ -366,18 +430,85 @@ protected:
     size_t  size_;
 };
 
+template<class Type> std::ostream& operator<< (std::ostream &output, const LinkedList<Type> &list)
+{
+    if (typeid(output).name() != typeid(std::ofstream).name())
+    {
+        output << '\n' << "{ ";
+        for (int object_number = 1; object_number <= LinkedList<Type>::size_; object_number++)
+        {
+            output << list[object_number] << " ";
+        }
+        output << "}" << '\n';
+    }
+    else
+    {
 
+    }
+}
 
 
 int main()
 {
     // Задание 6.0: Проверка общей работоспособности системы.
-    //////////////////////////////////////////////////////////////////////////////
-    Programmer Rustem1(1, "c++", "Rustem", "Sirazetdinov",
+    ////////////////////////////////////////////////////////////////////////////
+    Programmer Rustem1(1, "c++", "Rustem1", "Sirazetdinov",
         "avesirazetdinov@gmail.com", "I_getsuga");
+    Programmer Rustem2(1, "c++", "Rustem2", "Sirazetdinov",
+        "avesirazetdinov@gmail.com", "I_getsuga");
+    Programmer Rustem3(1, "c++", "Rustem3", "Sirazetdinov",
+        "avesirazetdinov@gmail.com", "I_getsuga");
+    Programmer Rustem4(1, "c++", "Rustem4", "Sirazetdinov",
+        "avesirazetdinov@gmail.com", "I_getsuga");
+    Programmer Rustem5(1, "c++", "Rustem5", "Sirazetdinov",
+        "avesirazetdinov@gmail.com", "I_getsuga");
+    Programmer Rustem6(1, "c++", "Rustem6", "Sirazetdinov",
+        "avesirazetdinov@gmail.com", "I_getsuga");
+    Programmer Rustem7(1, "c++", "Rustem7", "Sirazetdinov",
+        "avesirazetdinov@gmail.com", "I_getsuga");
+    Programmer Rustem8(1, "c++", "Rustem8", "Sirazetdinov",
+        "avesirazetdinov@gmail.com", "I_getsuga");
+    Programmer Rustem9(1, "c++", "Rustem9", "Sirazetdinov",
+        "avesirazetdinov@gmail.com", "I_getsuga");
+    Programmer Rustem10(1, "c++", "Rustem10", "Sirazetdinov",
+        "avesirazetdinov@gmail.com", "I_getsuga");
+    Programmer Rustem11(1, "c++", "Rustem11", "Sirazetdinov",
+        "avesirazetdinov@gmail.com", "I_getsuga");
+    ///////////////////////////////////////////////////////////////////////////
 
-    Programmer Rustem2 = Rustem1;
+    LinkedList<Programmer> list;
 
-    std::cout << Rustem1 << Rustem2;
-    //delete ptr2;
+    list.pushBack(Rustem1); std::cout << list;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    return 0;
 }
