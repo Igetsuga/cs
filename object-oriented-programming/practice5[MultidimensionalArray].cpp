@@ -241,39 +241,6 @@ public:
 		return *this;
 	}
 
-	class Row
-	{
-	public:
-		// constructor
-		Row(const int &row)
-		{
-			row_ = new Type[Matrix<Type>::columns_ + 1];
-
-			for (int itt = 1; itt <= Matrix<Type>::columns_; itt++)
-			{
-				row_[itt] = Matrix<Type>::matrix_[row][itt];
-			}
-		}
-
-		// copy constructor
-		
-
-		// destructor
-		~Row() { delete[] row_; }
-
-		Type operator[] (const int& pos) { return row_[pos]; }
-	protected:
-		Type* row_;
-		// int cols_ = columns_;
-	};
-
-	// oparatror[][]
-	Row operator[] (const int &row)
-	{
-		if (row <= rows_ && row > 0) { Row row_current(row); return row_current; }
-		else { throw IndexOutOfBounds("operator[]: Index out of bounds", rows_, columns_); }
-		
-	}
 
 	// transposing 
 	Matrix<Type> operator! () const
@@ -503,7 +470,64 @@ public:
 	template <class Type> friend std::ostream& operator<< (std::ostream &output, const Matrix<Type> &matrix);
 	template <class Type> friend std::istream& operator>> (std::istream &input, Matrix<Type> &matrix);
 	
-	
+	class Row
+	{
+	public:
+		 
+		// constructor
+		Row (const int &row)
+		{
+			row_ = new Type[Matrix<Type>::columns_ + 1];
+
+			for (int itt = 1; itt <= Matrix<Type>::columns_; itt++)
+			{
+				row_[itt] = Matrix<Type>::matrix_[row][itt];
+			}
+		}
+
+		// copy constructor
+		Row (const Type* row) 
+		{
+			for (int itt = 1; itt <= Matrix<Type>::columns_; itt++)
+			{
+				row_[itt] = row[itt];
+			}
+		}
+
+		// destructor
+		~Row() { delete[] row_; }
+
+		Type operator[] (const int &pos) { return row_[pos]; }
+	protected:
+		Type* row_;
+		// friend class Matrix<Type>;
+	};
+
+	//class M
+	//{
+	//public:
+	//	class R
+	//	{
+	//	private:
+	//		friend class M; // Only M can create these objects.
+	//		R(M& parent, int row) : m_parent(parent), m_row(row) {}
+	//	public:
+	//		int& operator[](int col) { return m_parent.at(m_row, col); }
+	//	private:
+	//		M& m_parent;
+	//		int m_row;
+	//	};
+
+	//	R operator[](int row) { return R(*this, row); }
+	//}
+
+	// oparatror[][]
+	Row operator[] (const int &row)
+	{
+		if (row <= rows_ && row > 0) { Row row_current(row); return row_current; }
+		else { throw IndexOutOfBounds("operator[]: Index out of bounds", rows_, columns_); }
+
+	}
 
 protected:
 	Type** matrix_;
