@@ -1,10 +1,11 @@
-#include <cmath>
+﻿#include <cmath>
 #include <iostream>
 #include <stdarg.h>
 
 template<class Type> Type max1 (int params_amount = 1, ...)
 {
-	auto *ptr = &params_amount; std::cout << ">>> " << ptr << " : " << *ptr << typeid(*ptr).name() << '\n';
+	auto* ptr = &params_amount;
+	// std::cout << ">>> " << ptr << " : " << *ptr << typeid(*ptr).name() << '\n';
 	/*ptr += 2;
 	std::cout << ">>> " << ptr << " : " << *ptr << typeid(*ptr).name() << '\n';*/
 	Type value_max = *(++ptr);
