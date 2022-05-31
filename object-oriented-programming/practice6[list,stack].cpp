@@ -158,10 +158,10 @@ template<class Type> class LinkedList
 {
 public:
 
-    virtual struct Object
+    struct Object
     {
         // default constructor.
-        Object(const Type& data, Object* sucessor = nullptr)
+        Object (const Type& data, Object *sucessor = nullptr)
         {
             sucessor_ = sucessor;
             data_ = data;
@@ -170,11 +170,18 @@ public:
         // destructor.
         ~Object() = default;
 
-        void removeNext()
+
+        Object* removeNext()
         {
-            Object* removeObject = sucessor_;
+            Object *removeObject = sucessor_;
             sucessor_ = removeObject->sucessor_;
+
+            Object *removeObject_copy = new Object (removeObject->data_, sucessor_);
             delete removeObject;
+
+
+            return removeObject_copy;
+           
         }
 
         void insertNext()
@@ -182,7 +189,7 @@ public:
 
         }
 
-        Object* sucessor_;
+        Object *sucessor_;
         Type    data_;
     };
 
@@ -223,7 +230,7 @@ public:
 
     // LinkedList::list1 = LinkedList::list2 ==> list1.
     // HELP
-    LinkedList& operator= (const LinkedList &other) // coping, not rename other.
+    virtual LinkedList& operator= (const LinkedList &other) // coping, not rename other.
                                                     // this->sucessor_ != other->sucessor_.
                                                     // this->data_ = other->data_.
     {
@@ -248,34 +255,11 @@ public:
                 ptr_this = ptr_other_data_copy; // КАК ЭТО ПРОИСХОДИТ, ЕСЛИ У МЕНЯ НЕ ПЕРЕГРУЖЕН ОПЕРАТОР= ДЛЯ объектов Object
                 ptr_other_iterator = ptr_other_iterator->sucessor_;
             }
-
-            
         }
+        return *this;
     } 
 
-    // destructor.
-    ~LinkedList()
-    {
-        size_ = 0;
-        forceObjectDelete(head_);
-    }
-
-    void forceObjectDelete (Object *object)
-    {
-        if (object == nullptr) { return; }
-        
-        Object *nextObjectDelete = object->sucessor_;
-        delete object;
-
-        forceObjectDelete(nextObjectDelete);
-    }
-    
-    size_t size() const 
-    {
-        return size_;
-    }
-
-    void clear() 
+    void clear() //final
     {
         while (head_ != nullptr)
         {
@@ -284,8 +268,96 @@ public:
         size_ = 0;
     }
 
-    void removeFront()
+    // destructor.
+    virtual ~LinkedList()
     {
+        size_ = 0;
+        forceObjectDelete(head_);
+    }
+
+    virtual void forceObjectDelete (Object *object) final
+    {
+        if (object == nullptr) { return; }
+        
+        Object *nextObjectDelete = object->sucessor_;
+        delete object;
+
+
+        forceObjectDelete(nextObjectDelete);
+    }
+    
+
+
+    virtual void insert(const int &pos, const Type &data)
+    {
+        if (pos <= 0) { throw std::out_of_range("LinkedList<Type>::insert: pos < 0"); }
+        else if (pos > size_ && (pos != 1 && size_ != 0)) { throw std::out_of_range("LinkedList<Type>::insert: pos > size"); }
+
+        if (pos == 1)
+        {
+            this->pushFront(data);
+        }
+        else
+        {
+            Object* currentObject = head_;
+
+            for (int position = 1; position < pos; position++)
+            {
+                currentObject->sucessor_;
+            }
+
+            currentObject->sucessor_ = new Object(data, currentObject->sucessor_);
+            size_++;
+        }
+    }
+
+    virtual void pushFront(const Type &data) final
+    {
+        head_ = new Object(data, head_);
+        size_++;
+    }
+
+    virtual void pushBack(const Type &data) final
+    {
+        if (size_ == 0)
+        {
+            head_ = new Object(data, head_); // <==> head_ = new Object(data, nullptr);
+            size_++;
+        }
+        else
+        {
+            insert(size_, data);
+        }
+    }
+
+
+    virtual LinkedList<Type>::Object* remove(const int &pos)
+    {
+        if (pos <= 0) { throw std::out_of_range("LinkedList<Type>::remove: pos < 0"); }
+        else if (pos > size_) { throw std::out_of_range("LinkedList<Type>::remove: pos > size"); }
+
+        if (pos == 1)
+        {
+            this->removeFront();
+        }
+        else
+        {
+            Object *currentObject = head_;
+
+            for (int position = 1; position < pos - 1; position++)
+            {
+                currentObject->sucessor_;
+            }
+
+            size_--;
+            return currentObject->removeNext();
+            
+        }
+    }
+
+    virtual LinkedList<Type>::Object* removeFront() final
+    {
+        Object *head_copy = new Object (head_->data_, nullptr);
         if (size_ == 1)
         {
             delete head_; head_ = nullptr;
@@ -293,32 +365,40 @@ public:
         }
         else
         {
-            Object *removeFront_next = head_->sucessor_;
+            Object* removeFront_next = head_->sucessor_;
+            head_copy->sucessor_ = removeFront_next;
+
             delete head_; head_ = removeFront_next;
             size_--;
         }
+
+
+        return head_copy;
     }
 
-    void removeBack()
+    virtual LinkedList<Type>::Object* removeBack()
     {
         Object *currentObject = head_;
         
         int currentPosition = 1;
-        while (currentPosition < size_ - 1)
+        while (currentPosition <= size_)
         {
             currentObject = currentObject->sucessor_;
             currentPosition++;
         }
 
         // now: currentObject = penultimateObject
-        currentObject->removeNext();
+        size_--;
+        return currentObject->removeNext();
         // delete (currentObject->sucessor_);
         // currentObject->sucessor = nullptr;
-        size_--;
+        
 
     }
 
-    LinkedList<Type>::Object* GetObject (const int &pos) const 
+
+
+    virtual LinkedList<Type>::Object* GetObject (const int &pos) const 
     {
         if (pos < 0 || pos > size_) { throw std::out_of_range("LinkedList<Type>::*GetObject: index out of range"); }
         else {
@@ -335,73 +415,18 @@ public:
         }
         
     }
-    
-    void pushBack (const Type &data)
+
+    size_t size() const
     {
-        if (size_ == 0)
-        {
-            head_ = new Object(data, head_); // <==> head_ = new Object(data, nullptr);
-            size_++;
-        }
-        else
-        {
-            insert(size_, data);
-        }
+        return size_;
     }
 
-    void pushFront (const Type &data)
+    const Type& operator[] (const int& pos) const
     {
-        head_ = new Object(data, head_);
-        size_++;
-    }
-
-    void insert (const int &pos, const Type &data)
-    {
-        if (pos <= 0) { throw std::out_of_range("LinkedList<Type>::insert: pos < 0"); }
-        else if (pos > size_ && (pos != 1 && size_ != 0)) { throw std::out_of_range("LinkedList<Type>::insert: pos > size"); }
-
-        if (pos == 1)
-        {
-            this->pushFront(data);
-        }
-        else
-        {
-            Object* currentObject = head_;
-
-            for (int position = 1; position < pos - 1; position++)
-            {
-                currentObject->sucessor_;
-            }
-
-            currentObject->sucessor_ = new Object(data, currentObject->sucessor_);
-            size_++;
-        }
-    }
-
-    void remove (const int &pos)
-    {
-        if (pos <= 0) { throw std::out_of_range("LinkedList<Type>::remove: pos < 0"); }
-        else if (pos > size_) { throw std::out_of_range("LinkedList<Type>::remove: pos > size"); }
-
-        if (pos == 1) 
-        {
-            this->removeFront();
-        }
-        else 
-        {
-            Object* currentObject = head_;
-
-            for (int position = 1; position < pos - 1; position++)
-            {
-                currentObject->sucessor_;
-            }
-
-            currentObject->removeNext();
-            size_--;
-        }
+        return this->GetObject(pos)->data_;
     }
     
-    LinkedList<Type> filter ( bool (*fn)(Type) )
+    virtual LinkedList<Type> filter ( bool (*fn)(Type) )
     {
         LinkedList<Type> resultList;
         for (int i = 1; i <= size_; i++)
@@ -416,18 +441,14 @@ public:
         return resultList;
     }
 
+
+
     template<class Type> friend std::ostream& operator<< (std::ostream &output, const LinkedList<Type> &list);
     
-    const Type& operator[] (const int &pos) const
-    {
-            return GetObject(pos)->data_;
-    }
-
 protected:
     Object *head_;
     size_t  size_;
 };
-
 template<class Type> std::ostream& operator<< (std::ostream &output, const LinkedList<Type> &list)
 {
     if (typeid(output).name() != typeid(std::ofstream).name())
@@ -447,6 +468,24 @@ template<class Type> std::ostream& operator<< (std::ostream &output, const Linke
 
     return output;
 }
+
+template<class Type> class Stack : public LinkedList<Type>
+{
+public:
+    Stack() : LinkedList<Type>() {};
+    Stack (const Stack &other) : LinkedList<Type>(other) {};
+//    ~Stack() : LinkedList<Type>();
+
+    
+
+    //Stack::LinkedList<Type>::Object insert (const Type& data)
+    //{
+    //    
+    //}
+};
+
+
+
 
 
 int main()
