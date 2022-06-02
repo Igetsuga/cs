@@ -22,7 +22,7 @@ public:
     Human& operator= (const Human& other) = default;
 
     // destructor.
-    virtual ~Human() { std::cout << "Object \"Human\" was deleted" << '\n'; } // = default;
+    virtual ~Human() = default; // { std::cout << "Object \"Human\" was deleted" << '\n'; } // = default;
 
 
 
@@ -55,7 +55,7 @@ public:
     Worker& operator= (const Worker& other) = default;
 
     // destructor.
-    virtual ~Worker() { std::cout << "Object \"Worker\" was deleted" << '\n'; }// = default;
+    virtual ~Worker() = default; // { std::cout << "Object \"Worker\" was deleted" << '\n'; }// = default;
 
 
 
@@ -75,51 +75,51 @@ class Programmer : public Worker
 {
 public:
     // default constructor.
-    Programmer(const int& level = 0,
-        const std::string& lang = "unknown",
-        const std::string& name = "unknown",
-        const std::string& surname = "unknown",
-        const std::string& email = "unknown",
+    Programmer(const int& level       = 0,
+        const std::string& lang       = "unknown",
+        const std::string& name       = "unknown",
+        const std::string& surname    = "unknown",
+        const std::string& email      = "unknown",
         const std::string& telegramID = "unknown",
-        const std::string& skypeID = "unknown",
-        const std::string& job = "unknown")
+        const std::string& skypeID    = "unknown",
+        const std::string& job        = "unknown")
 
     {
-        Programmer::level_ = level;
-        Programmer::lang_ = lang;
-        Human::name_ = name;
-        Human::surname_ = surname;
-        Programmer::email_ = email;
-        Programmer::telegramID_ = telegramID;
-        Programmer::skypeID_ = skypeID;
-        Worker::job_ = job;
+        Programmer::level_       = level;
+        Programmer::lang_        = lang;
+        Human::name_             = name;
+        Human::surname_          = surname;
+        Programmer::email_       = email;
+        Programmer::telegramID_  = telegramID;
+        Programmer::skypeID_     = skypeID;
+        Worker::job_             = job;
     }
 
     // copy constructor.
     Programmer(const Programmer& other)
     {
         // this->Human = other.Human
-        this->Human::name_ = other.Human::name_;
+        this->Human::name_    = other.Human::name_;
         this->Human::surname_ = other.Human::surname_;
 
         this->Worker::job_ = other.Worker::job_;
 
-        this->Programmer::level_ = other.Programmer::level_;
-        this->Programmer::lang_ = other.Programmer::lang_;
-        this->Programmer::email_ = other.Programmer::email_;
+        this->Programmer::level_      = other.Programmer::level_;
+        this->Programmer::lang_       = other.Programmer::lang_;
+        this->Programmer::email_      = other.Programmer::email_;
         this->Programmer::telegramID_ = other.Programmer::telegramID_;
-        this->Programmer::skypeID_ = other.Programmer::skypeID_;
+        this->Programmer::skypeID_    = other.Programmer::skypeID_;
     }
 
     // destructor
-    ~Programmer() { std::cout << "Object \"Pragrammer\" was deleted" << '\n'; }
+    ~Programmer() = default; // { std::cout << "Object \"Pragrammer\" was deleted" << '\n'; }
 
     void GetInfo() const
     {
         std::cout << '\n' << "---------------------START--------------------" << '\n';
 
         std::cout << "   name: " << (*this).Human::name_ << '\n'
-            << "surname: " << (*this).Human::surname_ << '\n'
+            <<       "surname: " << (*this).Human::surname_ << '\n'
             << "------------------Information:----------------" << '\n';
 
         std::cout << "     level: " << (*this).Programmer::level_ << '\n'
@@ -140,9 +140,9 @@ protected:
     std::string    telegramID_;
     std::string    skypeID_;
 };
-std::ostream& operator<< (std::ostream& output, const Programmer& other)
+std::ostream& operator<< (std::ostream& output, const Programmer& programmer)
 {
-    output << other.name_;
+    output << programmer.name_;
 
 
     return output;
@@ -168,20 +168,24 @@ public:
         }
 
         // destructor.
-        ~Object() = default;
+        virtual ~Object() = default; 
 
-        void removeNext()
+        virtual Type removeNext() final
         {
-            Object* removeObject = sucessor_;
+            Object* removeObject = sucessor_; Type data = removeObject->data_;
             sucessor_ = removeObject->sucessor_;
             delete removeObject;
+            
+
+            return data;
         }
 
-        void insertNext()
+        virtual void insertNext() final
         {
 
         }
 
+    // protected:
         Object* sucessor_;
         Type    data_;
     };
@@ -252,7 +256,7 @@ public:
     }
 
     // destructor.
-    ~LinkedList()
+    virtual ~LinkedList()
     {
         size_ = 0;
         forceObjectDelete(head_);
@@ -325,14 +329,14 @@ public:
 
 
 
-    virtual void remove(const int& pos)
+    virtual Type remove(const int& pos)
     {
         if (pos <= 0) { throw std::out_of_range("LinkedList<Type>::remove: pos < 0"); }
         else if (pos > size_) { throw std::out_of_range("LinkedList<Type>::remove: pos > size"); }
 
         if (pos == 1)
         {
-            this->removeFront();
+            return this->removeFront();
         }
         else
         {
@@ -343,13 +347,18 @@ public:
                 currentObject->sucessor_;
             }
 
-            currentObject->removeNext();
             size_--;
+            
+            
+            return currentObject->removeNext();
         }
     }
 
-    virtual void removeFront() final
+    virtual Type removeFront() final
     {
+
+        Type data = head_->data_;
+        
         if (size_ == 1)
         {
             delete head_; head_ = nullptr;
@@ -357,13 +366,16 @@ public:
         }
         else
         {
-            Object* removeFront_next = head_->sucessor_;
-            delete head_; head_ = removeFront_next;
+            Object* next_after_head = head_->sucessor_;
+            delete head_; head_ = next_after_head;
             size_--;
         }
+
+
+        return data;
     }
 
-    virtual void removeBack()
+    virtual Type removeBack()
     {
         Object* currentObject = head_;
 
@@ -375,22 +387,22 @@ public:
         }
 
         // now: currentObject = penultimateObject
-        currentObject->removeNext();
+        size_--;
+        
+        
+        return currentObject->removeNext();
         // delete (currentObject->sucessor_);
         // currentObject->sucessor = nullptr;
-        size_--;
+        
 
     }
 
 
 
 
-    size_t size() const
-    {
-        return size_;
-    }
+    size_t size() const { return size_; }
 
-    virtual LinkedList<Type>::Object* GetObject(const int& pos) const
+    virtual LinkedList<Type>::Object* GetObject(const int& pos) const 
     {
         if (pos < 0 || pos > size_) { throw std::out_of_range("LinkedList<Type>::*GetObject: index out of range"); }
         else {
@@ -408,6 +420,8 @@ public:
 
     }
 
+    virtual const Type& operator[] (const int& pos) const final { return GetObject(pos)->data_; }
+
     virtual LinkedList<Type> filter(bool (*fn)(Type))
     {
         LinkedList<Type> resultList;
@@ -423,18 +437,16 @@ public:
         return resultList;
     }
 
+
+
     template<class Type> friend std::ostream& operator<< (std::ostream& output, const LinkedList<Type>& list);
 
-    const Type& operator[] (const int& pos) const
-    {
-        return GetObject(pos)->data_;
-    }
+    
 
 protected:
     Object* head_;
     size_t  size_;
 };
-
 template<class Type> std::ostream& operator<< (std::ostream& output, const LinkedList<Type>& list)
 {
     if (typeid(output).name() != typeid(std::ofstream).name())
@@ -456,6 +468,68 @@ template<class Type> std::ostream& operator<< (std::ostream& output, const Linke
 }
 
 
+
+template<class Type> class Stack : public LinkedList<Type>
+{
+public:
+    
+    // constructor.
+    Stack<Type>() : LinkedList<Type>() {};
+
+    // destructor.
+    virtual ~Stack<Type>() {};
+
+
+
+    void insert(const Type& data) { LinkedList<Type>::pushBack(data); }
+
+    Type remove() { return LinkedList<Type>::removeBack(); }
+};
+
+
+
+template<class Type> class DLS : public LinkedList<Type>
+{
+public:
+    
+    virtual struct Object
+    {
+        // default constructor.
+        Object(const Type& data, Object* sucessor = nullptr, Object* predecessor = nullptr)
+        {
+            sucessor_    = sucessor;
+            predecessor_ = predecessor;
+            data_        = data;
+        }
+
+        // destructor.
+        ~Object() = default;
+
+        virtual Type removeNext() final
+        {
+            Object* removeObject = sucessor_; Type data = removeObject->data_;
+            sucessor_ = removeObject->sucessor_;
+            delete removeObject;
+
+
+            return data;
+        }
+
+        virtual void insertNext() final
+        {
+
+        }
+
+        Object* predecessor_;
+        Object* sucessor_;
+        Type    data_;
+    };
+
+
+
+protected:
+    Object* tail_;
+};
 int main()
 {
     // Задание 6.0: Проверка общей работоспособности системы.
@@ -489,22 +563,31 @@ int main()
     list.pushBack(Rustem1); std::cout << list;
     list.pushFront(Rustem2); std::cout << list;
     list.insert(2, Rustem3); std::cout << list;
-    list.removeBack(); std::cout << list;
-    list.removeFront(); std::cout << list;
+    auto something1 = list.removeBack(); std::cout << list << something1;
+    auto something2 = list.removeFront(); std::cout << list << something2;
 
     list.pushBack(Rustem4); list.pushBack(Rustem5); list.pushBack(Rustem6);
     list.pushBack(Rustem7); list.pushBack(Rustem8); std::cout << list;
 
-    list.remove(2); std::cout << list;
+    auto something3 = list.remove(2); std::cout << list << something3;
 
     list.clear(); std::cout << list;
 
+    
+    
+
+    Stack<Programmer> stack;
+
+    stack.insert(Rustem1); std::cout << stack;
+    stack.insert(Rustem2); std::cout << stack;
+    stack.insert(Rustem3); std::cout << stack;
+    stack.insert(Rustem4); std::cout << stack;
+    
 
 
-
-
-
-
+    auto something4 = stack.remove(); std::cout << stack << something4;
+    
+    stack.remove(); std::cout << stack;
 
 
 
