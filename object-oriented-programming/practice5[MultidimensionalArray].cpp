@@ -39,7 +39,7 @@ public:
 	}
 
 	// destructor
-	~Exception()
+	virtual ~Exception()
 	{
 		delete[] message_; message_ = nullptr;
 	}
@@ -57,7 +57,7 @@ protected:
 public:
 
 	// constructor_full
-	IndexOutOfBounds(const char* message, const int &index_row, const int &index_column) : Exception(message)
+	IndexOutOfBounds(const char *message, const int &index_row, const int &index_column) : Exception(message)
 	{
 		index_row_ = index_row; index_column_ = index_column;
 	}
@@ -71,13 +71,57 @@ public:
 	}
 
 	// destructor
-	~IndexOutOfBounds() {}
+	~IndexOutOfBounds() = default;
 
-	virtual void print()
+
+
+	virtual void print() { std::cout << "GEOGEO"; }
+};
+
+class IndexUnderZero : public  IndexOutOfBounds
+{
+public:
+
+	// constructor_full
+	IndexUnderZero (const int &index_row, const int &index_column, const char *message = "IndexUnderZero")
+		: IndexOutOfBounds(message, index_row, index_column) {};
+
+	// constructor_copy
+	IndexUnderZero (const IndexUnderZero &other) 
+		: IndexOutOfBounds(other) {};
+
+	// destructor
+	~IndexUnderZero() = default;
+
+	void print()
 	{
-		std::cout  << '\n' <<  message_ << ": " << "it is not possible to access the specified indexes: row- " << index_row_
-		<< " ,column- " << index_column_ << '!';
+		std::cout << '\n' << message_  << "it is not possible to access the specified indexes: row= " << index_row_
+			<< " ,column= " << index_column_ << '!' << '\n';
 	}
+
+};
+
+class IndexUpperLimits : public  IndexOutOfBounds
+{
+public:
+
+	// constructor_full
+	IndexUpperLimits (const int &index_row, const int &index_column, const char *message = "IndexUpperLimits") 
+		: IndexOutOfBounds(message, index_row, index_column) {};
+
+	// constructor_copy
+	IndexUpperLimits (const IndexUnderZero& other) 
+		: IndexOutOfBounds(other) {};
+
+	// destructor
+	~IndexUpperLimits() = default;
+
+	void print()
+	{
+		std::cout << '\n' << message_ << ": " << "it is not possible to access the specified indexes: row= " << index_row_
+			<< " ,column= " << index_column_ << '!';
+	}
+
 };
 
 class WrongDimension : public  Exception
@@ -369,9 +413,13 @@ public:
 	// Type* GetRow() { return Matrix<Type>::Row.row_; } const
 	void SetValue(const int &row, const int &column, int value)
 	{
-		if ( (row <= 0 || row > rows_) || (column <= 0 || column > columns_ ) )
+		if ((row <= 0) || (column <= 0))
 		{
-			throw IndexOutOfBounds("method: \'SetValue(const int &row, const int &column, int value)\' : Index out of bounds", row, column);
+			throw IndexUnderZero(row, column, "method: \'SetValue(const int &row, const int &column, int value)\' :");
+		}
+		else if (  (row > rows_) || (column > columns_ ) )
+		{
+			throw IndexUpperLimits(row, column, "method: \'SetValue(const int &row, const int &column, int value)\' :");
 		}
 		else { matrix_[row][column] = value; }
 	}
@@ -470,62 +518,81 @@ public:
 	template <class Type> friend std::ostream& operator<< (std::ostream &output, const Matrix<Type> &matrix);
 	template <class Type> friend std::istream& operator>> (std::istream &input, Matrix<Type> &matrix);
 	
-	class Row
-	{
-	public:
-		 
-		// constructor
-		Row (const int &row)
-		{
-			row_ = new Type[Matrix<Type>::columns_ + 1];
-
-			for (int itt = 1; itt <= Matrix<Type>::columns_; itt++)
-			{
-				row_[itt] = Matrix<Type>::matrix_[row][itt];
-			}
-		}
-
-		// copy constructor
-		Row (const Type* row) 
-		{
-			for (int itt = 1; itt <= Matrix<Type>::columns_; itt++)
-			{
-				row_[itt] = row[itt];
-			}
-		}
-
-		// destructor
-		~Row() { delete[] row_; }
-
-		Type operator[] (const int &pos) { return row_[pos]; }
-	protected:
-		Type* row_;
-		// friend class Matrix<Type>;
-	};
-
-	//class M
+	//class Row
 	//{
 	//public:
-	//	class R
+	//	 
+	//	// constructor
+	//	Row (const int &row)
 	//	{
-	//	private:
-	//		friend class M; // Only M can create these objects.
-	//		R(M& parent, int row) : m_parent(parent), m_row(row) {}
-	//	public:
-	//		int& operator[](int col) { return m_parent.at(m_row, col); }
-	//	private:
-	//		M& m_parent;
-	//		int m_row;
-	//	};
+	//		row_ = new Type[Matrix<Type>::columns_ + 1];
 
-	//	R operator[](int row) { return R(*this, row); }
+	//		for (int itt = 1; itt <= Matrix<Type>::columns_; itt++)
+	//		{
+	//			row_[itt] = Matrix<Type>::matrix_[row][itt];
+	//		}
+	//	}
+
+	//	// copy constructor
+	//	Row (const Type *row) 
+	//	{
+	//		for (int itt = 1; itt <= Matrix<Type>::columns_; itt++)
+	//		{
+	//			row_[itt] = row[itt];
+	//		}
+	//	}
+
+	//	// destructor
+	//	~Row() { delete[] row_; }
+
+		/*Type operator[] (const int &pos) { return row_[pos]; }*/
+
+
+	//protected:
+	//	Type *row_;
+	//	// friend class Matrix<Type>;
+	//};
+
+	////class M
+	////{
+	////public:
+	////	class R
+	////	{
+	////	private:
+	////		friend class M; // Only M can create these objects.
+	////		R(M& parent, int row) : m_parent(parent), m_row(row) {}
+	////	public:
+	////		int& operator[](int col) { return m_parent.at(m_row, col); }
+	////	private:
+	////		M& m_parent;
+	////		int m_row;
+	////	};
+
+
+	//// oparatror[][]
+	//Row operator[] (const int &row)
+	//{
+	//	if (row <= rows_ && row > 0) { Row row_current(row); return row_current; }
+	//	else { throw IndexOutOfBounds("operator[]: Index out of bounds", rows_, columns_); }
+
+
+	//	return Row(row);
 	//}
 
-	// oparatror[][]
-	Row operator[] (const int &row)
+	Type* operator[] (int row)
 	{
-		if (row <= rows_ && row > 0) { Row row_current(row); return row_current; }
-		else { throw IndexOutOfBounds("operator[]: Index out of bounds", rows_, columns_); }
+		if (row <= rows_ && row > 0) 
+		{ 
+			return matrix_[row];
+		}
+		else if (row <= 0)
+		{
+			throw IndexUnderZero(rows_, columns_, "operator[]: ");
+		}
+		else if (row > rows_)
+		{
+			throw IndexUpperLimits(rows_, columns_, "operator[]: ");
+		}
 
 	}
 
@@ -628,7 +695,7 @@ template<class Type> std::istream& operator>> (std::istream &input, Matrix<Type>
 	return input;
 }
 
-std::ostream& manipulator_custom(std::ostream& output)
+std::ostream& manipulator_custom (std::ostream &output)
 {
 	output.fill(' ');
 	output.width(6);
@@ -852,9 +919,23 @@ int main()
 		}
 	}
 
-	std::cout << '\n' << cc1[1][1];
+	try
+	{
+		std::cout << matrix[-1][1];
+	}
+	catch (IndexUnderZero less)
+	{
+		less.print();
+	}
+	catch (IndexUpperLimits upper)
+	{
+		upper.print();
+	}
+	catch (IndexOutOfBounds smth)
+	{
+		 smth.print();
+	}
 	
-
 	//////////////////////////////////////////////////////////////////////////////
 	return 0;
 }

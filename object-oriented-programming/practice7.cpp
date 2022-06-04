@@ -54,7 +54,7 @@ int main()
 {
 	std::cout << harmonic_mean<int>(1, 2, 3, 4, 5, 6, 7, 0) << '\n';
 
-	std::cout << harmonic_mean<double>(235.34234, 329.90, 24.0, 4.0, 912.11, 1.0, 0) << '\n';
+	std::cout << harmonic_mean<double>(235.34234, 1.0, 0) << '\n';
 
 
 
