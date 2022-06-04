@@ -147,9 +147,9 @@ std::ostream& operator<< (std::ostream& output, const Programmer& programmer)
 
     return output;
 }
-
-
-
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -158,9 +158,9 @@ template<class Type> class LinkedList
 {
 public:
 
-    virtual struct Object
+    virtual class Object
     {
-    // public:
+    public:
         // default constructor.
         Object(const Type& data, LinkedList<Type>::Object* sucessor = nullptr)
         {
@@ -169,7 +169,7 @@ public:
         }
 
         // destructor.
-        virtual ~Object() = default; 
+        virtual ~Object() = default;
 
         virtual Type removeNext()
         {
@@ -181,8 +181,17 @@ public:
             return data;
         }
 
-        virtual void insertNext() {}
+        virtual void insertNext() {};
 
+
+        //virtual Object& operator= (const LinkedList<Type>::Object other)
+        //{
+        //    delete this; this = nullptr;
+        //    this = new Object(other.data_, other.sucessor);
+
+
+        //    return *this;
+        //}
     // protected:
         LinkedList<Type>::Object* sucessor_;
                             Type  data_;
@@ -198,19 +207,19 @@ public:
     }
 
     // copy constructor.
-    LinkedList(const LinkedList& other)
+    LinkedList (const LinkedList& other)
     {
         if (other.size_ != 0)
         {
-            head_ = new Object(other.head_->data_); // (*head_).data_ = (*other.head).data_;
-                                                    // (*head_).sucessor_ = nullptr;
+            head_ = new Object(other.head_->data_); // c. (*head_).data_ = (*other.head).data_;
+                                                    // c. (*head_).sucessor_ = nullptr;
             Object* this_ptr_current = head_;
             Object* other_ptr_current = other.head_;
 
             while (other_ptr_current != nullptr)
             {
-                // (*this_ptr_current).data_ = (*other_ptr_current).data_; 
-                // (*this_ptr_current).sucessor_ = nullptr;
+                // c. (*this_ptr_current).data_ = (*other_ptr_current).data_; 
+                // c. (*this_ptr_current).sucessor_ = nullptr;
                 this_ptr_current->sucessor_ = new Object(other_ptr_current->sucessor_->data_);
 
                 this_ptr_current = this_ptr_current->sucessor_; 
@@ -236,6 +245,7 @@ public:
 
         if (size_ != 0)
         {
+
             Object* ptr_other_iterator = other.head_;
             Object* ptr_this = new Object(other.head_->data_);
             head_ = ptr_this; // after: head_->sucessor_ = ptr_this->sucessor_ (=nullptr);  
@@ -251,8 +261,10 @@ public:
                 ptr_other_iterator = ptr_other_iterator->sucessor_;
             }
 
-
         }
+
+
+        return *this;
     }
 
     // destructor.
@@ -375,7 +387,7 @@ public:
         return data;
     }
 
-    virtual Type removeBack()
+    virtual Type removeBack() final
     {
         Object* objectCurrent = head_;
 
@@ -477,13 +489,13 @@ public:
     Stack<Type>() : LinkedList<Type>() {};
 
     // destructor.
-    virtual ~Stack<Type>() {};
+    virtual ~Stack<Type>() = default;
 
 
 
     void insert(const Type& data) { LinkedList<Type>::pushBack(data); }
 
-    Type remove() { return LinkedList<Type>::removeBack(); }
+    Type remove() { return LinkedList<Type>::removeFront(); }
 };
 
 
@@ -492,11 +504,13 @@ template<class Type> class DLS : public LinkedList<Type>
 {
 public:
     
-    virtual struct Object : public LinkedList<Type>::Object
+    class Object : public LinkedList<Type>::Object
     {
-    // public:
-        // default constructor.
-        Object(const Type& data, Object* sucessor = nullptr, Object* predecessor = nullptr) : LinkedList<Type>::Object(data, nullptr)
+    public:
+
+        // constructor_full.
+        Object(const Type& data, Object* sucessor = nullptr, Object* predecessor = nullptr) 
+            : LinkedList<Type>::Object(data, nullptr)
         {
             predecessor_ = predecessor;
         }
@@ -627,79 +641,80 @@ public:
 
     
 
-
-
-    //virtual Type remove(const int& pos) final
+    //virtual Type remove(const int& pos) override final // CHECK REQUIRE
     //{
     //    if (pos <= 0) { throw std::out_of_range("LinkedList<Type>::remove: pos < 0"); }
-    //    else if (pos > size_) { throw std::out_of_range("LinkedList<Type>::remove: pos > size"); }
+    //    else if (pos > LinkedList<Type>::size_) { throw std::out_of_range("LinkedList<Type>::remove: pos > size"); }
 
     //    if (pos == 1)
     //    {
     //        return this->removeFront();
     //    }
-    //    else
+
+    //    if (pos < (LinkedList<Type>::size_ / 2) )
     //    {
-    //        Object* objectCurrent = head_;
+    //        LinkedList<Type>::Object* objectCurrent = LinkedList<Type>::head_;
+    //        
 
     //        for (int position = 1; position < pos - 1; position++)
     //        {
-    //            objectCurrent->sucessor_;
+    //            objectCurrent->LinkedList<Type>::Object::sucessor_;
     //        }
 
-    //        size_--;
+    //        LinkedList<Type>::size_--;
+
+
+    //        return objectCurrent::LinkedList::Object->removeNext();
+    //    }
+    //    else
+    //    {
+    //        Object* objectCurrent = tail_;
+
+    //        for (int position = 1; position < pos - 1; position--)
+    //        {
+    //            objectCurrent->LinkedList<Type>::Object::sucessor_;
+    //        }
+
+    //        LinkedList<Type>::size_--;
 
 
     //        return objectCurrent->removeNext();
     //    }
-    //}
+    //} 
 
-    //virtual Type removeFront() final
+    //virtual Type removeFront() override final
     //{
 
-    //    Type data = head_->data_;
+    //    Type data = LinkedList<Type>::head_->data_;
 
-    //    if (size_ == 1)
+    //    if (LinkedList<Type>::size_ == 1)
     //    {
-    //        delete head_; head_ = nullptr;
-    //        size_ = 0;
+    //        delete LinkedList<Type>::head_; LinkedList<Type>::head_ = nullptr;
+    //        LinkedList<Type>::size_ = 0;
     //    }
     //    else
     //    {
-    //        Object* next_after_head = head_->sucessor_;
-    //        delete head_; head_ = next_after_head;
-    //        size_--;
+    //        DLS<Type>::Object* next_after_head;
+    //        next_after_head->LinkedList<Type>::Object = LinkedList<Type>::head_->LinkedList<Type>::Object::sucessor_;
+
+    //        next_after_head->predecessor_ = nullptr;
+
+    //        delete LinkedList<Type>::head_; LinkedList<Type>::head_ = next_after_head;
+    //        LinkedList<Type>::size_--;
     //    }
 
 
     //    return data;
     //}
 
-    //virtual Type removeBack() final
-    //{
-    //    Object* objectCurrent = head_;
-
-    //    int currentPosition = 1;
-    //    while (currentPosition < size_ - 1)
-    //    {
-    //        objectCurrent = objectCurrent->sucessor_;
-    //        currentPosition++;
-    //    }
-
-    //    // now: objectCurrent = penultimateObject
-    //    size_--;
-
-
-    //    return objectCurrent->removeNext();
-    //    // delete (objectCurrent->sucessor_);
-    //    // objectCurrent->sucessor = nullptr;
-
-
-    //}
+    
 
 protected:
     DLS<Type>::Object* tail_;
 };
+
+
+
 int main()
 {
     // Задание 6.0: Проверка общей работоспособности системы.
@@ -759,8 +774,9 @@ int main()
     
     stack.remove(); std::cout << stack;
 
+    //DLS<Programmer> dls;
 
-
+    //dls.pushBack(Rustem1); std::cout << dls;
 
 
 
