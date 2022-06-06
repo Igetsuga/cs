@@ -40,7 +40,7 @@ protected:
 };
 
 
-
+///////////////////////////////////////////////////////////////////////////////
 // class Worker.
 class Worker : public Human
 {
@@ -70,7 +70,8 @@ protected:
 };
 
 
-
+///////////////////////////////////////////////////////////////////////////////
+// class Programmer
 class Programmer : public Worker
 {
 public:
@@ -175,6 +176,8 @@ std::istream& operator>> (std::istream& input, Programmer& programmer)
 
     return input;
 }
+
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -190,7 +193,7 @@ public:
     virtual class Object
     {
     public:
-        // default constructor.
+        // constructor.
         Object(const Type& data, LinkedList<Type>::Object* sucessor = nullptr, LinkedList<Type>::Object* predecessor = nullptr)
         {
                sucessor_ = sucessor;
@@ -218,6 +221,14 @@ public:
 
         void insertNext() {};
 
+        // 
+        LinkedList<Type>::Object* GetSucessor() { return sucessor_; }
+        LinkedList<Type>::Object* GetPredecessor() { return predecessor_; }
+        
+        const Type& GetData() const { return data_; }
+        void SetData (Type& data) { data_ = data; }
+
+
         // protected:
         LinkedList<Type>::Object* sucessor_;
         LinkedList<Type>::Object* predecessor_;
@@ -234,7 +245,7 @@ public:
     }
 
     // copy constructor.
-    LinkedList(const LinkedList& other)
+    LinkedList (const LinkedList& other)
     {
         if (other.size_ != 0)
         {
@@ -304,7 +315,7 @@ public:
     }
 
     // for destructor. 
-    virtual void forceObjectDelete(Object* object) final
+    virtual void forceObjectDelete (Object* object) final
     {
         if (object == nullptr) { return; }
 
@@ -325,7 +336,7 @@ public:
 
 
 
-    virtual void insert(const int& pos, const Type& data)
+    virtual void insert (const int& pos, const Type& data)
     {
         if (pos <= 0) { throw std::out_of_range("LinkedList<Type>::insert: pos < 0"); }
         else if (pos > size_ + 1 && (pos != 1 && size_ != 0)) { throw std::out_of_range("LinkedList<Type>::insert: pos > size"); }
@@ -356,7 +367,7 @@ public:
         }
     }
 
-    virtual void pushFront(const Type& data) final
+    virtual void pushFront (const Type& data) final
     {
         head_ = new Object(data, head_);
 
@@ -372,7 +383,7 @@ public:
         size_++;
     }
 
-    virtual void pushBack(const Type& data) final
+    virtual void pushBack (const Type& data) final
     {
         if (size_ == 0)
         {
@@ -388,7 +399,7 @@ public:
 
 
 
-    virtual Type remove(const int& pos)
+    virtual Type remove (const int& pos)
     {
         if (pos <= 0) { throw std::out_of_range("LinkedList<Type>::remove: pos < 0"); }
         else if (pos > size_) { throw std::out_of_range("LinkedList<Type>::remove: pos > size"); }
@@ -453,7 +464,7 @@ public:
 
     size_t size() const { return size_; }
 
-    virtual LinkedList<Type>::Object* GetObject(const int& pos) const
+    virtual LinkedList<Type>::Object* GetObject (const int& pos) const
     {
         if (pos <= 0 || pos > size_) { throw std::out_of_range("LinkedList<Type>::*GetObject: index out of range"); }
         else {
@@ -473,24 +484,68 @@ public:
 
     virtual const Type& operator[] (const int& pos) const final { return GetObject(pos)->data_; }
 
-    virtual LinkedList<Type> filter(bool (*fn)(Type))
+    virtual LinkedList<Type> i_filter (bool (*fn)(Type))
     {
-        LinkedList<Type> resultList;
+        LinkedList<Type> listResult;
+        // int size = static_cast<int>(size_);
 
-        int size = static_cast<int>(size_);
-        for (int i = 1; i <= size; i++)
+        for (Object* objectCurrent = head_; objectCurrent != nullptr;
+            objectCurrent = objectCurrent->sucessor_)
         {
-            if (fn((*this)[i])) // if (fn (this->GetObject(pos)->data_) )
+            if ( fn(objectCurrent->data_) ) // if ( fn(this->GetObject(pos)->data_) )
             {
-                resultList.pushBack((*this)[i]);
+                listResult.pushBack(objectCurrent->data_);
             }
         }
 
 
-        return resultList;
+        return listResult;
     }
 
+    virtual LinkedList<Type> r_filter (bool (*fn)(Type), LinkedList<Type> listResult, Object* objectCurrent = head_)
+    {   
+        if ( objectCurrent == nullptr) { return listResult; }
+        else if ( fn(objectCurrent->data_) ) // if ( fn(this->GetObject(pos)->data_) )
+        {
+            listResult.pushBack(objectCurrent->data_);
+        }
 
+
+        return r_filter(fn, listResult, objectCurrent->sucessor_);
+    }
+
+    virtual Type i_find (bool (*fn)(Type))
+    {
+        Object* objectCurrent = head_;
+        while ( true )
+        {
+            if ( objectCurrent == nullptr )
+            {
+                Type unknown; // implies of defualt_constructor existing
+
+
+                return unknown;
+            }
+            else if ( fn(objectCurrent->data_) ) { return objectCurrent->data_; }
+
+            objectCurrent = objectCurrent->sucessor_;
+        }
+    }
+    
+    virtual Type r_find (bool (*fn)(Type), Object* objectCurrent = head_)
+    {
+        if ( objectCurrent == nullptr )
+        {
+            Type unknown; // implies of defualt_constructor existing
+
+
+            return unknown;
+        }
+        else if ( fn(objectCurrent->data_) ) { return objectCurrent->data_; }
+
+        
+        return r_find (fn, objectCurrent->sucessor_);
+    }
 
     template<class Type> friend std::ostream& operator<< (std::ostream& output, const LinkedList<Type>& list);
 
@@ -564,43 +619,120 @@ public:
 
 
 
-    void insert(const int& pos, const Type& data) override
+    virtual void insert(const int& pos, const Type& data) override
     {
         if ( pos <= 0 ) { throw std::out_of_range("LinkedList<Type>::insert: pos < 0"); }
         else if ( pos > LinkedList<Type>::size_ + 1 && (pos != 1 && LinkedList<Type>::size_ != 0) ) 
         { throw std::out_of_range("LinkedList<Type>::insert: pos > size"); }
 
+        llObject* objectCurrent = nullptr;
+
         if ( pos == 1 )
         {
             this->LinkedList<Type>::pushFront(data);
+            return;
         }
         else if ( pos == LinkedList<Type>::size_ + 1 )
         {
             this->LinkedList<Type>::pushBack(data);
+            return;
         }
-        else if (pos < LinkedList<Type>::size_ / 2)
+        else if (pos <= LinkedList<Type>::size_ / 2)
         {
-            auto* objectCurrent = LinkedList<Type>::head_;
+            objectCurrent = LinkedList<Type>::head_;
 
             for ( int position = 1; position < pos - 1; position++ )
             {
                 objectCurrent = objectCurrent->sucessor_;
             }
-
-            llObject* objectInsert = new llObject(data, objectCurrent->sucessor_, objectCurrent);
-
-            objectCurrent->sucessor_ = objectInsert;
-            (objectInsert->sucessor_)->predecessor_ = objectInsert;
-
-            LinkedList<Type>::size_++;
         }
+        else
+        {
+            objectCurrent = LinkedList<Type>::tail_;
+
+            for ( int position = LinkedList<Type>::size_; position > pos - 1; position-- )
+            {
+                objectCurrent = objectCurrent->predecessor_;
+            }
+        }
+        llObject* objectInsert = new llObject(data, objectCurrent->sucessor_, objectCurrent);
+
+        objectCurrent->sucessor_ = objectInsert;
+        (objectInsert->sucessor_)->predecessor_ = objectInsert;
+
+        LinkedList<Type>::size_++;
     }
 
-    //virtual Type remove()
-    //{
-    //    std::cout<< "gjitk yfpeq";
-    //}
+    virtual Type remove(const int& pos) override
+    {
+        if ( pos <= 0 ) { throw std::out_of_range("LinkedList<Type>::remove: pos < 0"); }
+        else if ( pos > LinkedList<Type>::size_ ) { throw std::out_of_range("LinkedList<Type>::remove: pos > size"); }
+
+        llObject* objectCurrent = nullptr;
+
+        if ( pos == 1 )
+        {
+            return this->removeFront();
+        }
+        else if ( pos == LinkedList<Type>::size_ )
+        {
+            return this->removeBack();
+        }
+        else if ( pos <= LinkedList<Type>::size_ / 2 )
+        {
+            objectCurrent = LinkedList<Type>::head_;
+
+            for ( int position = 1; position < pos - 1; position++ )
+            {
+                objectCurrent = objectCurrent->sucessor_;
+            }
+        }
+        else
+        {
+            objectCurrent = LinkedList<Type>::tail_;
+
+            for ( int position = LinkedList<Type>::size_; position > pos - 1; position-- )
+            {
+                objectCurrent = objectCurrent->predecessor_;
+            }
+        }
+        LinkedList<Type>::size_--;
+
+
+        return objectCurrent->removeNext();
+    }
+
+    void print()
+    {
+        llObject* objectCurrent = LinkedList<Type>::head_;
+
+        std::cout << '\n' << "print: { ";
+        while ( objectCurrent != nullptr )
+        {
+            std::cout << objectCurrent->data_ << " ";
+            objectCurrent = objectCurrent->sucessor_;
+        }
+        std::cout << "}" << '\n';
+
+    }
+
+    void print_reverse()
+    {
+        llObject* objectCurrent = LinkedList<Type>::tail_;
+
+        std::cout << '\n' << "print_reverse: { ";
+        while ( objectCurrent != nullptr )
+        {
+            std::cout << objectCurrent->data_ << " ";
+            objectCurrent = objectCurrent->predecessor_;
+        }
+        std::cout << "}" << '\n';
+    }
+
 };
+
+
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -679,11 +811,25 @@ int main()
     ///////////////////////////////////////////////////////////////////////////
     DLS<Programmer> dls;
     dls.insert(1, Rustem1); std::cout << dls;
+    dls.insert(2, Rustem2); std::cout << dls;
+    dls.insert(3, Rustem3); std::cout << dls;
+    dls.insert(4, Rustem4); std::cout << dls;
+
+    dls.insert(2, Rustem5); std::cout << dls;
+    dls.insert(4, Rustem6); std::cout << dls;
+    std::cout << "indexation " <<  dls[5];
+    dls.print();
+    dls.print_reverse();
 
 
+    auto objectRemove1 = dls.remove(2); std::cout << dls << objectRemove1 << '\n';
+    auto objectRemove2 = dls.remove(4); std::cout << dls << objectRemove2 << '\n';
+    dls.print();
+    dls.print_reverse();
 
 
-
+    Programmer Rustem13;
+    Rustem13.GetInfo();
 
 
 
