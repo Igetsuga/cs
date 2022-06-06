@@ -132,6 +132,18 @@ public:
             << "       job: " << (*this).Worker::job_ << '\n'
             << "----------------------END---------------------" << '\n';
     }
+    void SetInfo(const Programmer& other)
+    {
+             Programmer::level_ = other.level_;
+              Programmer::lang_ = other.lang_;
+                   Human::name_ = other.name_;
+                Human::surname_ = other.surname_;
+             Programmer::email_ = other.email_;
+        Programmer::telegramID_ = other.telegramID_;
+           Programmer::skypeID_ = other.skypeID_;
+                   Worker::job_ = other.job_;
+    }
+
 
     friend std::ostream& operator<< (std::ostream& output, const Programmer& programmer);
     friend std::istream& operator>> (std::istream& output, Programmer& programmer);
@@ -223,13 +235,16 @@ public:
 
         // 
         LinkedList<Type>::Object* GetSucessor() { return sucessor_; }
+        void SetSucessor (LinkedList<Type>::Object* other) { sucessor_ = other; }
+
         LinkedList<Type>::Object* GetPredecessor() { return predecessor_; }
-        
+        void SetPredecessor (LinkedList<Type>::Object* other) { predecessor_ = other; }
+
         const Type& GetData() const { return data_; }
         void SetData (Type& data) { data_ = data; }
 
 
-        // protected:
+    protected:
         LinkedList<Type>::Object* sucessor_;
         LinkedList<Type>::Object* predecessor_;
                             Type  data_;
@@ -249,9 +264,9 @@ public:
     {
         if (other.size_ != 0)
         {
-            head_ = new Object(other.head_->data_); // c. (*head_).data_ = (*other.head).data_;
-                                                    // c. (*head_).sucessor_ = nullptr;
-                                                    // c. (*head_).predecessor_ = nullptr;
+            head_ = new Object(other.head_->GetData()); // c. (*head_).data_ = (*other.head).data_;
+                                                        // c. (*head_).sucessor_ = nullptr;
+                                                        // c. (*head_).predecessor_ = nullptr;
             Object* this_ptr_current = head_;
             Object* other_ptr_current = other.head_;
 
@@ -259,11 +274,11 @@ public:
             {
                 // c. (*this_ptr_current).data_ = (*other_ptr_current).data_; 
                 // c. (*this_ptr_current).sucessor_ = nullptr;
-                this_ptr_current->sucessor_ = new Object(other_ptr_current->sucessor_->data_);
-                (this_ptr_current->sucessor_)->predecessor_ = this_ptr_current;
+                this_ptr_current->SetSucessor( new Object((other_ptr_current->GetSucessor())->GetData()) );
+                (this_ptr_current->GetSucessor())->SetPredecessor( this_ptr_current );
 
-                this_ptr_current = this_ptr_current->sucessor_;
-                other_ptr_current = other_ptr_current->sucessor_;
+                this_ptr_current = this_ptr_current->GetSucessor();
+                other_ptr_current = other_ptr_current->GetSucessor();
             }
         }
         else
@@ -319,7 +334,7 @@ public:
     {
         if (object == nullptr) { return; }
 
-        LinkedList<Type>::Object* nextObjectDelete = object->sucessor_;
+        LinkedList<Type>::Object* nextObjectDelete = object->GetSucessor();
         delete object;
 
         forceObjectDelete(nextObjectDelete);
@@ -355,13 +370,13 @@ public:
 
             for (int position = 1; position < pos - 1; position++)
             {
-                objectCurrent = objectCurrent->sucessor_;
+                objectCurrent = objectCurrent->GetSucessor();
             }
 
-            Object* objectInsert = new Object(data, objectCurrent->sucessor_, objectCurrent);
+            Object* objectInsert = new Object(data, objectCurrent->GetSucessor(), objectCurrent);
             
-            objectCurrent->sucessor_ = objectInsert;
-            (objectInsert->sucessor_)->predecessor_ = objectInsert;
+            objectCurrent->SetSucessor(objectInsert);
+            (objectInsert->GetSucessor())->SetPredecessor(objectInsert);
 
             size_++;
         }
@@ -377,7 +392,7 @@ public:
         }
         else 
         {
-            (head_->sucessor_)->predecessor_ = head_;
+            ( head_->GetSucessor() )->SetPredecessor(head_);
         }
 
         size_++;
@@ -392,7 +407,7 @@ public:
         else
         {
             tail_ = new Object(data, nullptr, tail_);
-            (tail_->predecessor_)->sucessor_ = tail_;
+            ( tail_->GetPredecessor() )->SetSucessor(tail_);
         }
         size_++;
     }
@@ -414,7 +429,7 @@ public:
 
             for (int position = 1; position < pos - 1; position++)
             {
-                objectCurrent->sucessor_;
+                objectCurrent->GetSucessor();
             }
 
             size_--;
@@ -427,7 +442,7 @@ public:
     virtual Type removeFront() final
     {
 
-        Type data = head_->data_;
+        Type data = head_->GetData();
 
         if ( size_ == 1 )
         {
@@ -435,9 +450,9 @@ public:
         }
         else
         {
-            Object* next_after_head = head_->sucessor_;
+            Object* next_after_head = head_->GetSucessor();
             delete head_; head_ = next_after_head;
-            head_->predecessor_ = nullptr;
+            head_->SetPredecessor(nullptr);
         }
         size_--;
 
@@ -449,11 +464,11 @@ public:
     {
         size_--;
 
-        Object* before_tail_= tail_->predecessor_; Type data = tail_->data_;
+        Object* before_tail_= tail_->GetPredecessor(); Type data = tail_->GetData();
 
         delete tail_;
 
-        tail_ = before_tail_; tail_->sucessor_ = nullptr;
+        tail_ = before_tail_; tail_->SetSucessor(nullptr);
 
 
         return data;
@@ -473,7 +488,7 @@ public:
             Object* ptr_current = this->head_;
             for (int pos_current = 1; pos_current < pos; pos_current++)
             {
-                ptr_current = ptr_current->sucessor_;
+                ptr_current = ptr_current->GetSucessor();
             }
 
 
@@ -482,7 +497,7 @@ public:
 
     }
 
-    virtual const Type& operator[] (const int& pos) const final { return GetObject(pos)->data_; }
+    virtual const Type& operator[] (const int& pos) const { return GetObject(pos)->Object::GetData(); }
 
     virtual LinkedList<Type> i_filter (bool (*fn)(Type))
     {
@@ -490,11 +505,11 @@ public:
         // int size = static_cast<int>(size_);
 
         for (Object* objectCurrent = head_; objectCurrent != nullptr;
-            objectCurrent = objectCurrent->sucessor_)
+            objectCurrent = objectCurrent->GetSucessor() )
         {
-            if ( fn(objectCurrent->data_) ) // if ( fn(this->GetObject(pos)->data_) )
+            if ( fn(objectCurrent->GetData()) ) // if ( fn(this->GetObject(pos)->data_) )
             {
-                listResult.pushBack(objectCurrent->data_);
+                listResult.pushBack(objectCurrent->GetData());
             }
         }
 
@@ -505,13 +520,13 @@ public:
     virtual LinkedList<Type> r_filter (bool (*fn)(Type), LinkedList<Type> listResult, Object* objectCurrent = head_)
     {   
         if ( objectCurrent == nullptr) { return listResult; }
-        else if ( fn(objectCurrent->data_) ) // if ( fn(this->GetObject(pos)->data_) )
+        else if ( fn(objectCurrent->GetData()) ) // if ( fn(this->GetObject(pos)->data_) )
         {
-            listResult.pushBack(objectCurrent->data_);
+            listResult.pushBack(objectCurrent->GetData());
         }
 
 
-        return r_filter(fn, listResult, objectCurrent->sucessor_);
+        return r_filter(fn, listResult, objectCurrent->GetSucessor());
     }
 
     virtual Type i_find (bool (*fn)(Type))
@@ -526,9 +541,9 @@ public:
 
                 return unknown;
             }
-            else if ( fn(objectCurrent->data_) ) { return objectCurrent->data_; }
+            else if ( fn(objectCurrent->GetData()) ) { return objectCurrent->GetData(); }
 
-            objectCurrent = objectCurrent->sucessor_;
+            objectCurrent = objectCurrent->GetSucessor();
         }
     }
     
@@ -541,10 +556,10 @@ public:
 
             return unknown;
         }
-        else if ( fn(objectCurrent->data_) ) { return objectCurrent->data_; }
+        else if ( fn(objectCurrent->GetData()) ) { return objectCurrent->GetData(); }
 
         
-        return r_find (fn, objectCurrent->sucessor_);
+        return r_find (fn, objectCurrent->GetSucessor());
     }
 
     template<class Type> friend std::ostream& operator<< (std::ostream& output, const LinkedList<Type>& list);
@@ -605,7 +620,6 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////
 // class DLS.
-
 template<class Type> class DLS : public LinkedList<Type>
 {
     typedef LinkedList<Type>::Object llObject;
@@ -643,7 +657,7 @@ public:
 
             for ( int position = 1; position < pos - 1; position++ )
             {
-                objectCurrent = objectCurrent->sucessor_;
+                objectCurrent = objectCurrent->GetSucessor();
             }
         }
         else
@@ -652,13 +666,13 @@ public:
 
             for ( int position = LinkedList<Type>::size_; position > pos - 1; position-- )
             {
-                objectCurrent = objectCurrent->predecessor_;
+                objectCurrent = objectCurrent->GetPredecessor();
             }
         }
-        llObject* objectInsert = new llObject(data, objectCurrent->sucessor_, objectCurrent);
+        llObject* objectInsert = new llObject(data, objectCurrent->GetSucessor(), objectCurrent);
 
-        objectCurrent->sucessor_ = objectInsert;
-        (objectInsert->sucessor_)->predecessor_ = objectInsert;
+        objectCurrent->SetSucessor(objectInsert);
+        (objectInsert->GetSucessor())->SetPredecessor(objectInsert);
 
         LinkedList<Type>::size_++;
     }
@@ -684,7 +698,7 @@ public:
 
             for ( int position = 1; position < pos - 1; position++ )
             {
-                objectCurrent = objectCurrent->sucessor_;
+                objectCurrent = objectCurrent->GetSucessor();
             }
         }
         else
@@ -693,7 +707,7 @@ public:
 
             for ( int position = LinkedList<Type>::size_; position > pos - 1; position-- )
             {
-                objectCurrent = objectCurrent->predecessor_;
+                objectCurrent = objectCurrent->GetPredecessor();
             }
         }
         LinkedList<Type>::size_--;
@@ -702,38 +716,215 @@ public:
         return objectCurrent->removeNext();
     }
 
-    void print()
+    virtual void print() final
     {
         llObject* objectCurrent = LinkedList<Type>::head_;
 
         std::cout << '\n' << "print: { ";
         while ( objectCurrent != nullptr )
         {
-            std::cout << objectCurrent->data_ << " ";
-            objectCurrent = objectCurrent->sucessor_;
+            std::cout << objectCurrent->GetData() << " ";
+            objectCurrent = objectCurrent->GetSucessor();
         }
         std::cout << "}" << '\n';
 
     }
 
-    void print_reverse()
+    virtual void print_reverse() final
     {
         llObject* objectCurrent = LinkedList<Type>::tail_;
 
         std::cout << '\n' << "print_reverse: { ";
         while ( objectCurrent != nullptr )
         {
-            std::cout << objectCurrent->data_ << " ";
-            objectCurrent = objectCurrent->predecessor_;
+            std::cout << objectCurrent->GetData() << " ";
+            objectCurrent = objectCurrent->GetPredecessor();
         }
         std::cout << "}" << '\n';
     }
 
 };
 
+///////////////////////////////////////////////////////////////////////////////
+// class MC.
+template<class Type> class Queue : protected DLS<Type>
+{
+    typedef LinkedList<Type>::Object llObject;
+public:
+    
+    // constructor.
+    Queue<Type>() : DLS<Type>() {};
+
+    // destructor.
+    virtual ~Queue<Type>() = default;
+
+    // clear all objects
+    virtual void clearQueue()
+    {
+        while ( LinkedList<Type>::head_ != nullptr ) // <=> (head_ != tail_)
+        {
+            this->dequeue();
+        }
+        LinkedList<Type>::size_ = 0;
+    }
+
+    virtual llObject* GetObject (const int& pos) const
+    {
+        if ( pos <= 0 || pos > LinkedList<Type>::size_ ) { throw std::out_of_range("Queue<Type>::*GetObject: index out of range"); }
+        else {
+            // size_t position = static_cast<size_t>(pos);
+
+            llObject* ptr_current = this->LinkedList<Type>::head_;
+            for ( int pos_current = 1; pos_current < pos; pos_current++ )
+            {
+                ptr_current = ptr_current->GetSucessor();
+            }
+
+
+            return ptr_current;
+        }
+    }
+
+    virtual const Type& operator[] (const int& pos) const { return GetObject(pos)->GetData(); }
 
 
 
+    virtual void enqueue (const Type& data)
+    {
+        LinkedList<Type>::head_ = new llObject(data, LinkedList<Type>::head_);
+
+        if ( LinkedList<Type>::size_ == 0 )
+        {
+            LinkedList<Type>::tail_ = LinkedList<Type>::head_;
+        }
+        else
+        {
+            (LinkedList<Type>::head_->GetSucessor())->SetPredecessor(LinkedList<Type>::head_);
+        }
+
+        LinkedList<Type>::size_++;
+    }
+
+    virtual Type dequeue()
+    {
+        Type data = LinkedList<Type>::head_->GetData();
+
+        if ( LinkedList<Type>::size_ == 1 )
+        {
+            delete LinkedList<Type>::head_; LinkedList<Type>::head_ = LinkedList<Type>::tail_ = nullptr;
+        }
+        else
+        {
+            llObject* next_after_head = LinkedList<Type>::head_->GetSucessor();
+            delete LinkedList<Type>::head_; LinkedList<Type>::head_ = next_after_head;
+            LinkedList<Type>::head_->SetPredecessor(nullptr);
+        }
+        LinkedList<Type>::size_--;
+
+
+        return data;
+    }
+
+     /*virtual const Type& operator[] (const int& pos) const  { return GetObject(pos)->GetData(); }*/
+
+    virtual void load(std::string fileName)
+    {
+        std::ifstream file_input; file_input.open(fileName);
+        if ( file_input.is_open() )
+        {
+            int size = 0; file_input >> size;
+            Type value_from_file;
+
+            if ( size == LinkedList<Type>::size_ )
+            {
+                for ( int object_number = 1; object_number <= size; object_number++ )
+                {
+                   file_input >> value_from_file;
+                   GetObject(object_number)->SetData(value_from_file);
+                }
+            }
+            else
+            {
+                this->clearQueue();
+
+                for ( int object_number = 1; object_number <= size; object_number++ )
+                {
+                    file_input >> value_from_file;
+                    this->enqueue(value_from_file);
+                }
+            }
+            LinkedList<Type>::size_ = size;
+            file_input.close();
+        }
+    }
+    
+    virtual void save(std::string fileName)
+    {
+        std::ofstream file_output(fileName);
+        if ( file_output.is_open() )
+        {
+            file_output << LinkedList<Type>::size_ << "\n";
+            
+            for ( int object_number = 1; object_number <= LinkedList<Type>::size_; object_number++ )
+            {
+                // file_output << *this[object_number].GetInfo() << '\n';
+                // file_output << GetObject(object_number)->GetData() << " ";
+                file_output << (*this)[object_number] << '\n';
+            }
+            file_output << '\n';
+
+            file_output.close();
+        }
+    }
+    
+    template<typename Type> friend std::ostream& operator<< (std::ostream& output, const Queue<Type>& other);
+};
+template<typename Type> std::ostream& operator<< (std::ostream& output, const Queue<Type>& other)
+{
+    if ( typeid(output).name() != typeid(std::ofstream).name() )
+    {
+        /*output << '\n' << "{ ";
+        for ( int object_number = 1; object_number <= other.LinkedList<Type>::size_; object_number++ )
+        {
+            output << manupulator_custom << other[object_number] << " ";
+        }
+        output << "}" << '\n';*/
+
+        output << '\n' << "{ ";
+        for ( int object_number = 1; object_number <= other.LinkedList<Type>::size_; object_number++ )
+        {
+            output << other[object_number] << " ";
+        }
+        output << "}" << '\n';
+    }
+    else
+    {
+        output << '\n';
+        for ( int object_number = 1; object_number <= other.LinkedList<Type>::size_; object_number++ )
+        {
+            output << other[object_number] << " ";
+        }
+        output << '\n';
+    }
+
+
+    return output;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+std::ostream& manupulator_custom (std::ostream& output)
+{
+    output.unsetf(std::ios::dec); output.setf(std::ios::oct);
+    
+    output.setf(std::ios::left);
+    output.width(80);
+    
+
+    return output;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -788,6 +979,7 @@ int main()
 
 
     ///////////////////////////////////////////////////////////////////////////
+    std::cout << "///////////////////////////////////////////////////////////////////////////";
     ///////////////////////////////////////////////////////////////////////////
     Stack<Programmer> stack;
 
@@ -808,6 +1000,7 @@ int main()
     // std::cin >> Rustem12; Rustem12.GetInfo();
 
     ///////////////////////////////////////////////////////////////////////////
+    std::cout << "///////////////////////////////////////////////////////////////////////////";
     ///////////////////////////////////////////////////////////////////////////
     DLS<Programmer> dls;
     dls.insert(1, Rustem1); std::cout << dls;
@@ -831,12 +1024,23 @@ int main()
     Programmer Rustem13;
     Rustem13.GetInfo();
 
+    ///////////////////////////////////////////////////////////////////////////
+    std::cout << "///////////////////////////////////////////////////////////////////////////";
+    ///////////////////////////////////////////////////////////////////////////
 
+    Queue<Programmer> queue;
+    
+    queue.enqueue(Rustem1); std::cout << queue; 
+    queue.enqueue(Rustem2); std::cout << queue;
+    queue.enqueue(Rustem3); std::cout << queue;
+    queue.enqueue(Rustem4); std::cout << queue;
+    
+    // std::cout << queue[2];
 
+    queue.dequeue(); std::cout << queue;
+    queue.dequeue(); std::cout << queue;
 
-
-
-
+    queue.clearQueue(); std::cout << queue;
 
 
 
