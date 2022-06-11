@@ -28,8 +28,9 @@ public:
 
     // Get & Set.
     std::string GetName() { return name_; }
-    std::string GetSurname() { return surname_; }
     void SetName(std::string name) { name_ = name; }
+
+    std::string GetSurname() { return surname_; }
     void SetSurname(std::string surname) { surname_ = surname; }
 
 
@@ -145,6 +146,24 @@ public:
     }
 
 
+
+    int GetLevel() const { return level_; }
+    int SetLevel(int level) { level_ = level; }
+
+    std::string GetLang() const { return lang_; }
+    void SetLang(std::string lang) { lang_ = lang; }
+
+    std::string GetEmail() const { return email_; }
+    void SetEmail(std::string email) { email_ = email; }
+
+    std::string GetTelegram() const { return telegramID_; }
+    void SetTelegram(std::string telegramID) { telegramID_ = telegramID; }
+
+    std::string GetSkype() const { return skypeID_; }
+    void Setkype(std::string skypeID) { skypeID_ = skypeID; }
+
+
+
     friend std::ostream& operator<< (std::ostream& output, const Programmer& programmer);
     friend std::istream& operator>> (std::istream& output, Programmer& programmer);
 
@@ -159,7 +178,7 @@ std::ostream& operator<< (std::ostream& output, const Programmer& programmer)
 {
     if ( typeid(output).name() == typeid(std::ofstream).name() )
     {
-       
+        output << programmer.name_;
     }
     else
     {
@@ -172,18 +191,12 @@ std::ostream& operator<< (std::ostream& output, const Programmer& programmer)
 }
 std::istream& operator>> (std::istream& input, Programmer& programmer)
 {
-    if ( typeid(input).name() == typeid(std::ofstream).name() )
-    {
-
-    }
-    else
-    {
-        input >> programmer.level_;
-        input >> programmer.lang_;
-        input >> programmer.email_;
-        input >> programmer.telegramID_;
-        input >> programmer.skypeID_;
-    }
+        
+    input >> programmer.level_;
+    input >> programmer.lang_;
+    input >> programmer.email_;
+    input >> programmer.telegramID_;
+    input >> programmer.skypeID_;
 
 
     return input;
@@ -270,16 +283,20 @@ public:
             Object* this_ptr_current = head_;
             Object* other_ptr_current = other.head_;
 
-            while (other_ptr_current != nullptr)
+            while (other_ptr_current != other.tail_)
             {
                 // c. (*this_ptr_current).data_ = (*other_ptr_current).data_; 
                 // c. (*this_ptr_current).sucessor_ = nullptr;
-                this_ptr_current->SetSucessor( new Object((other_ptr_current->GetSucessor())->GetData()) );
-                (this_ptr_current->GetSucessor())->SetPredecessor( this_ptr_current );
+                
+                Object* this_ptr_new_sucessor = new Object( (other_ptr_current->GetSucessor())->GetData(), nullptr, this_ptr_current);
+
+                this_ptr_current->SetSucessor(this_ptr_new_sucessor);
+                // (this_ptr_current->GetSucessor())->SetPredecessor( this_ptr_current );
 
                 this_ptr_current = this_ptr_current->GetSucessor();
                 other_ptr_current = other_ptr_current->GetSucessor();
             }
+            tail_ = this_ptr_current;
         }
         else
         {
@@ -296,26 +313,29 @@ public:
         this->clear();
 
         size_ = other.size_;
-        head_ = nullptr;
+        head_ = tail_ = nullptr;
 
         if (size_ != 0)
         {
 
             Object* ptr_other_iterator = other.head_;
-            Object* ptr_this = new Object(other.head_->data_);
+            Object* ptr_this = new Object(other.head_->GetData(), nullptr, nullptr);
             head_ = ptr_this; // after: head_->sucessor_ = ptr_this->sucessor_ (=nullptr);  
                               //        head_->data_ = ptr_this->data_ (=other.head_->data_);
             Object* ptr_other_data_copy = nullptr;
 
-            ptr_other_iterator = ptr_other_iterator->sucessor_;
+            ptr_other_iterator = ptr_other_iterator->GetSucessor();
             while (ptr_other_iterator != nullptr)
             {
-                ptr_other_data_copy = new Object(ptr_other_iterator->data_);
-                ptr_this->sucessor_ = ptr_other_data_copy;
-                ptr_this = ptr_other_data_copy; // КАК ЭТО ПРОИСХОДИТ, ЕСЛИ У МЕНЯ НЕ ПЕРЕГРУЖЕН ОПЕРАТОР= ДЛЯ объектов Object
-                ptr_other_iterator = ptr_other_iterator->sucessor_;
+                ptr_other_data_copy = new Object(ptr_other_iterator->GetData(), nullptr, ptr_this);
+                ptr_this->SetSucessor(ptr_other_data_copy);
+
+                
+                ptr_this = ptr_this->GetSucessor(); 
+                ptr_other_iterator = ptr_other_iterator->GetSucessor();
             }
 
+            tail_ = ptr_this;
         }
 
 
@@ -499,7 +519,10 @@ public:
 
     virtual const Type& operator[] (const int& pos) const { return GetObject(pos)->Object::GetData(); }
 
-    virtual LinkedList<Type> i_filter (bool (*fn)(Type))
+
+
+
+    virtual LinkedList<Type> i_filter (bool (*fn)(const Type&, int), int level_cmp = 2) const
     {
         LinkedList<Type> listResult;
         // int size = static_cast<int>(size_);
@@ -507,9 +530,9 @@ public:
         for (Object* objectCurrent = head_; objectCurrent != nullptr;
             objectCurrent = objectCurrent->GetSucessor() )
         {
-            if ( fn(objectCurrent->GetData()) ) // if ( fn(this->GetObject(pos)->data_) )
+            if ( fn(objectCurrent->GetData(), level_cmp) ) // if ( fn(this->GetObject(pos)->data_) )
             {
-                listResult.pushBack(objectCurrent->GetData());
+                listResult.pushFront(objectCurrent->GetData());
             }
         }
 
@@ -517,19 +540,22 @@ public:
         return listResult;
     }
 
-    virtual LinkedList<Type> r_filter (bool (*fn)(Type), LinkedList<Type> listResult, Object* objectCurrent = head_)
+    virtual LinkedList<Type> r_filter (bool (*fn)(const Type&, int), LinkedList<Type>& listResult, Object* objectCurrent, int level_cmp = 2) const
     {   
-        if ( objectCurrent == nullptr) { return listResult; }
-        else if ( fn(objectCurrent->GetData()) ) // if ( fn(this->GetObject(pos)->data_) )
+        if ( objectCurrent == nullptr ) { return listResult; }
+        else if ( fn(objectCurrent->GetData(), level_cmp) ) // if ( fn(this->GetObject(pos)->data_, int) )
         {
             listResult.pushBack(objectCurrent->GetData());
         }
 
 
-        return r_filter(fn, listResult, objectCurrent->GetSucessor());
+        return r_filter(fn, listResult, objectCurrent->GetSucessor(), level_cmp);
     }
 
-    virtual Type i_find (bool (*fn)(Type))
+
+
+
+    virtual Type i_find (bool (*fn)(Type)) const
     {
         Object* objectCurrent = head_;
         while ( true )
@@ -547,7 +573,7 @@ public:
         }
     }
     
-    virtual Type r_find (bool (*fn)(Type), Object* objectCurrent = head_)
+    virtual Type r_find (bool (*fn)(Type), Object* objectCurrent = head_) const
     {
         if ( objectCurrent == nullptr )
         {
@@ -562,9 +588,40 @@ public:
         return r_find (fn, objectCurrent->GetSucessor());
     }
 
+
+
+
     template<class Type> friend std::ostream& operator<< (std::ostream& output, const LinkedList<Type>& list);
 
-    // template<class Type> friend std::istream& operator>> (std::istream& input, Object object);
+    template<class Type> friend std::istream& operator>> (std::istream& input, LinkedList<Type>& list);
+
+    
+    virtual void print() const
+    {
+        Object* objectCurrent = LinkedList<Type>::head_;
+
+        std::cout << '\n' << "print: { ";
+        while ( objectCurrent != nullptr )
+        {
+            std::cout << objectCurrent->GetData() << " ";
+            objectCurrent = objectCurrent->GetSucessor();
+        }
+        std::cout << "}" << '\n';
+
+    }
+
+    virtual void print_reverse() const 
+    {
+        Object* objectCurrent = LinkedList<Type>::tail_;
+
+        std::cout << '\n' << "print_reverse: { ";
+        while ( objectCurrent != nullptr )
+        {
+            std::cout << objectCurrent->GetData() << " ";
+            objectCurrent = objectCurrent->GetPredecessor();
+        }
+        std::cout << "}" << '\n';
+    }
 
 
 protected:
@@ -592,7 +649,31 @@ template<class Type> std::ostream& operator<< (std::ostream& output, const Linke
 
     return output;
 }
+template<class Type> std::istream& operator>> (std::istream& input, LinkedList<Type>& list)
+{
+    int other_size = 0; input >> other_size;
+    Type data;
 
+    if ( other_size != list.size() )
+    {
+        list->clear();
+
+        for ( int object_number = 1; object_number <= other_size; object_number++ )
+        {
+            input >> data; list.pushBack(data);
+        }
+    }
+    else 
+    {
+        for ( int object_number = 1; object_number <= other_size; object_number++ )
+        {
+            input >> data; list->GetObject(object_number)->SetData(data);
+        }
+    }
+
+    
+    return input;
+}
 
 
 
@@ -606,7 +687,7 @@ public:
     Stack<Type>() : LinkedList<Type>() {};
 
     // destructor.
-    virtual ~Stack<Type>() = default;
+    ~Stack<Type>() = default;
 
 
 
@@ -623,6 +704,8 @@ public:
 template<class Type> class DLS : public LinkedList<Type>
 {
     typedef LinkedList<Type>::Object llObject;
+
+
 public:
     
     // constructor.
@@ -716,7 +799,7 @@ public:
         return objectCurrent->removeNext();
     }
 
-    virtual void print() final
+    /*virtual void print() const final
     {
         llObject* objectCurrent = LinkedList<Type>::head_;
 
@@ -730,7 +813,7 @@ public:
 
     }
 
-    virtual void print_reverse() final
+    virtual void print_reverse() const final
     {
         llObject* objectCurrent = LinkedList<Type>::tail_;
 
@@ -741,22 +824,26 @@ public:
             objectCurrent = objectCurrent->GetPredecessor();
         }
         std::cout << "}" << '\n';
-    }
+    }*/
 
 };
 
+
 ///////////////////////////////////////////////////////////////////////////////
-// class MC.
+// class Queue.
 template<class Type> class Queue : protected DLS<Type>
 {
     typedef LinkedList<Type>::Object llObject;
+
+
 public:
     
     // constructor.
     Queue<Type>() : DLS<Type>() {};
-
     // destructor.
     virtual ~Queue<Type>() = default;
+
+
 
     // clear all objects
     virtual void clearQueue()
@@ -768,7 +855,7 @@ public:
         LinkedList<Type>::size_ = 0;
     }
 
-    virtual llObject* GetObject (const int& pos) const
+    virtual llObject* GetObject (const int& pos) const final
     {
         if ( pos <= 0 || pos > LinkedList<Type>::size_ ) { throw std::out_of_range("Queue<Type>::*GetObject: index out of range"); }
         else {
@@ -785,11 +872,11 @@ public:
         }
     }
 
-    virtual const Type& operator[] (const int& pos) const { return GetObject(pos)->GetData(); }
+    virtual const Type& operator[] (const int& pos) const final { return GetObject(pos)->GetData(); }
 
 
 
-    virtual void enqueue (const Type& data)
+    virtual void enqueue (const Type& data) final
     {
         LinkedList<Type>::head_ = new llObject(data, LinkedList<Type>::head_);
 
@@ -805,7 +892,7 @@ public:
         LinkedList<Type>::size_++;
     }
 
-    virtual Type dequeue()
+    virtual Type dequeue() final
     {
         Type data = LinkedList<Type>::head_->GetData();
 
@@ -825,84 +912,124 @@ public:
         return data;
     }
 
-     /*virtual const Type& operator[] (const int& pos) const  { return GetObject(pos)->GetData(); }*/
+    
 
-    virtual void load(std::string fileName)
+    Type findEmail(std::string key)
     {
-        std::ifstream file_input; file_input.open(fileName);
-        if ( file_input.is_open() )
+        llObject* objectCurrent = LinkedList<Type>::head_;
+        while ( true )
         {
-            int size = 0; file_input >> size;
-            Type value_from_file;
-
-            if ( size == LinkedList<Type>::size_ )
+            if ( objectCurrent == nullptr )
             {
-                for ( int object_number = 1; object_number <= size; object_number++ )
+                Type unknown; // implies of defualt_constructor existing
+
+
+                return unknown;
+            }
+            else if ( (objectCurrent->GetData() ).GetEmail() == key) { return objectCurrent->GetData(); }
+
+            objectCurrent = objectCurrent->GetSucessor();
+        }
+    }
+
+    Queue<Type> filter (const int& key) // filter_level 
+    {
+        Queue<Type> QueueResult;
+        // int size = static_cast<int>(size_);
+
+        for ( llObject* objectCurrent = LinkedList<Type>::head_; objectCurrent != nullptr;
+            objectCurrent = objectCurrent->GetSucessor() )
+        {
+            if (key > 0)
+            {
+                if ( (objectCurrent->GetData()).GetLevel > key ) // if ( fn(this->GetObject(pos)->data_) )
                 {
-                   file_input >> value_from_file;
-                   GetObject(object_number)->SetData(value_from_file);
+                    QueueResult.enqueue(objectCurrent->GetData());
                 }
             }
             else
             {
-                this->clearQueue();
-
-                for ( int object_number = 1; object_number <= size; object_number++ )
+                int key_ = -key;
+                if ( (objectCurrent->GetData()).GetLevel < key_ ) // if ( fn(this->GetObject(pos)->data_) )
                 {
-                    file_input >> value_from_file;
-                    this->enqueue(value_from_file);
+                    QueueResult.enqueue(objectCurrent->GetData());
                 }
             }
-            LinkedList<Type>::size_ = size;
-            file_input.close();
-        }
-    }
-    
-    virtual void save(std::string fileName)
-    {
-        std::ofstream file_output(fileName);
-        if ( file_output.is_open() )
-        {
-            file_output << LinkedList<Type>::size_ << "\n";
             
-            for ( int object_number = 1; object_number <= LinkedList<Type>::size_; object_number++ )
-            {
-                // file_output << *this[object_number].GetInfo() << '\n';
-                // file_output << GetObject(object_number)->GetData() << " ";
-                file_output << (*this)[object_number] << '\n';
-            }
-            file_output << '\n';
-
-            file_output.close();
         }
+
+
+        return QueueResult;
     }
+
+    Queue<Type> filter (const std::string& key)
+    {// if ( fn(this->GetObject(pos)->data_) )
+        Queue<Type> QueueResult;
+        // int size = static_cast<int>(size_);
+
+        for ( llObject* objectCurrent = LinkedList<Type>::head_; objectCurrent != nullptr;
+            objectCurrent = objectCurrent->GetSucessor() )
+        {
+            {
+                if ( ( objectCurrent->GetData() ).GetLang() == key ||
+                    ( objectCurrent->GetData() ).GetEmail() == key ||
+                    ( objectCurrent->GetData() ).GetTelegram() == key ||
+                    ( objectCurrent->GetData() ).GetSkype() == key)
+                {
+                    QueueResult.enqueue(objectCurrent->GetData());
+                }
+            }
+        }
+
+
+        return QueueResult;
+    }
+
+
+
+    template<typename Type> friend void load_from(std::string fileName);
+
+    template<typename Type> friend void save_to (std::string fileName, const Queue<Type>& other);
     
+
+
     template<typename Type> friend std::ostream& operator<< (std::ostream& output, const Queue<Type>& other);
+    template<typename Type> friend std::istream& operator>> (std::istream& input, Queue<Type>& queue);
 };
-template<typename Type> std::ostream& operator<< (std::ostream& output, const Queue<Type>& other)
+std::ostream& manupulator_custom (std::ostream& output)
+{
+    output.unsetf(std::ios::dec); output.setf(std::ios::oct);
+
+    output.setf(std::ios::left);
+    output.width(14);
+
+
+    return output;
+}
+
+template<typename Type> std::ostream& operator<< (std::ostream& output, const Queue<Type>& queue)
 {
     if ( typeid(output).name() != typeid(std::ofstream).name() )
     {
-        /*output << '\n' << "{ ";
-        for ( int object_number = 1; object_number <= other.LinkedList<Type>::size_; object_number++ )
+       /* output << '\n' << "Queue: { ";
+        for ( int object_number = 1; object_number <= queue.LinkedList<Type>::size_; object_number++ )
         {
-            output << manupulator_custom << other[object_number] << " ";
+            output << manupulator_custom << queue[object_number] << " ";
         }
         output << "}" << '\n';*/
-
-        output << '\n' << "{ ";
-        for ( int object_number = 1; object_number <= other.LinkedList<Type>::size_; object_number++ )
+        output << '\n' << "Queue: { ";
+        for ( int object_number = 1; object_number <= queue.LinkedList<Type>::size_; object_number++ )
         {
-            output << other[object_number] << " ";
+            output << queue[object_number] << " ";
         }
         output << "}" << '\n';
     }
     else
     {
-        output << '\n';
-        for ( int object_number = 1; object_number <= other.LinkedList<Type>::size_; object_number++ )
+        output << queue.LinkedList<Type>::size_ << '\n';
+        for ( int object_number = 1; object_number <= queue.LinkedList<Type>::size_; object_number++ )
         {
-            output << other[object_number] << " ";
+            output << queue[object_number] << " ";
         }
         output << '\n';
     }
@@ -910,29 +1037,66 @@ template<typename Type> std::ostream& operator<< (std::ostream& output, const Qu
 
     return output;
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-std::ostream& manupulator_custom (std::ostream& output)
+template<typename Type> std::istream& operator>> (std::istream& input, Queue<Type>& queue)
 {
-    output.unsetf(std::ios::dec); output.setf(std::ios::oct);
-    
-    output.setf(std::ios::left);
-    output.width(80);
-    
+    int other_size = 0; input >> other_size;
+    Type data;
 
-    return output;
+    queue.LinkedList<Type>::clear();
+
+    for ( int object_number = 1; object_number <= other_size; object_number++ )
+    {
+        input >> data; queue.enqueue(data);
+    }
+
+
+    return input;
+}
+template<typename Type> void load_from (std::string fileName, Queue<Type>& other)
+{
+    std::ifstream file_input; file_input.open(fileName, std::ios::in); file_input >> other; file_input.close();
+}
+template<typename Type> void save_to (std::string fileName, const Queue<Type>& other)
+{
+    std::ofstream file_output; file_output.open(fileName, std::ios::out); file_output << other; file_output.close();
+
+    //std::ofstream file_output(fileName);
+    //if ( file_output.is_open() )
+    //{
+    //    file_output << LinkedList<Type>::size_ << "\n";
+    //    
+    //    for ( int object_number = 1; object_number <= LinkedList<Type>::size_; object_number++ )
+    //    {
+    //        // file_output << *this[object_number].GetInfo() << '\n';
+    //        // file_output << GetObject(object_number)->GetData() << " ";
+    //        file_output << (*this)[object_number] << '\n';
+    //    }
+    //    file_output << '\n';
+
+    //    file_output.close();
+    //}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+bool level_cmp (const Programmer& programmer, int level = 2)
+{
+    return (programmer.GetLevel() >= level ? 1 : 0);
+}
+
+
+
 int main()
 {
     // Задание 6.0: Проверка общей работоспособности системы.
     ////////////////////////////////////////////////////////////////////////////
+    
     Programmer Rustem1(1, "c++", "Rustem1", "Sirazetdinov",
         "avesirazetdinov@gmail.com", "I_getsuga");
     Programmer Rustem2(1, "c++", "Rustem2", "Sirazetdinov",
@@ -951,11 +1115,11 @@ int main()
         "avesirazetdinov@gmail.com", "I_getsuga");
     Programmer Rustem9(1, "c++", "Rustem9", "Sirazetdinov",
         "avesirazetdinov@gmail.com", "I_getsuga");
-    Programmer Rustem10(1, "c++", "Rustem10", "Sirazetdinov",
+    Programmer Rustem10(10, "c++", "Rustem10", "Sirazetdinov",
         "avesirazetdinov@gmail.com", "I_getsuga");
-    Programmer Rustem11(1, "c++", "Rustem11", "Sirazetdinov",
+    Programmer Rustem11(11, "c++", "Rustem11", "Sirazetdinov",
         "avesirazetdinov@gmail.com", "I_getsuga");
-    Programmer Rustem12(1, "c++", "Rustem12", "Sirazetdinov",
+    Programmer Rustem12(12, "c++", "Rustem12", "Sirazetdinov",
         "avesirazetdinov@gmail.com", "I_getsuga");
     ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
@@ -972,15 +1136,59 @@ int main()
 
     auto something3 = list.remove(2); std::cout << list << something3 << '\n';
 
-    std::cout << list[2];
+    // std::cout << list[2] << '\n';
     // std::cin >> list[2];
-
-    list.clear(); std::cout << list;
-
 
     ///////////////////////////////////////////////////////////////////////////
     std::cout << "///////////////////////////////////////////////////////////////////////////";
     ///////////////////////////////////////////////////////////////////////////
+
+    std::cout << '\n' << "(copy constructor)" << '\n';
+
+    // Проверка конструктора копий
+    LinkedList<Programmer> list_copy(list);
+    std::cout << list_copy;
+
+    list_copy.GetObject(1)->SetData(Rustem12);
+    std::cout << list_copy << list;
+
+    list_copy.print();
+    list_copy.print_reverse();
+
+
+
+    std::cout << '\n' << "(operator= base on copying)" << '\n';
+    // Проверка оператора присваивания копированием
+    list_copy.clear();
+
+    list_copy = list;
+    list_copy.GetObject(1)->SetData(Rustem12);
+    std::cout << list_copy << list;
+
+    list_copy.print();
+    list_copy.print_reverse();
+
+    ///////////////////////////////////////////////////////////////////////////
+    std::cout << "///////////////////////////////////////////////////////////////////////////";
+    ///////////////////////////////////////////////////////////////////////////
+
+    list.clear(); std::cout << list;
+    list_copy.clear();
+
+    list.pushBack(Rustem10); list.pushBack(Rustem11);
+    list.pushBack(Rustem12); list.pushBack(Rustem4); list.pushBack(Rustem5); list.pushBack(Rustem6);
+
+    bool (*filter_level)(const Programmer&, int) = level_cmp;
+    list_copy = list.i_filter(filter_level, 2); std::cout << list_copy;
+
+
+    list_copy.clear();
+    list.r_filter(filter_level, list_copy, list.GetObject(1), 2); std::cout << list_copy;
+
+    ///////////////////////////////////////////////////////////////////////////
+    std::cout << "///////////////////////////////////////////////////////////////////////////";
+    ///////////////////////////////////////////////////////////////////////////
+
     Stack<Programmer> stack;
 
     stack.insert(Rustem1); std::cout << stack;
@@ -1010,7 +1218,7 @@ int main()
 
     dls.insert(2, Rustem5); std::cout << dls;
     dls.insert(4, Rustem6); std::cout << dls;
-    std::cout << "indexation " <<  dls[5];
+    std::cout << "indexation " << dls[5];
     dls.print();
     dls.print_reverse();
 
@@ -1029,12 +1237,12 @@ int main()
     ///////////////////////////////////////////////////////////////////////////
 
     Queue<Programmer> queue;
-    
-    queue.enqueue(Rustem1); std::cout << queue; 
+
+    queue.enqueue(Rustem1); std::cout << queue;
     queue.enqueue(Rustem2); std::cout << queue;
     queue.enqueue(Rustem3); std::cout << queue;
     queue.enqueue(Rustem4); std::cout << queue;
-    
+
     // std::cout << queue[2];
 
     queue.dequeue(); std::cout << queue;
@@ -1042,6 +1250,65 @@ int main()
 
     queue.clearQueue(); std::cout << queue;
 
+    ///////////////////////////////////////////////////////////////////////////
+
+    Queue<Programmer> queue1;
+    queue1.enqueue(Rustem1); std::cout << queue1;
+    queue1.enqueue(Rustem2); std::cout << queue1;
+    queue1.enqueue(Rustem3); std::cout << queue1;
+    queue1.enqueue(Rustem4); std::cout << queue1;
+
+    Queue<Programmer> queue2;
+    queue2.enqueue(Rustem5); std::cout << queue2;
+    queue2.enqueue(Rustem6); std::cout << queue2;
+    queue2.enqueue(Rustem7); std::cout << queue2;
+    queue2.enqueue(Rustem8); std::cout << queue2;
+
+  /*  std::ofstream file_out; file_out.open("practice6.txt", std::ios::out);
+    if ( file_out )
+    {
+        file_out << queue1 << queue2;
+        file_out.close();
+    }*/
+
+    std::cout << queue2; save_to("practice6.txt", queue2);
+    
+    queue1.clearQueue(); load_from("practice6.txt", queue1); std::cout << queue1;
+    
+    ///////////////////////////////////////////////////////////////////////////
+    std::cout << "///////////////////////////////////////////////////////////////////////////";
+    ///////////////////////////////////////////////////////////////////////////
+
+    
+    LinkedList<Programmer>* ptr_base = new LinkedList<Programmer>();
+    // указателю ptr_base доступны методы только базового класса
+    
+    // при удалении указателя на базовый класс, который смотрит на экземпляр базового класса, должен быть вызван
+    // деструктор базового класса. (ВЫПОЛНЕНО)
+    delete ptr_base;
+
+    ///////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+
+    Stack<Programmer> derived_stack;
+    ptr_base = &derived_stack;
+
+    // при удалении указателя на базовый класс, который смотрит на экземпляр производного класса сначала должен быть вызван
+    // деструктор производного класса, потом деструктор базового, но это произойдет только в случае, если деструктор базового 
+    // класса объявлен виртуальным. Иначе с самого начала будет вызван деструктор базового класса, а деструктор производного
+    // класс не будет вызван. Произойдет утечка памяти, если под атрибуты производного класса была выделена память. (ВЫПОЛНЕНО)
+
+    ///////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+
+    Stack<Programmer>* ptr_derevid = dynamic_cast<Stack<Programmer>*>(ptr_base); 
+    // указатель ptr_derived смотрит на объект derived_stack.
+  
+    // поскольку указатель на производный класс смотрит на объект свого класс, то деструкторы должны быть вызваны 
+    // в порядке наследования, т.е. сначала деструктор производного класса, потом деструктор базового класса. (ВЫПОЛНЕНО)
+
+
+    
 
 
     return 0;
