@@ -263,7 +263,7 @@ public:
                             Type  data_;
     };
 
-
+ 
 
     // default constructor.
     LinkedList()
@@ -691,10 +691,13 @@ public:
 
 
 
-    void insert(const Type& data) { LinkedList<Type>::pushBack(data); }
+    void insert (const Type& data) { LinkedList<Type>::pushBack(data); }
 
     Type remove() { return LinkedList<Type>::removeFront(); }
 
+
+    void new_test_method () { std::cout << '\n' 
+        << "This is the test method to show that we have access to it from derived pointer" << '\n'; }
     
 };
 
@@ -1300,15 +1303,42 @@ int main()
 
     ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
+    
+    // ptr_base - есть указатель на базовый класс, имеет тип `LinkedList<Programmer>*`, поэтому через этот указатель мы можем
+    // обращаться ко всем методам базового класса, и ко всем атрибутам класса, объявленным с ключевым словом `public`.
+    // Возможны следующие обращения:
+    ptr_base->clear();
+    // ptr_base->forceObjectDelete(...);
+    // ptr_base->GetObject(...);
+    // ptr_base->insert();
+    // ptr_base->remove();
+    //         ...
+    // и все остальные.
 
-    Stack<Programmer>* ptr_derevid = dynamic_cast<Stack<Programmer>*>(ptr_base); 
-    // указатель ptr_derived смотрит на объект derived_stack.
-  
+    Stack<Programmer>* ptr_derived = dynamic_cast<Stack<Programmer>*>(ptr_base); 
     // поскольку указатель на производный класс смотрит на объект свого класс, то деструкторы должны быть вызваны 
     // в порядке наследования, т.е. сначала деструктор производного класса, потом деструктор базового класса. (ВЫПОЛНЕНО)
 
+    // указатель ptr_derived смотрит на объект derived_stack. Поэтому теперь через указатель `ptr_base` помимо методов базового
+    // классы мы можем обратиться ко всем методам производного класса `Stack`. Например, методы, которых не было в базовом классе:
+    // `new_test_method`
+    ptr_derived->new_test_method();
 
+    // Еще пример. Метод, который есть только в производном классе - вставка в конец
+    ptr_derived->insert(Rustem10); std::cout << *ptr_derived;
+    ptr_derived->insert(Rustem11); std::cout << *ptr_derived;
+    ptr_derived->insert(Rustem12); std::cout << *ptr_derived;
     
+    // Метод базового класса - вставка в начало (не переопределен в производном) 
+    ptr_derived->pushFront(Rustem1); std::cout << *ptr_derived;
+
+    // Удаление из начала.
+    ptr_derived->remove(); std::cout << *ptr_derived;
+    
+    // Удаление с конца. (не переопределен в производном) 
+    ptr_derived->removeBack(); std::cout << *ptr_derived;
+
+    ptr_derived->clear(); std::cout << *ptr_derived;
 
 
     return 0;
