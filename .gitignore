@@ -1,40 +1,51 @@
 # Prerequisites
 *.d
+# ---
 
 # Compiled Object files
 *.slo
 *.lo
 *.o
 *.obj
+# ---
 
 # Precompiled Headers
 *.gch
 *.pch
+# ---
 
 # Compiled Dynamic libraries
 *.so
 *.dylib
 *.dll
+# ---
 
 # Fortran module files
 *.mod
 *.smod
+# ---
 
 # Compiled Static libraries
 *.lai
 *.la
 *.a
 *.lib
+# ---
 
 # Executables
 *.exe
 *.out
 *.app
-object-oriented-programming/.vs
-object-oriented-programming/Debug
-object-oriented-programming/x64
-object-oriented-programming/object-oriented-programming.sln
-object-oriented-programming/object-oriented-programming.vcxproj
-object-oriented-programming/object-oriented-programming.vcxproj.filters
-object-oriented-programming/object-oriented-programming.vcxproj.user
-object-oriented-programming/test.cpp
+# ---
+
+# VS Project
+object-oriented-programming-2/.vs
+object-oriented-programming-2/Debug
+object-oriented-programming-2/x64
+
+*.sln
+*.vcxproj
+*.user
+*.filters
+
+
