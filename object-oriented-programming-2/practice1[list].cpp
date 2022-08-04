@@ -1,4 +1,4 @@
-#define nline '\n'
+п»ї#define nline '\n'
 #include <iostream>
 #include <fstream>
 
@@ -151,15 +151,15 @@ std::ostream& operator<< (std::ostream &output, const Bike &bike) {
 
 
 
-// TODO написать документацию
+// TODO РЅР°РїРёСЃР°С‚СЊ РґРѕРєСѓРјРµРЅС‚Р°С†РёСЋ
 template<class Type> void push_ (std::list<Type> &list_, const Type &object) {
 	
 	auto it_pos= list_.begin();
 	// std::list<Type>::iterator it_pos = list_.begin();
 
 	while ( it_pos != list_.end() ) {
-		// >= лучше чем >, т.к. при > вставка сильно замедляется, 
-		// если все объекты в списке равны между собой
+		// >= Р»СѓС‡С€Рµ С‡РµРј >, С‚.Рє. РїСЂРё > РІСЃС‚Р°РІРєР° СЃРёР»СЊРЅРѕ Р·Р°РјРµРґР»СЏРµС‚СЃСЏ, 
+		// РµСЃР»Рё РІСЃРµ РѕР±СЉРµРєС‚С‹ РІ СЃРїРёСЃРєРµ СЂР°РІРЅС‹ РјРµР¶РґСѓ СЃРѕР±РѕР№
 		if ( *it_pos >= object ) { break; }
 		it_pos++;
 	}
@@ -172,8 +172,8 @@ void push_ (std::list<Bike> &bikeList, const Bike &bike) {
 	// std::list<Type>::iterator it_pos = list_.begin();
 
 	while ( it_pos != bikeList.end() ) {
-		// >= лучше чем >, т.к. при > вставка сильно замедляется, 
-		// если все объекты в списке равны между собой
+		// >= Р»СѓС‡С€Рµ С‡РµРј >, С‚.Рє. РїСЂРё > РІСЃС‚Р°РІРєР° СЃРёР»СЊРЅРѕ Р·Р°РјРµРґР»СЏРµС‚СЃСЏ, 
+		// РµСЃР»Рё РІСЃРµ РѕР±СЉРµРєС‚С‹ РІ СЃРїРёСЃРєРµ СЂР°РІРЅС‹ РјРµР¶РґСѓ СЃРѕР±РѕР№
 		if ( *it_pos <= bike ) { break; }
 		it_pos++;
 	}
@@ -182,11 +182,11 @@ void push_ (std::list<Bike> &bikeList, const Bike &bike) {
 }
 
 
-// TODO написать документацию
-// TODO отдельная быстрая реализация удаления с начала и с конца 
+// TODO РЅР°РїРёСЃР°С‚СЊ РґРѕРєСѓРјРµРЅС‚Р°С†РёСЋ
+// TODO РѕС‚РґРµР»СЊРЅР°СЏ Р±С‹СЃС‚СЂР°СЏ СЂРµР°Р»РёР·Р°С†РёСЏ СѓРґР°Р»РµРЅРёСЏ СЃ РЅР°С‡Р°Р»Р° Рё СЃ РєРѕРЅС†Р° 
 template<class Type> Type pop_ (std::list<Type> &list_, const int &pos = 0) {
 	
-	// инициализация по умолчанию +-
+	// РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ +-
 	Type object_r_temp;
 
 	if ( pos == 0 ) {
@@ -215,7 +215,13 @@ template<class Type> Type pop_ (std::list<Type> &list_, const int &pos = 0) {
 }
 
 
-// TODO написать документацию
+/**
+ * \brief Create a new list which contains objects that satisfy `func_key`
+ * 
+ * \param std::list<Type> &list_
+ * \param int (*func_key)(const Type &)
+ * \return New list `ListResult`
+ */
 template<class Type> std::list<Type> filter (const std::list<Type> &list_,
 											 int (*func_key)(const Type &)) {
 	std::list<Type> ListResult;
@@ -229,7 +235,7 @@ template<class Type> std::list<Type> filter (const std::list<Type> &list_,
 	return ListResult;
 }
 
-// TODO написать документацию
+// TODO РЅР°РїРёСЃР°С‚СЊ РґРѕРєСѓРјРµРЅС‚Р°С†РёСЋ
 template<class Type> void print (const std::list<Type> &list_) {	
 	std::cout << "{";
 	// for (std::list<Type>::iterator it_pos = list_.begin(); it_pos != list_.end(); it_pos++) {...}
@@ -239,7 +245,7 @@ template<class Type> void print (const std::list<Type> &list_) {
 	std::cout << "}; " << nline;
 }
 
-// TODO написать документацию
+// TODO РЅР°РїРёСЃР°С‚СЊ РґРѕРєСѓРјРµРЅС‚Р°С†РёСЋ
 int IsFactorialOfEven (const int &value_) {
 	int value = value_; int div = 1;
 	
@@ -268,16 +274,17 @@ int main()
 
 
 	// -------------- p.1 --------------
-	// Cоздаем лист с элементами типа `int`
+	// CРѕР·РґР°РµРј Р»РёСЃС‚ СЃ СЌР»РµРјРµРЅС‚Р°РјРё С‚РёРїР° `int`
 	std::list<int> myList = {215, 507, 668, 680, 1004, 1207, 1550, 2854,
 		2972, 3091, 3209, 3706, 4078, 4482, 4925, 5458, 5892, 6476, 6896,
 		7076, 7268, 7373, 8168, 8443, 9406};
 	
-	// Проверка функции `print` для объектов типа std::list<Type>
+	// РџСЂРѕРІРµСЂРєР° С„СѓРЅРєС†РёРё `print` РґР»СЏ РѕР±СЉРµРєС‚РѕРІ С‚РёРїР° std::list<Type>
 	print(myList);
 	
-	// Добавим в лист некоторое количество элементов. Проверим, останется ли
-	// он отсортированным
+
+	// Р”РѕР±Р°РІРёРј РІ Р»РёСЃС‚ РЅРµРєРѕС‚РѕСЂРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ. РџСЂРѕРІРµСЂРёРј, РѕСЃС‚Р°РЅРµС‚СЃСЏ Р»Рё
+	// РѕРЅ РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅС‹Рј
 	push_(myList, 2);           // = 2!
 	push_(myList, 24);          // = 4!
 	push_(myList, 720);         // = 6!
@@ -293,7 +300,7 @@ int main()
 	
 	print(myList);
 
-	// Удалим из листа несколько значений
+	// РЈРґР°Р»РёРј РёР· Р»РёСЃС‚Р° РЅРµСЃРєРѕР»СЊРєРѕ Р·РЅР°С‡РµРЅРёР№
 	auto hValue_temp = pop_(myList, 1); std::cout << nline << hValue_temp << " ";
 	hValue_temp = pop_(myList, 9); std::cout << nline << hValue_temp << " ";
 	hValue_temp = pop_(myList, myList.size() - 1); std::cout << nline << hValue_temp << " ";
@@ -304,8 +311,8 @@ int main()
 
 	print(myList);
 	
-	// Выделим из нашего листа новый, элементы которого представляют собой
-	// факториалы четных чисел.
+	// Р’С‹РґРµР»РёРј РёР· РЅР°С€РµРіРѕ Р»РёСЃС‚Р° РЅРѕРІС‹Р№, СЌР»РµРјРµРЅС‚С‹ РєРѕС‚РѕСЂРѕРіРѕ РїСЂРµРґСЃС‚Р°РІР»СЏСЋС‚ СЃРѕР±РѕР№
+	// С„Р°РєС‚РѕСЂРёР°Р»С‹ С‡РµС‚РЅС‹С… С‡РёСЃРµР».
 	// int (*func_key)(const int &) = nullptr; func_key = &IsFactorialOfEven;
 	int (*func_key)(const int &) = IsFactorialOfEven;
 
