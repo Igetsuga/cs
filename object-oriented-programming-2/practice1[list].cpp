@@ -1,18 +1,41 @@
-﻿#define nline '\n'
+﻿/*****************************************************************//**
+ * @file 
+ * \brief  Практическая работа 1
+ * 
+ * \author Sirazetdinov Rustem
+ * \date   August 2022
+ *********************************************************************/
+
+#define nline '\n'
 #include <iostream>
 #include <fstream>
 
 
-//  
 #include <list>
 #include <iterator>
 #include <algorithm>
 
 
-
+/**
+ * \brief Класс для p.2.
+ * 
+ * Класс был создан по таблице 1.2 из методического пособия по ООП/2. 
+ */
 class Bike {
 public:
-	// default constructor
+
+	/**
+	 * Конструктор по умолчанию.
+	 * 
+	 * 
+	 * \param brand
+	 * \param bikeType
+	 * \param breaksType
+	 * \param wheelCount 
+	 * \param wheelDiameter 
+	 * \param isAbsorber 
+	 * \param isAdult 
+	 */
 	Bike (std::string brand = "unknown", std::string bikeType = "unknown",
 		  std::string breaksType = "unknown", int wheelCount = 2,
 		  float wheelDiameter = 26, bool isAbsorber = 0,
@@ -26,17 +49,38 @@ public:
 		_isAdult = isAdult;
 	}
 
-	// copy constructor
+
+	/**
+	 * Конструктор копий.
+	 * 
+	 * \warning Опеределен компилятором.
+	 * 
+	 * \param other
+	 */
 	Bike (const Bike &other) = default;
 
-	// operator=
+	/**
+	 * Перегрузка оператора `=`.
+	 * 
+	 * \warning Определен компилятором.
+	 * 
+	 * \param other
+	 * \return Новый объект класса, поля которого равны полям входящего объекта.
+	 */
 	Bike &operator= (const Bike &other) = default;
 
-	// default destructor
+	/**
+	 * Деструктор.
+	 * 
+	 * \warning Деструктор определен компилятором и не является виртуальным.
+	 * 
+	 */
 	~Bike() = default;
 
 
-	// Get
+
+	// GetValue
+
 	std::string GetBrand() const noexcept { return _brand; }
 
 	int GetWheelCount() const noexcept { return _wheelCount; }
@@ -53,7 +97,13 @@ public:
 
 
 
-
+	/**
+	 * Перегрузка оператора `==`.
+	 * 
+	 * 
+	 * \param other
+	 * \return Возвращает `true`, если поля экземплятров класса совпадают, в противном случае - `false`.
+	 */
 	bool operator== (const Bike &other) const noexcept {
 		if ( _brand == other._brand &&
 			_bikeType == other._bikeType &&
@@ -69,6 +119,17 @@ public:
 		return false;
 	}
 
+	/**
+	 * Перегрузка оператора >.
+	 * 
+	 * Сравнивает объекты класса `Bike` в соответствии с приоритетом полей класса. 
+	 * 
+	 * Цепочка приоритета: _wheelDiameter -> _wheelCount -> _brand(lexi-graph) -> ...
+ 	 *
+	 * \param other
+	 * \return `true`, если поле объекта `*this` имеет больший приоритет, если приоритеты равны,
+	 * сравнение спускается по цепочки приоритетов, иначе `false`. 
+	 */
 	bool operator> (const Bike &other) const noexcept {
 		if ( _wheelDiameter > other._wheelDiameter ) {
 			return true;
@@ -81,11 +142,11 @@ public:
 				
 				std::string brandLowerCase = _brand;
 				std::transform(brandLowerCase.begin(), brandLowerCase.end(), brandLowerCase.begin(),
-							   [](unsigned char c) { return std::tolower(c); });
+							   [](unsigned char c) { return std::tolower(c); }); //< преобразование поля *this._brand в нижний регистр
 				
 				std::string otherBrandLowerCasae = other._brand;
 				std::transform(otherBrandLowerCasae.begin(), otherBrandLowerCasae.end(), otherBrandLowerCasae.begin(),
-							   [](unsigned char c) { return std::tolower(c); });
+							   [](unsigned char c) { return std::tolower(c); }); //< преобразование поля other._brand в нижний регистр
 
 				// other way
 				/*std::string brandLowerCase = _brand;
@@ -106,6 +167,13 @@ public:
 		return false;
 	}
 
+	/**
+	 * Перегрузка оператора <.
+	 * 
+	 * 
+	 * \param other
+	 * \return Противоположное значение оператора>
+	 */
 	bool operator< (const Bike &other) const noexcept {
 		return !(*this > other);
 	}
@@ -119,6 +187,14 @@ public:
 	}
 
 
+	/**
+	 * Перегрузка оператора<<.
+	 * 
+	 * \param output
+	 * \param bike
+	 * 
+	 * \return output
+	 */
 	friend std::ostream& operator<< (std::ostream &output, const Bike &bike);
 	
 
@@ -133,6 +209,14 @@ private:
 	     bool   _isAdult;
 };
 
+/**
+ * Перегрузка оператора<<.
+ *
+ * \param output
+ * \param bike
+ *
+ * \return output
+ */
 std::ostream& operator<< (std::ostream &output, const Bike &bike) {
 	if ( typeid(output).name() != typeid(std::ofstream).name() ) {
 		output << "{ " << bike.GetWheelDiameter() << "; " << bike.GetWheelCount() << "; "
@@ -151,25 +235,42 @@ std::ostream& operator<< (std::ostream &output, const Bike &bike) {
 
 
 
-// TODO написать документацию
-template<class Type> void push_ (std::list<Type> &list_, const Type &object) {
+/**
+ * Помещает объект в контейнер std::list.
+ * 
+ * Объект помещается в контейнер std::list при этом контейнер остается отсортированным.
+ * 
+ * \param list
+ * \param object
+ */
+template<class Type> void push_ (std::list<Type> &list, const Type &object) {
 	
-	auto it_pos= list_.begin();
-	// std::list<Type>::iterator it_pos = list_.begin();
+	auto it_pos = list.begin();
+	// std::list<Type>::iterator it_pos = list.begin();
 
-	while ( it_pos != list_.end() ) {
+	while ( it_pos != list.end() ) {
 		// >= лучше чем >, т.к. при > вставка сильно замедляется, 
 		// если все объекты в списке равны между собой
 		if ( *it_pos >= object ) { break; }
 		it_pos++;
 	}
 
-	list_.insert(it_pos, object);
+	list.insert(it_pos, object);
 }
 
+/**
+* \
+ * Спецификация шаблона функции push_.
+ * 
+ * Данная функция является спецификацией шаблона функции. Она предназначена для работы с экземплярами класса `Bike`,
+ * поскольку требуется расположить экземпляры этого класса в контейнере с сортировкой по убыванию.
+ *  
+ * \param bikeList
+ * \param bike
+ */
 void push_ (std::list<Bike> &bikeList, const Bike &bike) {
 	auto it_pos = bikeList.begin();
-	// std::list<Type>::iterator it_pos = list_.begin();
+	// std::list<Type>::iterator it_pos = list.begin();
 
 	while ( it_pos != bikeList.end() ) {
 		// >= лучше чем >, т.к. при > вставка сильно замедляется, 
@@ -182,32 +283,44 @@ void push_ (std::list<Bike> &bikeList, const Bike &bike) {
 }
 
 
-// TODO написать документацию
-// TODO отдельная быстрая реализация удаления с начала и с конца 
-template<class Type> Type pop_ (std::list<Type> &list_, const int &pos = 0) {
+
+/**
+ * Удаление элемента из контейнера std::list.
+ * 
+ * Функция удаляет элемент из контейнера и возвращает элемент, который имеет наибольший приоритет,
+ * поскольку контейнер отсортирован, наибольший приоритет имеет объект, стоящий самым первым. 
+ * Если после удаления элемента из контейнера, контейнер оказывается пустым, то возвращается 
+ * последний удаленный объект.
+ * 
+ * \param list
+ * \param pos
+ * \return Объект с наибольшим приоритетом.
+ * \warning Объект типа `Type` обязательно должен иметь конструктор по умолчанию, иначе UB!
+ */
+template<class Type> Type pop_ (std::list<Type> &list, const int &pos = 0) {
 	
 	// инициализация по умолчанию +-
 	Type object_r_temp;
 
 	if ( pos == 0 ) {
-		object_r_temp = list_.front();
-		list_.pop_front(); 
+		object_r_temp = list.front();
+		list.pop_front(); 
 	}
-	else if ( pos == list_.size() ) {
-		object_r_temp = list_.back();
-		list_.pop_back();
+	else if ( pos == list.size() ) {
+		object_r_temp = list.back();
+		list.pop_back();
 	}
 	else {
-		auto it_pos = std::next(list_.begin(), pos);
-		// or / auto it_pos = list_.begin(); std::advance(it_pos, pos); 
-	    // or / std::list<Type>::iterator it_pos = std::next(list_.begin(), pos);
+		auto it_pos = std::next(list.begin(), pos);
+		// or / auto it_pos = list.begin(); std::advance(it_pos, pos); 
+	    // or / std::list<Type>::iterator it_pos = std::next(list.begin(), pos);
 		object_r_temp = *it_pos;
-		list_.erase(it_pos);
+		list.erase(it_pos);
 	}
 
 
-	if ( !list_.empty() ) {
-		return list_.back(); // != return *list_.end() == nullptr;
+	if ( !list.empty() ) {
+		return list.back(); // != return *list.end() == nullptr;
 	}
 	else {
 		return object_r_temp;
@@ -216,18 +329,19 @@ template<class Type> Type pop_ (std::list<Type> &list_, const int &pos = 0) {
 
 
 /**
- * \brief Create a new list which contains objects that satisfy `func_key`
+ * Фильтрация объектов контейнера по функции-ключу.
  * 
- * \param std::list<Type> &list_
- * \param int (*func_key)(const Type &)
- * \return New list `ListResult`
+ * \param list
+ * \param *func_key
+ * \return Новый контейнер, элементы которого удовлетворяют функции-ключу.
  */
-template<class Type> std::list<Type> filter (const std::list<Type> &list_,
-											 int (*func_key)(const Type &)) {
+template<class Type> std::list<Type> filter (const std::list<Type> &list,
+											 int (*func_key)(const Type &)) 
+{
 	std::list<Type> ListResult;
 
-	// for (std::list<Type>::iterator it_pos = list_.begin(); it_pos != list_.end(); it_pos++) {...}
-	for ( auto object : list_ ) {
+	// for (std::list<Type>::iterator it_pos = list.begin(); it_pos != list.end(); it_pos++) {...}
+	for ( auto object : list ) {
 		if ( func_key(object) ) { ListResult.push_back(object); }
 	}
 
@@ -235,17 +349,32 @@ template<class Type> std::list<Type> filter (const std::list<Type> &list_,
 	return ListResult;
 }
 
-// TODO написать документацию
-template<class Type> void print (const std::list<Type> &list_) {	
+/**
+ * Вывод содержимого контейнера.
+ * 
+ * Отправляет каждый элемент контейнера в поток вывода std::ostream.
+ * 
+ * \param list
+ */
+template<class Type> void print (const std::list<Type> &list) {	
 	std::cout << "{";
-	// for (std::list<Type>::iterator it_pos = list_.begin(); it_pos != list_.end(); it_pos++) {...}
-	for ( auto object : list_ ) {
+	// for (std::list<Type>::iterator it_pos = list.begin(); it_pos != list.end(); it_pos++) {...}
+	for ( auto object : list ) {
 		std::cout << " " << object;
 	}
 	std::cout << "}; " << nline;
 }
 
-// TODO написать документацию
+/**
+ * Определение факторила четного числа.
+ * 
+ * Функция опеределяет является ли заданное число факториалом четного число, 
+ * и находит это число, если это так.
+ * 
+ * \param value_
+ * \return 0, если входное число не является факториалом четного числа, иначе само число,
+ *  факториалом которого является входное число.
+ */
 int IsFactorialOfEven (const int &value_) {
 	int value = value_; int div = 1;
 	
@@ -262,6 +391,8 @@ int IsFactorialOfEven (const int &value_) {
 	if ( value == 1 && div % 2 == 0 ) { return div; }
 	return 0;
 }
+
+
 
 int main()
 {
@@ -311,6 +442,7 @@ int main()
 
 	print(myList);
 	
+	
 	// Выделим из нашего листа новый, элементы которого представляют собой
 	// факториалы четных чисел.
 	// int (*func_key)(const int &) = nullptr; func_key = &IsFactorialOfEven;
@@ -343,31 +475,6 @@ int main()
 	print(bikeList);
 	
 	std::cout << pop_(bikeList, 2);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 	return 0;
