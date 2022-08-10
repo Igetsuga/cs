@@ -246,7 +246,6 @@ public:
 
         void insertNext() {};
 
-        // 
         LinkedList<Type>::Object* GetSucessor() { return sucessor_; }
         void SetSucessor (LinkedList<Type>::Object* other) { sucessor_ = other; }
 
@@ -262,7 +261,7 @@ public:
         LinkedList<Type>::Object* predecessor_;
                             Type  data_;
     };
-
+    
  
 
     // default constructor.
