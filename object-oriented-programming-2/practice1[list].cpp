@@ -91,7 +91,7 @@ template<class Type> Type pop (std::list<Type> &list, const int &pos = list.size
 // как передавать произвольный контейнер? 
 // ответ: передача итератора начала и конца		
 // или template<class Type1, class Type2> ...
-template<class Type> std::list<Type>& filter (const std::list<Type> &list,
+template<class Type> std::list<Type> filter (const std::list<Type> &list,
 											 bool (*func_key)(const Type, const Type), double param) {
 	std::list<Type> ListResult;
 
@@ -112,11 +112,9 @@ template<class Type> std::list<Type>& filter (const std::list<Type> &list,
  * \param list
  */
 template<class Type> void print (const std::list<Type> &list) {	
-	std::cout << nline << "{";
-	for ( Type object : list ) {
-		std::cout << " " << object;
-	}
-	std::cout << " }; " << nline;
+	std::cout << nline << "{ ";
+	std::for_each(list.begin(), list.end(), [](const Type n) { std::cout << n << ", "; });
+	std::cout << "}; " << nline;
 }
 
 
@@ -148,65 +146,60 @@ int main()
 	if ( std::is_sorted(doubleList.begin(), doubleList.end()) ) { std::cout << "SORTED" << nline; }
 	else { std::cout << "UNSORTED" << nline; }
 	
-	print(doubleList);
+	print(doubleList); std::cout << nline;
 
 	// Удалим из листа несколько значений
-	auto hValue_temp = pop(doubleList, 1); std::cout << nline << hValue_temp << " ";
-	print(doubleList);
+	auto hValue_temp = pop(doubleList, 1); std::cout << hValue_temp << " ";
+	print(doubleList); std::cout << nline;
 
-	hValue_temp = pop(doubleList, 9); std::cout << nline << hValue_temp << " ";
-	print(doubleList);
+	hValue_temp = pop(doubleList, 9); std::cout << hValue_temp << " ";
+	print(doubleList); std::cout << nline;
 
-	hValue_temp = pop(doubleList, doubleList.size() - 1); std::cout << nline << hValue_temp << " ";
-	std::cout << nline << nline;
-	print(doubleList);
+	hValue_temp = pop(doubleList, doubleList.size() - 1); std::cout << hValue_temp << " ";
+	print(doubleList); std::cout << nline;
 
 	
 	
 	// Выделим из нашего листа новый, элементы которого представляют собой
 	// числа типа `double` с дробной частью не превышающей числа `p`.
 	bool (*func_key)(const double, const double) = &EvaluateFractionalPart;
-	//int (*func_key)(const int &) = IsFactorialOfEven;
 
 	double param = 0.4567;
-	//std::for_each(doubleList.begin(), doubleList.end(), [](double n) {n /= 100; });
-	for ( auto x : doubleList ) {
-		x = x / 100.0;
-	}
-	// std::for_each(doubleList.begin(), doubleList.end(), [](double n) {std::cout << n << " "; });
-	print(doubleList);
-	//std::list<double> listFiltered = filter(doubleList, func_key, param);
+	std::for_each(doubleList.begin(), doubleList.end(), [](double &n) {n /= 100; });
 	
-	//std::cout << nline << "listFiltered is: " << nline;
-	//print(listFiltered);
+	
+	print(doubleList);
+	std::list<double> listFiltered = filter(doubleList, func_key, param);
+	
+	std::cout << nline << "listFiltered is: ";
+	print(listFiltered);
 
 	doubleList.clear();
-	//listFiltered.clear();
+	listFiltered.clear();
 
 
 
-	//// -------------- p.2 --------------
-	//std::list<Computer> bikeList;
+	// -------------- p.2 --------------
+	std::list<Computer> computerList;
 
-	//Computer bikeSimple();
-	//Computer bikeSimpleUPG();
-	//// std::cout << nline << bikeSimple << nline << bikeSimpleUPG << nline;
-	//// bikeSimple > bikeSimpleUPG ? std::cout << nline << "1" : std::cout << nline << "2";
+	Computer Apple ((std::string)"apple", 1000, 16, 64, 17.8);
+	Computer Lenovo ((std::string) "lenovo", 500, 16, 16, 15.0);
+	Computer Huawei ((std::string) "huawei", 400, 16, 32, 16.7);
+	Computer HP ((std::string) "hp", 350, 4, 8, 14.5);
+	Computer Dell ((std::string) "dell", 200, 4, 8, 16.2);
 
-	//Computer bikeUltra();
-	//Computer bikeMedium();
-	//Computer bikeHigh();
+	push(computerList, Apple);
+	push(computerList, Lenovo);
+	push(computerList, Huawei);
+	push(computerList, HP);
+	push(computerList, Dell);
 
-	//push(bikeList, bikeSimple); 
-	//push(bikeList, bikeSimpleUPG);
-	//push(bikeList, bikeUltra);
-	//push(bikeList, bikeHigh);
-	//push(bikeList, bikeMedium);
+	print(computerList);
 
-	//print(bikeList);
-	//
-	//std::cout << pop(bikeList, 2);
+	auto hvalue = pop(computerList, 2);
+	std::cout << nline << "hvalue is: " << hvalue;
 
+	print(computerList);
 
 	return 0;
 }
