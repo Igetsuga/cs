@@ -8,6 +8,8 @@
  *********************************************************************/
 
 #define nline '\n'
+
+
 #include <iostream>
 #include <fstream>
 
@@ -16,8 +18,8 @@
 #include <iterator>
 #include <algorithm>
 
-#include "Computer.h"
 
+#include "Computer.h"
 
 
 
@@ -25,8 +27,7 @@
  * Помещает объект в контейнер std::list, оставляя его отсортированным.
  * 
  * \param list
- * \param object
- */
+ * \param object */
 template<class Type> void push (std::list<Type> &list, const Type &object) {
 	
 	// auto it_pos = list.begin();
@@ -63,18 +64,11 @@ template<class Type> Type pop (std::list<Type> &list, const int &pos = list.size
 
 	Type object_remove = list.back();
 
-	if ( pos == 0 ) {
-		list.pop_front(); 
-	}
-	else if ( pos == list.size() - 1 ) {
-		list.pop_back();
-	}
-	else {
-		std::list<Type>::template iterator it_pos = std::next(list.begin(), pos);
-		// or / auto it_pos = std::next(list.begin(), pos);
-		// or / std::list<Type>::iterator it_pos = list.begin(); std::advance(it_pos, pos); 
-		list.erase(it_pos);
-	}
+	std::list<Type>::template iterator it_pos = std::next(list.begin(), pos);
+	// or / auto it_pos = std::next(list.begin(), pos);
+	// or / std::list<Type>::iterator it_pos = list.begin(); std::advance(it_pos, pos); 
+	
+	list.erase(it_pos);
 
 
 	return object_remove;
@@ -162,15 +156,18 @@ int main()
 	
 	// Выделим из нашего листа новый, элементы которого представляют собой
 	// числа типа `double` с дробной частью не превышающей числа `p`.
-	bool (*func_key)(const double, const double) = &EvaluateFractionalPart;
+	//bool (*func_key)(const double, const double) = &EvaluateFractionalPart;
+	using func = bool(*)(const double, const double);
+	func efp = &EvaluateFractionalPart;
 
 	double param = 0.4567;
 	std::for_each(doubleList.begin(), doubleList.end(), [](double &n) {n /= 100; });
 	
 	
 	print(doubleList);
-	std::list<double> listFiltered = filter(doubleList, func_key, param);
-	
+	//std::list<double> listFiltered = filter(doubleList, func_key, param);
+	std::list<double> listFiltered = filter(doubleList, efp, param);
+
 	std::cout << nline << "listFiltered is: ";
 	print(listFiltered);
 
@@ -200,6 +197,9 @@ int main()
 	std::cout << nline << "hvalue is: " << hvalue;
 
 	print(computerList);
+
+
+	//Computer computer_undef; std::cout << computer_undef;
 
 	return 0;
 }

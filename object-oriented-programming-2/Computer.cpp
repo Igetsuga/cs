@@ -17,11 +17,11 @@
 * \param ram
 * \param diaganal
 */
-Computer::Computer (std::string model = "unknown",
-					double price = -1,
-					int numCores = -1,
-					int ram = -1,
-					double diaganal = -1) {
+Computer::Computer (std::string model,
+					double price,
+					int numCores,
+					int ram,
+					double diaganal) {
 	_model = model;
 	_price = price;
 	_numCores = numCores;
