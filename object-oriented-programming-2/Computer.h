@@ -32,7 +32,6 @@ public:
 
 
 
-	// GetValue
 
 	std::string GetModel() const noexcept;
 
