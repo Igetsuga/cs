@@ -18,11 +18,11 @@
 class Computer {
 public:
 
-	Computer (std::string model,
-			  double price,
-			  int numCores,
-			  int ram,
-			  double diaganal);
+	Computer (std::string model = "unknown",
+					double price = -1,
+					int numCores = -1,
+					int ram = -1,
+					double diaganal = -1);
 
 	Computer (const Computer &other);
 
