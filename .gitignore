@@ -39,9 +39,11 @@
 # ---
 
 # VS Project
-object-oriented-programming-2/.vs
-object-oriented-programming-2/Debug
-object-oriented-programming-2/x64
+.vs
+Debug
+x64
+
+doc
 
 *.sln
 *.vcxproj
