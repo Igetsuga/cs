@@ -55,7 +55,7 @@ public:
 	 * \param other
 	 * \return Новый объект класса, поля которого равны полям входящего объекта.
 	 */
-	Bike& operator= (const Bike &other) = default;
+	Bike &operator= (const Bike &other) = default;
 
 	/**
 	 * Деструктор.
@@ -164,7 +164,7 @@ public:
 	 * \return Противоположное значение оператора >.
 	 */
 	bool operator< (const Bike &other) const noexcept {
-		return ( !(*this > other) && !(*this == other) );
+		return (!(*this > other) && !(*this == other));
 	}
 
 	bool operator>= (const Bike &other) const noexcept {

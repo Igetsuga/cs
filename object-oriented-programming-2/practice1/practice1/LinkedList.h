@@ -1,10 +1,10 @@
 ﻿/*****************************************************************//**
  * \file   LinkedList.h
  * \brief  Заголовочный файл определения класса	`LinkedList`.
- * 
- * Реализация контейнера std::list<Type> через указатели. 
+ *
+ * Реализация контейнера std::list<Type> через указатели.
  * Использован вспомогательный класс `Node`.
- * 
+ *
  * \author averu
  * \version
  * \date   September 2022
@@ -47,9 +47,9 @@ public:
 
 
 	virtual const Node<Type> *pop() = 0;
-	virtual const Node<Type> *remove(const int &pos) = 0; 
+	virtual const Node<Type> *remove(const int &pos) = 0;
 
-	
+
 
 	virtual const Node<Type> *operator[](const int &pos) noexcept(false);
 
@@ -62,7 +62,7 @@ protected:
 
 	Node<Type> *_begin;
 	Node<Type> *_end;
-	    size_t  _size;
+	size_t  _size;
 };
 
 

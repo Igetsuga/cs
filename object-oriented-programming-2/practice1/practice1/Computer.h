@@ -1,10 +1,10 @@
 ﻿/*****************************************************************//**
  * \file   Computer.h
  * \brief  Заголовочный файл определения класса `Computer`.
- * 
+ *
  * Вспомогательный класс для практической работы по ООП-2-1.
  * Опеределение класса смотри в файле `Computer.cpp`.
- * 
+ *
  * \author averu
  * \version 1.0.0
  * \date   September 2022
@@ -21,14 +21,14 @@ class Computer {
 public:
 
 	Computer (std::string model = "unknown",
-					double price = -1,
-					int numCores = -1,
-					int ram = -1,
-					double diaganal = -1);
+			  double price = -1,
+			  int numCores = -1,
+			  int ram = -1,
+			  double diaganal = -1);
 
 	Computer (const Computer &other);
 
-	Computer& operator= (const Computer &other);
+	Computer &operator= (const Computer &other);
 
 	~Computer();
 

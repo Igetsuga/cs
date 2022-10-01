@@ -1,9 +1,9 @@
 ﻿/*****************************************************************//**
  * \file   practice1.cpp
  * \brief  Практическая работа 1.
- * 
+ *
  * \author Sirazetdinov Rustem
- * \version 
+ * \version
  * \date   September 2022
  *********************************************************************/
 
@@ -26,14 +26,15 @@
 
 /**
  * Помещает объект в контейнер std::list, оставляя его отсортированным.
- * 
+ *
  * \param list
- * \param object */
+ * \param object
+ */
 template<class Type> void push (std::list<Type> &list, const Type &object) {
-	
+
 	// auto it_pos = list.begin();
 	std::list<Type>::template iterator it_pos = list.begin();
-	
+
 	while ( it_pos != list.end() ) {
 		// >= лучше чем >, т.к. при > вставка сильно замедляется, 
 		// если все объекты в списке равны между собой
@@ -47,19 +48,19 @@ template<class Type> void push (std::list<Type> &list, const Type &object) {
 
 /**
  * Удаление элемента из контейнера std::list.
- * 
+ *
  * Функция удаляет элемент из контейнера и возвращает элемент, который имеет наибольший приоритет,
- * поскольку контейнер отсортирован, наибольший приоритет имеет объект, стоящий самым последним. 
- * Если после удаления элемента из контейнера, контейнер оказывается пустым, то возвращается 
+ * поскольку контейнер отсортирован, наибольший приоритет имеет объект, стоящий самым последним.
+ * Если после удаления элемента из контейнера, контейнер оказывается пустым, то возвращается
  * последний удаленный объект.
- * 
+ *
  * \param list
  * \param pos
  * \return Объект с наибольшим приоритетом.
  */
-template<class Type> Type pop (std::list<Type> &list, const int &pos = list.size() - 1 ) {
-	
-	if ( pos > list.size() || pos < 0 ) { 
+template<class Type> Type pop (std::list<Type> &list, const int &pos = list.size() - 1) {
+
+	if ( pos > list.size() || pos < 0 ) {
 		throw std::out_of_range("pop ( std::list<Type> &list, const int &pos = ... ) Index out of range");
 	}
 
@@ -68,7 +69,7 @@ template<class Type> Type pop (std::list<Type> &list, const int &pos = list.size
 	std::list<Type>::template iterator it_pos = std::next(list.begin(), pos);
 	// or / auto it_pos = std::next(list.begin(), pos);
 	// or / std::list<Type>::iterator it_pos = list.begin(); std::advance(it_pos, pos); 
-	
+
 	list.erase(it_pos);
 
 
@@ -78,7 +79,7 @@ template<class Type> Type pop (std::list<Type> &list, const int &pos = list.size
 
 /**
  * Фильтрация объектов контейнера по функции-ключу.
- * 
+ *
  * \param list
  * \param *func_key
  * \return Новый контейнер, элементы которого удовлетворяют функции-ключу.
@@ -101,12 +102,12 @@ template<class Type> std::list<Type> filter (const std::list<Type> &list,
 
 /**
  * Вывод содержимого контейнера.
- * 
+ *
  * Отправляет каждый элемент контейнера в поток вывода std::ostream.
- * 
+ *
  * \param list
  */
-template<class Type> void print (const std::list<Type> &list) {	
+template<class Type> void print (const std::list<Type> &list) {
 	std::cout << nline << "{ ";
 	std::for_each(list.begin(), list.end(), [](const Type n) { std::cout << n << ", "; });
 	std::cout << "}; " << nline;
@@ -116,8 +117,8 @@ template<class Type> void print (const std::list<Type> &list) {
 bool EvaluateFractionalPart (const double p, const double value) {
 	int value_ceil = int(value);
 	double diff = value - value_ceil;
-	
-	
+
+
 	return (diff - p < 0);
 }
 
@@ -125,22 +126,22 @@ bool EvaluateFractionalPart (const double p, const double value) {
 
 int main()
 {
-	
+
 	// -------------- p.1 --------------
 	// Cоздаем лист с элементами типа `int`
 	std::list<double> doubleList;
 	for ( int i = 0; i < 20; i++ ) {
-		push(doubleList, (double)rand());
+		push(doubleList, (double) rand());
 		//doubleList.push_back( (double)rand() );
 	}
-	
+
 	// Проверка функции `print` для объектов типа std::list<Type>
 	print(doubleList);
 
 	// Проверка того, что функция `push` добавляет элементы в контейнер, оставляя его отсортированным
 	if ( std::is_sorted(doubleList.begin(), doubleList.end()) ) { std::cout << "SORTED" << nline; }
 	else { std::cout << "UNSORTED" << nline; }
-	
+
 	print(doubleList); std::cout << nline;
 
 	// Удалим из листа несколько значений
@@ -153,8 +154,8 @@ int main()
 	hValue_temp = pop(doubleList, doubleList.size() - 1); std::cout << hValue_temp << " ";
 	print(doubleList); std::cout << nline;
 
-	
-	
+
+
 	// Выделим из нашего листа новый, элементы которого представляют собой
 	// числа типа `double` с дробной частью не превышающей числа `p`.
 	//bool (*func_key)(const double, const double) = &EvaluateFractionalPart;
@@ -163,8 +164,8 @@ int main()
 
 	double param = 0.4567;
 	std::for_each(doubleList.begin(), doubleList.end(), [](double &n) {n /= 100; });
-	
-	
+
+
 	print(doubleList);
 	//std::list<double> listFiltered = filter(doubleList, func_key, param);
 	std::list<double> listFiltered = filter(doubleList, efp, param);
@@ -180,7 +181,7 @@ int main()
 	// -------------- p.2 --------------
 	std::list<Computer> computerList;
 
-	Computer Apple ((std::string)"apple", 1000, 16, 64, 17.8);
+	Computer Apple ((std::string) "apple", 1000, 16, 64, 17.8);
 	Computer Lenovo ((std::string) "lenovo", 500, 16, 16, 15.0);
 	Computer Huawei ((std::string) "huawei", 400, 16, 32, 16.7);
 	Computer HP ((std::string) "hp", 350, 4, 8, 14.5);

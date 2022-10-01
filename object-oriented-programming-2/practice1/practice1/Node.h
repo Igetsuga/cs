@@ -1,11 +1,11 @@
 ﻿/*****************************************************************//**
  * \file   Node.h
  * \brief  Заголовочный файл определения класса `Node`.
- * 
- * Вспомогательный класс для контейнеров. Выступает в роли 
+ *
+ * Вспомогательный класс для контейнеров. Выступает в роли
  * элемента контейнера. Класс реализован через указатели.
  * Опеределение класса смотри в файле `Node.cpp`.
- * 
+ *
  * \author averu
  * \version
  * \date   September 2022
@@ -22,8 +22,8 @@ template<class Type> class Node {
 public:
 
 	Node (const Type &data,
-			Node<Type> *sucessor = nullptr,
-			Node<Type> *predecessor = nullptr);
+		  Node<Type> *sucessor = nullptr,
+		  Node<Type> *predecessor = nullptr);
 
 	~Node ();
 
@@ -39,7 +39,7 @@ public:
 	void SetPredecessor (const Node<Type> *predecessor) noexcept;
 	void SetData (const Type &data) noexcept;
 
-	
+
 	bool DeepEqual (const Node<Type> &node) const noexcept;
 
 	bool operator== (const Node<Type> &node) const noexcept;
@@ -53,6 +53,6 @@ public:
 private:
 	Node<Type> *_sucessor;
 	Node<Type> *_predecessor;
-	Type _data;
+	Type        _data;
 };
 

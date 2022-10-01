@@ -1,11 +1,11 @@
 ﻿/*****************************************************************//**
  * \file   Node.cpp
  * \brief  Файл опеределения класса `Node`.
- * 
- * Вспомогательный класс для контейнеров. Выступает в роли 
+ *
+ * Вспомогательный класс для контейнеров. Выступает в роли
  * элемента контейнера. Класс реализован через указатели.
  * Опеределение класса смотри в файле `Node.h`.
- * 
+ *
  * \author averu
  * \version
  * \date   September 2022
@@ -20,7 +20,7 @@
  * \param predecessor
  */
 template<class Type> Node<Type>::Node(const Type &data,
-									  Node<Type> *sucessor, 
+									  Node<Type> *sucessor,
 									  Node<Type> *predecessor) {
 	_sucessor = sucessor;
 	_predecessor = predecessor;
@@ -91,10 +91,10 @@ template<class Type> void Node<Type>::SetData (const Type & data) noexcept {
 
 /**
  * Проверка равенства объектов(deep).
- * 
- * 
+ *
+ *
  * \param node
- * \return 
+ * \return
  */
 template<class Type> bool Node<Type>::DeepEqual (const Node<Type> &node) const noexcept {
 	if ( _data == node._data &&
@@ -109,9 +109,9 @@ template<class Type> bool Node<Type>::DeepEqual (const Node<Type> &node) const n
 
 /**
  * Проверка равенства объектов(shallow).
- * 
+ *
  * \param node
- * \return 
+ * \return
  */
 template<class Type> bool Node<Type>::operator== (const Node<Type> &node) const noexcept {
 	if ( _data == node._data &&
@@ -126,9 +126,9 @@ template<class Type> bool Node<Type>::operator== (const Node<Type> &node) const 
 
 /**
  * Проверка неравенства объектов(shallow).
- * 
+ *
  * \param node
- * \return 
+ * \return
  */
 template<class Type> bool Node<Type>::operator!= (const Node<Type> &node) const noexcept {
 	return !(*this == node);

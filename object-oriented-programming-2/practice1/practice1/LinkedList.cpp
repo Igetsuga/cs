@@ -1,5 +1,5 @@
 ﻿/*****************************************************************//**
- * \file   LinkedList.h
+ * \file   LinkedList.cpp
  * \brief  Файл определения класса `LinkedList`.
  *
  * Реализация контейнера std::list<Type> через указатели.
@@ -18,7 +18,7 @@
 
 /**
  * Конструктор по умолчанию.
- * 
+ *
  */
 template<class Type> LinkedList<Type>::LinkedList() {
 	_begin = _end = nullptr;
@@ -27,13 +27,13 @@ template<class Type> LinkedList<Type>::LinkedList() {
 
 /**
  * Конструктор копий(Deep copy).
- * 
+ *
  * \param otherList
  */
 template<class Type> LinkedList<Type>::LinkedList(const LinkedList<Type> &otherList) {
 	if ( otherList._size != 0 ) {
-		_begin = new Node<Type>(otherList._begin->GetData()); 
-													
+		_begin = new Node<Type>(otherList._begin->GetData());
+
 		Node<Type> *ptrCurrent = _begin;
 		Node<Type> *ptrCurrentOther = otherList._begin;
 
@@ -42,7 +42,7 @@ template<class Type> LinkedList<Type>::LinkedList(const LinkedList<Type> &otherL
 			Node<Type> *ptrCurrentNext = new Node<Type>((ptrCurrentOther->GetSucessor())->GetData(), nullptr, ptrCurrent);
 
 			ptrCurrent->SetSucessor(ptrCurrentNext);
-			
+
 			ptrCurrent = ptrCurrentNext;
 			ptrCurrentOther = ptrCurrentOther->GetSucessor();
 		}
@@ -57,19 +57,19 @@ template<class Type> LinkedList<Type>::LinkedList(const LinkedList<Type> &otherL
 
 /**
  * Перегрузка оператора `operator=`.
- * 
+ *
  * \warning Глубокое копирование.
- * 
+ *
  * \param otherList
- * \return Новый экземпляр класса `LinkedList<Type>`, данные которого идентичны 
+ * \return Новый экземпляр класса `LinkedList<Type>`, данные которого идентичны
  * объекту `otherList`, но ячейки памяти не пресекаются.
  */
-template<class Type> 
-LinkedList<Type>& LinkedList<Type>::operator=(const LinkedList &otherList) {
-	
+template<class Type>
+LinkedList<Type> &LinkedList<Type>::operator=(const LinkedList &otherList) {
+
 	Node<Type> *nodeCurrent = _begin;
 	Node<Type> *nodeCurrentOther = otherList._begin;
-	
+
 	if ( _size == otherList._size ) {
 		while ( nodeCurrentOther != nullptr ) {
 			nodeCurrent._data = nodeCurrentOther._data;
@@ -102,15 +102,15 @@ LinkedList<Type>& LinkedList<Type>::operator=(const LinkedList &otherList) {
 			_end = nodeCurrent;
 			_size = otherList._size;
 		}
-		
+
 	}
 }
 
 /**
- * Деструктор. 
- * 
+ * Деструктор.
+ *
  * Деструктор реализовани через вспомогательный метод `LinkedList<Type>::clear()`.
- * 
+ *
  */
 template<class Type> LinkedList<Type>::~LinkedList() {
 	this->clear();
@@ -120,7 +120,7 @@ template<class Type> LinkedList<Type>::~LinkedList() {
 
 /**
  * Метод очищает экземпляр класса `LinkedList<Type>`.
- * 
+ *
  */
 template<class Type> void LinkedList<Type>::clear() {
 	Node<Type> *deleteNext = _begin;
@@ -135,7 +135,7 @@ template<class Type> void LinkedList<Type>::clear() {
 /**
  * Метод позволяет узнать количество элементов класса `Node<Type`
  * в экземпляре класса `LinkedList<Type>.
- * 
+ *
  * \return Количество элементов класса `Node<Type`
  */
 template<class Type>
@@ -144,7 +144,7 @@ const size_t LinkedList<Type>::size() const noexcept { return _size; }
 
 /**
  * Метод позволяет получить указатель на начало контейнера.
- * 
+ *
  * \return Указатель на начало контейнера.
  */
 template<class Type>
@@ -163,11 +163,11 @@ const Node<Type> *LinkedList<Type>::GetEnd() const noexcept {
 }
 
 /**
- * Метод позволяет задать новое значение указателя на 
+ * Метод позволяет задать новое значение указателя на
  * начало контейнера.
- * 
+ *
  * \param newBegin
- */ 
+ */
 template<class Type>
 void LinkedList<Type>::SetBegin(const Node<Type> newBegin) noexcept {
 	_begin = newBegin;
@@ -188,19 +188,19 @@ void LinkedList<Type>::SetEnd(const Node<Type> newEnd) noexcept {
 
 /**
  * Перегрузка оператора `operator[]`.
- * 
+ *
  * \param pos
  * \return Объект класса `Node<Type>`, стоящий на позиции
  * `pos - 1` в контейнере.
  */
-template<class Type> 
+template<class Type>
 const Node<Type> *LinkedList<Type>::operator[](const int &pos) noexcept(false) {
-	
+
 	if ( pos < 0 || pos >= _size ) {
 		throw std::out_of_range("Method LinkedList<Type>::operator[] : pos out of range");
 	}
 	Node<Type> *nodeCurrent = _begin;
-	
+
 	for ( int it = 0; it < pos; it++ ) {
 		nodeCurrent = nodeCurrent->GetSucessor();
 	}
@@ -213,7 +213,7 @@ const Node<Type> *LinkedList<Type>::operator[](const int &pos) noexcept(false) {
 
 /**
  * Перегрузка оператора `operator<<` вывода в поток `std::ostream` или `std::ofstream`.
- * 
+ *
  * \param output
  * \param list
  * \return Ссылку на поток `std::ostream`.
@@ -224,7 +224,7 @@ template<class Type> std::ostream &operator<< (std::ostream &output,
 		Node<Type> *nodeCurrent = list.GetBegin();
 
 		if ( typeid(output).name() == typeid(std::ofstream).name() ) {
-			if(output.fail() ) {
+			if ( output.fail() ) {
 				throw std::filesystem::filesystem_error("LinkedList<Type>::operator<< : could not open the file");
 			}
 			output << list.size() << nline;
