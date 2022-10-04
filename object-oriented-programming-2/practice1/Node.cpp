@@ -1,19 +1,19 @@
 ﻿/*****************************************************************//**
  * \file   Node.cpp
- * \brief  Файл опеределения класса `Node`.
+ * \brief  Файл определения класса `Node`.
  *
  * Вспомогательный класс для контейнеров. Выступает в роли
  * элемента контейнера. Класс реализован через указатели.
  * Опеределение класса смотри в файле `Node.h`.
  *
- * \author averu
+ * \author Sirazetdinov Rustem
  * \version
  * \date   September 2022
  *********************************************************************/
 #include "Node.h"
 
 /**
- * Конструктор класса `Node<Type>`.
+ * Конструктор класса.
  *
  * \param data
  * \param sucessor
@@ -28,9 +28,9 @@ template<class Type> Node<Type>::Node(const Type &data,
 }
 
 /**
- * Деструктор класса `Node<Type>`.
+ * Деструктор класса.
  *
- * /waring Деструктор определен компилятором.
+ * \waring Деструктор определен компилятором.
  */
 template<class Type> Node<Type>::~Node () = default;
 
@@ -55,7 +55,7 @@ template<class Type> const Node<Type> *Node<Type>::GetPredecessor() const noexce
 /**
  * Предоставляет возможность получить доступ к полю `_data`.
  *
- * \return Копию данных, которые содержит текущий узел.
+ * \return Копию информации, которые содержит текущий узел.
  */
 template<class Type> const Type &Node<Type>::GetData() const noexcept {
 	return _data;
@@ -65,7 +65,6 @@ template<class Type> const Type &Node<Type>::GetData() const noexcept {
  * Предоставляет возможность установить новое значение для поля `_sucessor`.
  *
  * \param sucessor
- * \return
  */
 template<class Type> void Node<Type>::SetSucessor (const Node<Type> *sucessor) noexcept {
 	_sucessor = sucessor;
@@ -108,10 +107,11 @@ template<class Type> bool Node<Type>::DeepEqual (const Node<Type> &node) const n
 }
 
 /**
+ * \brief Перегрузка оператора `operator==`. 
+ * 
  * Проверка равенства объектов(shallow).
  *
  * \param node
- * \return
  */
 template<class Type> bool Node<Type>::operator== (const Node<Type> &node) const noexcept {
 	if ( _data == node._data &&
@@ -125,19 +125,20 @@ template<class Type> bool Node<Type>::operator== (const Node<Type> &node) const 
 }
 
 /**
+ * \brief Перегрузка оператора `operator`=`.
+ * 
  * Проверка неравенства объектов(shallow).
  *
  * \param node
- * \return
  */
 template<class Type> bool Node<Type>::operator!= (const Node<Type> &node) const noexcept {
 	return !(*this == node);
 }
 
 /**
- * Перегрузка оператора разыменования.
+ * Перегрузка оператора `operator*`.
  *
- * \return Ссылка на константный объект типа `Type`.
+ * \return Ссылку на константный объект типа `Type`.
  */
 template<class Type> const Type &Node<Type>::operator*() const {
 	if ( this == nullptr ) {
