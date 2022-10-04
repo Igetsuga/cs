@@ -12,7 +12,6 @@
 #include "LinkedList.h"
 #include <iostream>
 #include <ostream>
-#include <filesystem>
 
 #define nline '\n'
 
@@ -227,7 +226,7 @@ template<class Type> std::ostream &operator<< (std::ostream &output,
 
 		if ( typeid(output).name() == typeid(std::ofstream).name() ) {
 			if ( output.fail() ) {
-				throw std::filesystem::filesystem_error("LinkedList<Type>::operator<< : could not open the file");
+				throw std::ios_base::failure("LinkedList<Type>::operator<< : could not open the file");
 			}
 			output << list.size() << nline;
 

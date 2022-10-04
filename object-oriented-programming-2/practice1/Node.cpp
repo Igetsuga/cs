@@ -103,7 +103,7 @@ template<class Type> bool Node<Type>::DeepEqual (const Node<Type> &node) const n
 	}
 
 
-	retunr false;
+	return false;
 }
 
 /**
@@ -121,7 +121,7 @@ template<class Type> bool Node<Type>::operator== (const Node<Type> &node) const 
 	}
 
 
-	retunr false;
+	return false;
 }
 
 /**
