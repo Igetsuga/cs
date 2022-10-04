@@ -5,9 +5,9 @@
  * Реализация контейнера std::list<Type> через указатели.
  * Использован вспомогательный класс `Node`.
  *
- * \author averu
+ * \author  Sirazetdinov Rustem
  * \version
- * \date   September 2022
+ * \date    September 2022
  *********************************************************************/
 #include "LinkedList.h"
 #include <iostream>
@@ -55,13 +55,14 @@ template<class Type> LinkedList<Type>::LinkedList(const LinkedList<Type> &otherL
 	_size = otherList._size;
 }
 
+// TODO: переписать в shallow copy 
 /**
  * Перегрузка оператора `operator=`.
  *
  * \warning Глубокое копирование.
  *
  * \param otherList
- * \return Новый экземпляр класса `LinkedList<Type>`, данные которого идентичны
+ * \return Новый экземпляр класса, данные которого идентичны
  * объекту `otherList`, но ячейки памяти не пресекаются.
  */
 template<class Type>
@@ -119,7 +120,7 @@ template<class Type> LinkedList<Type>::~LinkedList() {
 
 
 /**
- * Метод очищает экземпляр класса `LinkedList<Type>`.
+ * Метод очищает экземпляр класса.
  *
  */
 template<class Type> void LinkedList<Type>::clear() {
@@ -134,7 +135,7 @@ template<class Type> void LinkedList<Type>::clear() {
 
 /**
  * Метод позволяет узнать количество элементов класса `Node<Type`
- * в экземпляре класса `LinkedList<Type>.
+ * в экземпляре текущего класса.
  *
  * \return Количество элементов класса `Node<Type`
  */
@@ -190,7 +191,8 @@ void LinkedList<Type>::SetEnd(const Node<Type> newEnd) noexcept {
  * Перегрузка оператора `operator[]`.
  *
  * \param pos
- * \return Объект класса `Node<Type>`, стоящий на позиции
+ * 
+ * \return Указатель на объект класса `Node<Type>`, стоящий на позиции
  * `pos - 1` в контейнере.
  */
 template<class Type>
@@ -212,11 +214,11 @@ const Node<Type> *LinkedList<Type>::operator[](const int &pos) noexcept(false) {
 
 
 /**
- * Перегрузка оператора `operator<<` вывода в поток `std::ostream` или `std::ofstream`.
+ * Перегрузка оператора `operator<<`.
  *
  * \param output
  * \param list
- * \return Ссылку на поток `std::ostream`.
+ * \return Ссылку на стандартный поток вывода.
  */
 template<class Type> std::ostream &operator<< (std::ostream &output,
 											   LinkedList<Type> &list) noexcept(false) {

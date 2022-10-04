@@ -1,13 +1,13 @@
 ﻿/*****************************************************************//**
  * \file   LinkedList.h
- * \brief  Заголовочный файл определения класса	`LinkedList`.
+ * \brief  Заголовочный файл объявления класса `LinkedList`.
  *
  * Реализация контейнера std::list<Type> через указатели.
  * Использован вспомогательный класс `Node`.
  *
- * \author averu
+ * \author  Sirazetdinov Rustem
  * \version
- * \date   September 2022
+ * \date    September 2022
  *********************************************************************/
 #pragma once
 #include <iostream>
