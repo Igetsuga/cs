@@ -1,21 +1,21 @@
 ﻿/*****************************************************************//**
  * \file   Object.cpp
- * \brief  Файл опеределения класса `Object`.
+ * \brief  Файл определения класса `Object`.
  *
  * Вспомогательный класс для контейнеров. Выступает в роли
  * элемента контейнера. Класс реализован через умные указатели.
- * Опеределение класса смотри в файле `Object.h`.
+ * Объявление класса смотри в файле `Object.h`.
  *
- * \author averu
- * \version
- * \date   September 2022
+ * \author  Sirazetdinov Rustem
+ * \warning Класс не реализован. НЕ ИСПОЛЬЗОВАТЬ КЛАСС!
+ * \date    September 2022
  *********************************************************************/
 #include "Object.h"
 
 
 
 /**
- * Конструктор класса `Object<Type>`.
+ * Конструктор класса.
  *
  * \param data
  * \param sucessor
@@ -31,9 +31,9 @@ template<class Type> Object<Type>::Object(const Type &data,
 }
 
 /**
- * Деструктор класса `Object<Type>`.
+ * Деструктор класса.
  *
- * /waring Деструктор определен компилятором.
+ * \waring Деструктор определен компилятором.
  */
 template<class Type> Object<Type>::~Object() = default;
 
@@ -56,7 +56,7 @@ template<class Type> uptr<Object<Type>> Object<Type>::GetPredecessor() const noe
 /**
  * Предоставляет возможность получить доступ к полю `_data`.
  *
- * \return Копию данных, которые содержит текущий узел.
+ * \return Копию информации, которую содержит текущий узел.
  */
 template<class Type> Type Object<Type>::GetData() const noexcept { return _data; }
 
@@ -96,6 +96,8 @@ template<class Type> void Object<Type>::SetData(Type & otherData) noexcept {
  *
  * \param output
  * \param object
+ * 
+ * \return Ссылку на поток стандартного вывода.
  */
 template<class T> std::ostream &operator<< (std::ostream & output, const Object<T> &object) {
 	output << object._data;
