@@ -1,35 +1,19 @@
 ﻿#include "LinkedListIterated.h"
 
-template<class Type> using LLIT = LinkedListIterated<Type>;
-
-//template<class Type>
-//LinkedListIterated::LinkedListIterated<Type>() : LinkedList<Type>() {};
-
-template<class Type>
-LinkedListIterated<Type>::~LinkedListIterated() {};
 
 /**
- * Метод позволяет получить итератор начала контейнера.
- *
- * \return Итератор начала контейнера.
+ * Конструктор по умолчанию. Конструктор унаследован от класса `LinkedList<Type>`.
+ * 
  */
 template<class Type>
-LinkedList::Iterator<Type> LinkedListIterated<Type>::begin() {
-	LinkedList::Iterator<Type> iterator = LinkedList<Type>::_begin;
-
-
-	return iterator;
-}
+LinkedListIterated<Type>::LinkedListIterated() : LinkedList<Type>() {};
 
 /**
- * Метод позволяет получить итератор конца контейнера.
- *
- * \return Итератор конца контейнера.
+ * Виртуальный деструктор.
+ * 
+ * \warning Определем компилятором.
+ * 
  */
 template<class Type>
-IT<Type> LinkedListIterated<Type>::end() {
-	IT<Type> iterator = LinkedList<Type>::_end;
+LinkedListIterated<Type>::~LinkedListIterated() = default;
 
-
-	return iterator;
-}

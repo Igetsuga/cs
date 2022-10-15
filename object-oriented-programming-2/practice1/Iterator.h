@@ -1,8 +1,16 @@
-﻿#pragma once
+﻿/*****************************************************************//**
+ * \file    Iterator.h
+ * \brief   Заголовочный файл с объявлением класса `Iterator`.
+ * 
+ * \author  Sirazetdinov Rustem
+ * \version
+ * \date    October 2022
+ *********************************************************************/
+#pragma once
 #include <iterator>
 #include "Node.h"
 
-namespace LinkedList {
+namespace LList {
 
 template<class Type>
 class Iterator : public std::iterator<std::input_iterator_tag, Type> {
@@ -13,11 +21,11 @@ public:
 
 	Iterator(Node<Type> *node);
 
-	Iterator(const Iterator<Type> *iterator);
+	Iterator(const Iterator<Type> &iterator);
 
 
 
-	Iterator<Type> &operator=(const Iterator *iterator) noexcept;
+	Iterator<Type> &operator=(const Iterator<Type> &iterator) noexcept;
 
 	Iterator<Type> &operator=(const Node<Type> &node) noexcept;
 
@@ -28,7 +36,7 @@ public:
 
 
 
-	const Node<Type> &operator*();
+	Node<Type> *operator*();
 
 	Iterator<Type> *operator++();
 

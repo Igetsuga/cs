@@ -107,6 +107,17 @@ template<class Type> bool Node<Type>::DeepEqual (const Node<Type> &node) const n
 }
 
 /**
+ * \breif Перегрузка оператора `operator=`(shallow).
+ * 
+ * \param node
+ */
+template<class Type> Node<Type> &Node<Type>::operator=(const Node<Type> &node) {
+	_sucessor = node._sucessor;
+	_predecessor = node._predecessor;
+	_data = node._data;
+}
+
+/**
  * \brief Перегрузка оператора `operator==`. 
  * 
  * Проверка равенства объектов(shallow).

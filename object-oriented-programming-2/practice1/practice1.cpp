@@ -99,6 +99,11 @@ template<class Type> std::list<Type> filter (const std::list<Type> &list,
 	return ListResult;
 }
 
+//template< class Container, class Type>
+//std::list filter(const Container<Type> &cont,
+//				 )
+
+
 
 /**
  * Вывод содержимого контейнера.

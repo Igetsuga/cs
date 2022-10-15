@@ -42,6 +42,8 @@ public:
 
 	bool DeepEqual (const Node<Type> &node) const noexcept;
 
+	Node<Type> &operator= (const Node<Type> &node);
+
 	bool operator== (const Node<Type> &node) const noexcept;
 
 	bool operator!= (const Node<Type> &node) const noexcept;

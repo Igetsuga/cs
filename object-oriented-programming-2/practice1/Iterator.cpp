@@ -1,11 +1,19 @@
-﻿#include "Iterator.h"
-using namespace LinkedList;
+﻿/*****************************************************************//**
+ * \file    Iterator.cpp
+ * \brief   Файл, содержащий определение класса `Iterator`.
+ * 
+ * \author  Sirazetdinov Rustem
+ * \version
+ * \date    October 2022
+ *********************************************************************/
+#include "Iterator.h"
+using namespace LList;
 
 /**
  * Конструктор по умолчанию.
  *
  */
-template<class Type> LinkedList::Iterator<Type>::Iterator() {
+template<class Type> LList::Iterator<Type>::Iterator() {
     _iterator = nullptr;
 }
 
@@ -16,7 +24,7 @@ template<class Type> LinkedList::Iterator<Type>::Iterator() {
  *
  * \param node
  */
-template<class Type> LinkedList::Iterator<Type>::Iterator (Node<Type> *node) {
+template<class Type> LList::Iterator<Type>::Iterator (Node<Type> *node) {
     _iterator = node;
 }
 
@@ -25,21 +33,21 @@ template<class Type> LinkedList::Iterator<Type>::Iterator (Node<Type> *node) {
  *
  * \param iterator
  */
-template<class Type> LinkedList::Iterator<Type>::Iterator (const Iterator<Type> *iterator) {
+template<class Type> LList::Iterator<Type>::Iterator (const Iterator<Type> &iterator) {
     _iterator = iterator._iterator;
 }
 
 /**
- * Перегрузка операторо присваисания, аргумент -- `Iterator<Type>`.
+ * Перегрузка оператора `operator=`(shallow copy).
  *
- *
- * \warning Shallow copy
+ * 
  * \param iterator
+ * 
  * \return Новый объект типа `Iterator<Type>`, который смотрит на тот же адресс в памяти, который
  * занимает переданный объект.
  */
 template<class Type>
-Iterator<Type> &LinkedList::Iterator<Type>::operator= (const Iterator *iterator) noexcept {
+Iterator<Type> &LList::Iterator<Type>::operator= (const Iterator<Type> &iterator) noexcept {
     _iterator = iterator._iterator;
 
 
@@ -47,16 +55,16 @@ Iterator<Type> &LinkedList::Iterator<Type>::operator= (const Iterator *iterator)
 }
 
 /**
- * Перегрузка операторо присваивания(deep).
+ * Перегрузка оператора `operator=`(shallow copy).
  *
  *
- * \warning Shallow copy
  * \param node
- * \return Новый объект типа `Iterator<Type>`, который смотрит на тот же адресс в памяти, который
+ *
+ *  \return Новый объект типа `Iterator<Type>`, который смотрит на тот же адресс в памяти, который
  * занимает переданный объект.
  */
 template<class Type>
-Iterator<Type> &LinkedList::Iterator<Type>::operator= (const Node<Type> &node) noexcept {
+Iterator<Type> &LList::Iterator<Type>::operator= (const Node<Type> &node) noexcept {
     _iterator = node;
 
 
@@ -64,52 +72,58 @@ Iterator<Type> &LinkedList::Iterator<Type>::operator= (const Node<Type> &node) n
 }
 
 /**
- * Проверка неравенства объектов(shallow).
+ * Перегрузка оператора `operator!=`(shallow).
  *
  * \param iterator
- * \return
+ * 
+ * \return `true`, если сравниваемые объекты смортят на разные
+ * участки памяти, в противном случае `false`.
  */
 template<class Type>
-bool LinkedList::Iterator<Type>::operator!= (Iterator<Type> const &iterator) const noexcept {
+bool LList::Iterator<Type>::operator!= (Iterator<Type> const &iterator) const noexcept {
     return (_iterator != iterator._iterator);
 }
 
 /**
- * Проверка равенства объектов(shallow).
+ * Перегрузка оператора `operator==`(shallow).
  *
  * \param iterator
- * \return
+ * 
+ * \return `true`, если сравниваемые объекты смортят на один и тот же
+ * участок памяти, в противном случае `false`.
  */
 template<class Type>
-bool LinkedList::Iterator<Type>::operator== (Iterator<Type> const &iterator) const noexcept {
-    return (_iterator == iterator._iterator)
+bool LList::Iterator<Type>::operator== (Iterator<Type> const &iterator) const noexcept {
+    return (_iterator == iterator._iterator);
 }
 
 /**
- * Перегрузка оператора разыменования.
+ * Перегрузка оператора `operator*`.
  *
- * \return Ссылка на константный объект типа `Type`.
+ * \return Ссылку на константный объект типа `Type`.
  */
 template<class Type>
-const Node<Type> &LinkedList::Iterator<Type>::operator*() {
+Node<Type> *LList::Iterator<Type>::operator*() {
     if ( _iterator == nullptr ) {
-        throw std::invalid_argument("LinkedList::Iterator<Type> : operator*");
+        throw std::invalid_argument("LList::Iterator<Type> : operator*");
     }
 
 
-    return *_iterator;
+    return _iterator;
 }
 
 
 /**
- * Перегрузка оператора перехода к следующему итератору.
+ * Перегрузка оператора `operator++`.
+ * 
+ * Переход итератора к следующему.
  *
  * \return Указатель на следующий итератор.
  */
 template<class Type>
-Iterator<Type> *LinkedList::Iterator<Type>::operator++() {
-    if ( _iterator == nullptr || _iterator->GetSucessor() ) {
-        throw std::invalid_argument("LinkedList::Iterator<Type> : operator*");
+Iterator<Type> *LList::Iterator<Type>::operator++() {
+    if ( _iterator == nullptr || _iterator->GetSucessor() == nullptr ) {
+        throw std::invalid_argument("LList::Iterator<Type> : operator++");
     }
 
     _iterator = _iterator->GetSucessor();
@@ -119,22 +133,22 @@ Iterator<Type> *LinkedList::Iterator<Type>::operator++() {
 }
 
 /**
- * Перегрузка оператора перехода на заданное количество шагов вперед к соот-му итеретору.
+ * Перегрузка оператора перехода на заданное количество шагов вперед к соот-му итератору.
  *
  * \param move_steps
  * \return Указатель на итератор, находящийся на заданном расстоянии от данного.
  */
 template<class Type>
-Iterator<Type> *LinkedList::Iterator<Type>::operator++ (int move_steps) {
-    if ( _iterator == nullptr ) {
-        throw std::invalid_argument("LinkedList::Iterator<Type> : operator*");
+Iterator<Type> *LList::Iterator<Type>::operator++ (int move_steps) {
+    if ( _iterator == nullptr || _iterator->GetSucessor() == nullptr ) {
+        throw std::invalid_argument("LList::Iterator<Type> : operator++");
     }
 
     for ( int i = 0; i < move_steps; i++ ) {
         Node<Type> *iteratorNext = _iterator->GetSucessor();
 
         if ( iteratorNext->GetSucessor() == nullptr ) {
-            throw std::invalid_argument("LinkedList::Iterator<Type> : operator*");
+            throw std::invalid_argument("LList::Iterator<Type> : operator++");
         }
 
         _iterator = iteratorNext;
