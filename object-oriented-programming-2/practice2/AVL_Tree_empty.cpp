@@ -2,7 +2,6 @@
 #include <iostream>
 
 using namespace std;
-//узел
 template<class T>
 class Node
 {
