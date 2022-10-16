@@ -22,11 +22,13 @@ template<class Type> class Node {
 public:
 
 	Node (const Type &data,
-		  size_t     &height,
+		  unsigned char     &height,
 		  Node<Type> *parent = nullptr,
 		  Node<Type> *left = nullptr,
 		  Node<Type> *right = nullptr
-			);
+		  );
+
+	Node (const Node<Type> &node);
 
 	~Node ();
 
@@ -36,24 +38,24 @@ public:
 	const Node<Type> *getLeft() const noexcept;
 	const Node<Type> *getRight() const noexcept;
 	const Type &getData() const noexcept;
-	const size_t &getHeight() const noexcept;
+	const unsigned char &getHeight() const noexcept;
 
 	
 	void setParent (const Node<Type> *parent) noexcept;
 	void setLeft (const Node<Type> *left) noexcept;
 	void setRight (const Node<Type> *right) noexcept;
 	void setData (const Type &data) noexcept;
-	void setHeight (const size_t &height);
+	void setHeight (const unsigned char &height);
 	
 
 	friend std::ostream &operator<< (std::ostream &output,
-														  const Node<Type> &node);
+									 const Node<Type> &node);
 private:
-	Node<Type> *_left;
-	Node<Type> *_right;
-	Node<Type> *_parent;
-	Type        _data;
-	size_t      _height;
+	Node<Type>        *_left;
+	Node<Type>        *_right;
+	Node<Type>        *_parent;
+	Type               _data;
+	unsigned char      _height;
 };
 
 

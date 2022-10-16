@@ -69,6 +69,7 @@ ostream& operator<< (ostream& stream, Node<T>& N)
 template<class T>
 void print(Node<T>* N) { cout << "\n" << N->getData(); }
 
+
 template<class T>
 class Tree
 {

@@ -12,16 +12,24 @@
  *********************************************************************/
 #include "Node.h"
 
-template<class Type> Node<Type>::Node(const Type &data,
-									  size_t     &height,
-									  Node<Type> *parent,
-									  Node<Type> *left,
-									  Node<Type> *right) {
+template<class Type> Node<Type>::Node (const Type &data,
+									   unsigned char     &height,
+									   Node<Type> *parent,
+									   Node<Type> *left,
+									   Node<Type> *right) {
 	_parent = parent;
 	_left = left;
 	_right = right;
 	_data = data;
 	_height = height;
+}
+
+template<class Type> Node<Type>::Node (const Node<Type> &node) {
+	_parent = node._parent;
+	_left = node._left;
+	_right = node._right;
+	_data = node._data;
+	_height = node._height;
 }
 
 template<class Type> Node<Type>::~Node () = default;
@@ -46,7 +54,7 @@ template<class Type> const Type &Node<Type>::getData() const noexcept {
 }
 
 
-template<class Type> const size_t &Node<Type>::getHeight() const noexcept {
+template<class Type> const unsigned char &Node<Type>::getHeight() const noexcept {
 	return _height;
 }
 
@@ -67,7 +75,7 @@ template<class Type> void Node<Type>::setData (const Type &data) noexcept {
 }
 
 
-template<class Type> void Node<Type>::setHeight (const size_t &height) {
+template<class Type> void Node<Type>::setHeight (const unsigned char &height) {
 	if ( height < 0 ) {
 		throw std::invalid_argument("Method Node::setHeight() cant apply negative numbers");
 	}
