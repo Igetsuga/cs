@@ -22,7 +22,7 @@
 #include "Computer.h"
 #include "LinkedList.h"
 #include "Node.h"
-
+#include "QueueIterated.h"
 
 /**
  * Помещает объект в контейнер std::list, оставляя его отсортированным.
@@ -207,6 +207,22 @@ int main()
 
 
 	//Computer computer_undef; std::cout << computer_undef;
+
+
+	QueueIterated<int>();
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	return 0;

@@ -151,14 +151,14 @@ template<class Type> bool Node<Type>::operator!= (const Node<Type> &node) const 
  *
  * \return Ссылку на константный объект типа `Type`.
  */
-template<class Type> const Type &Node<Type>::operator*() const {
-	if ( this == nullptr ) {
-		throw std::invalid_argument("Node<Type> : operator*");
-	}
-
-
-	return _data;
-}
+//template<class Type> const Type &Node<Type>::operator*() const {
+//	if ( this == nullptr ) {
+//		throw std::invalid_argument("Node<Type> : operator*");
+//	}
+//
+//
+//	return _data;
+//}
 
 /**
  * Перегрузка оператора `operator<<`.

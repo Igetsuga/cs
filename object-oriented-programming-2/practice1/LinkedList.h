@@ -40,14 +40,14 @@ public:
 	void SetEnd (Node<Type> newEnd) noexcept;
 
 
-
+	
 	virtual void push (const Type &data) = 0;
-	virtual void insert(const Type &data, const int &pos) = 0;
+	//virtual void insert(const Type &data, const int &pos) = 0;
 
 
 
 	virtual const Node<Type> *pop() = 0;
-	virtual const Node<Type> *remove(const int &pos) = 0;
+	//virtual const Node<Type> *remove(const int &pos) = 0;
 
 
 
@@ -62,7 +62,7 @@ protected:
 
 	Node<Type> *_begin;
 	Node<Type> *_end;
-	size_t  _size;
+	size_t      _size;
 };
 
 

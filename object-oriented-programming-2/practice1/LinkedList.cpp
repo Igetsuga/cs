@@ -185,6 +185,10 @@ void LinkedList<Type>::SetEnd(const Node<Type> newEnd) noexcept {
 }
 
 
+//template<class Type> void LinkedList<Type>::push (const Type &data);
+
+
+
 
 /**
  * Перегрузка оператора `operator[]`.

@@ -7,13 +7,13 @@
  * \date    October 2022
  *********************************************************************/
 #include "Iterator.h"
-using namespace LList;
+
 
 /**
  * Конструктор по умолчанию.
  *
  */
-template<class Type> LList::Iterator<Type>::Iterator() {
+template<class Type> Iterator<Type>::Iterator() {
     _iterator = nullptr;
 }
 
@@ -24,7 +24,7 @@ template<class Type> LList::Iterator<Type>::Iterator() {
  *
  * \param node
  */
-template<class Type> LList::Iterator<Type>::Iterator (Node<Type> *node) {
+template<class Type> Iterator<Type>::Iterator (Node<Type> *node) {
     _iterator = node;
 }
 
@@ -33,9 +33,15 @@ template<class Type> LList::Iterator<Type>::Iterator (Node<Type> *node) {
  *
  * \param iterator
  */
-template<class Type> LList::Iterator<Type>::Iterator (const Iterator<Type> &iterator) {
+template<class Type> Iterator<Type>::Iterator (const Iterator<Type> &iterator) {
     _iterator = iterator._iterator;
 }
+
+/**
+ * Деструктор.
+ * 
+ */
+template<class Type> Iterator<Type>::~Iterator() = default;
 
 /**
  * Перегрузка оператора `operator=`(shallow copy).
@@ -47,7 +53,7 @@ template<class Type> LList::Iterator<Type>::Iterator (const Iterator<Type> &iter
  * занимает переданный объект.
  */
 template<class Type>
-Iterator<Type> &LList::Iterator<Type>::operator= (const Iterator<Type> &iterator) noexcept {
+Iterator<Type> &Iterator<Type>::operator= (const Iterator<Type> &iterator) noexcept {
     _iterator = iterator._iterator;
 
 
@@ -64,7 +70,7 @@ Iterator<Type> &LList::Iterator<Type>::operator= (const Iterator<Type> &iterator
  * занимает переданный объект.
  */
 template<class Type>
-Iterator<Type> &LList::Iterator<Type>::operator= (const Node<Type> &node) noexcept {
+Iterator<Type> &Iterator<Type>::operator= (const Node<Type> &node) noexcept {
     _iterator = node;
 
 
@@ -80,7 +86,7 @@ Iterator<Type> &LList::Iterator<Type>::operator= (const Node<Type> &node) noexce
  * участки памяти, в противном случае `false`.
  */
 template<class Type>
-bool LList::Iterator<Type>::operator!= (Iterator<Type> const &iterator) const noexcept {
+bool Iterator<Type>::operator!= (Iterator<Type> const &iterator) const noexcept {
     return (_iterator != iterator._iterator);
 }
 
@@ -93,7 +99,7 @@ bool LList::Iterator<Type>::operator!= (Iterator<Type> const &iterator) const no
  * участок памяти, в противном случае `false`.
  */
 template<class Type>
-bool LList::Iterator<Type>::operator== (Iterator<Type> const &iterator) const noexcept {
+bool Iterator<Type>::operator== (Iterator<Type> const &iterator) const noexcept {
     return (_iterator == iterator._iterator);
 }
 
@@ -102,15 +108,15 @@ bool LList::Iterator<Type>::operator== (Iterator<Type> const &iterator) const no
  *
  * \return Ссылку на константный объект типа `Type`.
  */
-template<class Type>
-Node<Type> *LList::Iterator<Type>::operator*() {
-    if ( _iterator == nullptr ) {
-        throw std::invalid_argument("LList::Iterator<Type> : operator*");
-    }
-
-
-    return _iterator;
-}
+//template<class Type>
+//Node<Type> *Iterator<Type>::operator*() {
+//    if ( _iterator == nullptr ) {
+//        throw std::invalid_argument("Iterator<Type> : operator*");
+//    }
+//
+//
+//    return _iterator;
+//}
 
 
 /**
@@ -121,15 +127,34 @@ Node<Type> *LList::Iterator<Type>::operator*() {
  * \return Указатель на следующий итератор.
  */
 template<class Type>
-Iterator<Type> *LList::Iterator<Type>::operator++() {
+Iterator<Type> &Iterator<Type>::operator++() {
     if ( _iterator == nullptr || _iterator->GetSucessor() == nullptr ) {
-        throw std::invalid_argument("LList::Iterator<Type> : operator++");
+        throw std::invalid_argument("Iterator<Type> : operator++");
     }
 
     _iterator = _iterator->GetSucessor();
 
 
-    return this;
+    return *this;
+}
+
+/**
+ * Перегрузка оператора `operator--`.
+ *
+ * Переход итератора к предыдущему.
+ *
+ * \return Указатель на предыдущий итератор.
+ */
+template<class Type>
+Iterator<Type> &Iterator<Type>::operator--() {
+    if ( _iterator == nullptr || _iterator->GetSucessor() == nullptr ) {
+        throw std::invalid_argument("Iterator<Type> : operator++");
+    }
+
+    _iterator = _iterator->GetPredecessor();
+
+
+    return *this;
 }
 
 /**
@@ -139,16 +164,16 @@ Iterator<Type> *LList::Iterator<Type>::operator++() {
  * \return Указатель на итератор, находящийся на заданном расстоянии от данного.
  */
 template<class Type>
-Iterator<Type> *LList::Iterator<Type>::operator++ (int move_steps) {
+Iterator<Type> &Iterator<Type>::operator++ (int move_steps) {
     if ( _iterator == nullptr || _iterator->GetSucessor() == nullptr ) {
-        throw std::invalid_argument("LList::Iterator<Type> : operator++");
+        throw std::invalid_argument("Iterator<Type> : operator++");
     }
 
     for ( int i = 0; i < move_steps; i++ ) {
         Node<Type> *iteratorNext = _iterator->GetSucessor();
 
         if ( iteratorNext->GetSucessor() == nullptr ) {
-            throw std::invalid_argument("LList::Iterator<Type> : operator++");
+            throw std::invalid_argument("Iterator<Type> : operator++");
         }
 
         _iterator = iteratorNext;
@@ -156,7 +181,7 @@ Iterator<Type> *LList::Iterator<Type>::operator++ (int move_steps) {
 
 
 
-    return this;
+    return *this;
 }
 
 
