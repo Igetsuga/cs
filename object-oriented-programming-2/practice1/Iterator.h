@@ -25,24 +25,27 @@ public:
 	~Iterator();
 
 
-	Iterator<Type> &operator=(const Iterator<Type> &iterator) noexcept;
-
-	Iterator<Type> &operator=(const Node<Type> &node) noexcept;
+	Node<Type> *getNode();
 
 
+	Iterator<Type> &operator= (const Iterator<Type> &iterator) noexcept;
 
-	bool operator!=(Iterator<Type> const &iterator) const noexcept;
-	bool operator==(Iterator<Type> const &iterator) const noexcept;
+	Iterator<Type> &operator= (const Node<Type> &node) noexcept;
 
 
 
-	//Node<Type> *operator*();
+	bool operator!= (Iterator<Type> const &iterator) const noexcept;
+	bool operator== (Iterator<Type> const &iterator) const noexcept;
+
+
+
+	Node<Type> &operator*();
 
 	Iterator<Type> &operator++();
 	
 	Iterator<Type> &operator--();
 
-	Iterator<Type> &operator++(int steps_move);
+	Iterator<Type> &operator++ (int steps_move);
 
 private:
 	Node<Type> *_iterator;

@@ -43,6 +43,10 @@ template<class Type> Iterator<Type>::Iterator (const Iterator<Type> &iterator) {
  */
 template<class Type> Iterator<Type>::~Iterator() = default;
 
+template<class Type> Node<Type> *Iterator<Type>::getNode() {
+    return _iterator;
+}
+
 /**
  * Перегрузка оператора `operator=`(shallow copy).
  *
@@ -108,15 +112,15 @@ bool Iterator<Type>::operator== (Iterator<Type> const &iterator) const noexcept 
  *
  * \return Ссылку на константный объект типа `Type`.
  */
-//template<class Type>
-//Node<Type> *Iterator<Type>::operator*() {
-//    if ( _iterator == nullptr ) {
-//        throw std::invalid_argument("Iterator<Type> : operator*");
-//    }
-//
-//
-//    return _iterator;
-//}
+template<class Type>
+Node<Type> &Iterator<Type>::operator*() {
+    if ( _iterator == nullptr ) {
+        throw std::invalid_argument("Iterator<Type> : operator* : _iterator == nullptr");
+    }
+
+
+    return *_iterator;
+}
 
 
 /**

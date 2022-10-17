@@ -21,7 +21,6 @@
 
 #include "Computer.h"
 #include "LinkedList.h"
-#include "Node.h"
 #include "QueueIterated.h"
 
 /**
@@ -134,82 +133,87 @@ int main()
 
 	// -------------- p.1 --------------
 	// Cоздаем лист с элементами типа `int`
-	std::list<double> doubleList;
-	for ( int i = 0; i < 20; i++ ) {
-		push(doubleList, (double) rand());
-		//doubleList.push_back( (double)rand() );
-	}
+	//std::list<double> doubleList;
+	//for ( int i = 0; i < 20; i++ ) {
+	//	push(doubleList, (double) rand());
+	//	//doubleList.push_back( (double)rand() );
+	//}
 
-	// Проверка функции `print` для объектов типа std::list<Type>
-	print(doubleList);
+	//// Проверка функции `print` для объектов типа std::list<Type>
+	//print(doubleList);
 
-	// Проверка того, что функция `push` добавляет элементы в контейнер, оставляя его отсортированным
-	if ( std::is_sorted(doubleList.begin(), doubleList.end()) ) { std::cout << "SORTED" << nline; }
-	else { std::cout << "UNSORTED" << nline; }
+	//// Проверка того, что функция `push` добавляет элементы в контейнер, оставляя его отсортированным
+	//if ( std::is_sorted(doubleList.begin(), doubleList.end()) ) { std::cout << "SORTED" << nline; }
+	//else { std::cout << "UNSORTED" << nline; }
 
-	print(doubleList); std::cout << nline;
+	//print(doubleList); std::cout << nline;
 
-	// Удалим из листа несколько значений
-	auto hValue_temp = pop(doubleList, 1); std::cout << hValue_temp << " ";
-	print(doubleList); std::cout << nline;
+	//// Удалим из листа несколько значений
+	//auto hValue_temp = pop(doubleList, 1); std::cout << hValue_temp << " ";
+	//print(doubleList); std::cout << nline;
 
-	hValue_temp = pop(doubleList, 9); std::cout << hValue_temp << " ";
-	print(doubleList); std::cout << nline;
+	//hValue_temp = pop(doubleList, 9); std::cout << hValue_temp << " ";
+	//print(doubleList); std::cout << nline;
 
-	hValue_temp = pop(doubleList, doubleList.size() - 1); std::cout << hValue_temp << " ";
-	print(doubleList); std::cout << nline;
-
-
-
-	// Выделим из нашего листа новый, элементы которого представляют собой
-	// числа типа `double` с дробной частью не превышающей числа `p`.
-	//bool (*func_key)(const double, const double) = &EvaluateFractionalPart;
-	using func = bool(*)(const double, const double);
-	func efp = &EvaluateFractionalPart;
-
-	double param = 0.4567;
-	std::for_each(doubleList.begin(), doubleList.end(), [](double &n) {n /= 100; });
-
-
-	print(doubleList);
-	//std::list<double> listFiltered = filter(doubleList, func_key, param);
-	std::list<double> listFiltered = filter(doubleList, efp, param);
-
-	std::cout << nline << "listFiltered is: ";
-	print(listFiltered);
-
-	doubleList.clear();
-	listFiltered.clear();
+	//hValue_temp = pop(doubleList, doubleList.size() - 1); std::cout << hValue_temp << " ";
+	//print(doubleList); std::cout << nline;
 
 
 
-	// -------------- p.2 --------------
-	std::list<Computer> computerList;
+	//// Выделим из нашего листа новый, элементы которого представляют собой
+	//// числа типа `double` с дробной частью не превышающей числа `p`.
+	////bool (*func_key)(const double, const double) = &EvaluateFractionalPart;
+	//using func = bool(*)(const double, const double);
+	//func efp = &EvaluateFractionalPart;
 
-	Computer Apple ((std::string) "apple", 1000, 16, 64, 17.8);
-	Computer Lenovo ((std::string) "lenovo", 500, 16, 16, 15.0);
-	Computer Huawei ((std::string) "huawei", 400, 16, 32, 16.7);
-	Computer HP ((std::string) "hp", 350, 4, 8, 14.5);
-	Computer Dell ((std::string) "dell", 200, 4, 8, 16.2);
+	//double param = 0.4567;
+	//std::for_each(doubleList.begin(), doubleList.end(), [](double &n) {n /= 100; });
 
-	push(computerList, Apple);
-	push(computerList, Lenovo);
-	push(computerList, Huawei);
-	push(computerList, HP);
-	push(computerList, Dell);
 
-	print(computerList);
+	//print(doubleList);
+	////std::list<double> listFiltered = filter(doubleList, func_key, param);
+	//std::list<double> listFiltered = filter(doubleList, efp, param);
 
-	auto hvalue = pop(computerList, 2);
-	std::cout << nline << "hvalue is: " << hvalue;
+	//std::cout << nline << "listFiltered is: ";
+	//print(listFiltered);
 
-	print(computerList);
+	//doubleList.clear();
+	//listFiltered.clear();
+
+
+
+	//// -------------- p.2 --------------
+	//std::list<Computer> computerList;
+
+	//Computer Apple ((std::string) "apple", 1000, 16, 64, 17.8);
+	//Computer Lenovo ((std::string) "lenovo", 500, 16, 16, 15.0);
+	//Computer Huawei ((std::string) "huawei", 400, 16, 32, 16.7);
+	//Computer HP ((std::string) "hp", 350, 4, 8, 14.5);
+	//Computer Dell ((std::string) "dell", 200, 4, 8, 16.2);
+
+	//push(computerList, Apple);
+	//push(computerList, Lenovo);
+	//push(computerList, Huawei);
+	//push(computerList, HP);
+	//push(computerList, Dell);
+
+	//print(computerList);
+
+	//auto hvalue = pop(computerList, 2);
+	//std::cout << nline << "hvalue is: " << hvalue;
+
+	//print(computerList);
 
 
 	//Computer computer_undef; std::cout << computer_undef;
 
+	
+	QueueIterated<int> queue;
 
-	QueueIterated<int>();
+	//queue.push(1);
+	//queue.print();
+
+
 
 
 

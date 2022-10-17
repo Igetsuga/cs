@@ -3,16 +3,19 @@
 
 template<class Type>
 class QueueIterated : public LinkedListIterated<Type> {
+public:
 
+    friend class Iterator<Type>;
 
-    QueueIterated() : LinkedListIterated<Type>() {};
+    QueueIterated() {
+        std::cout << '\n' << "QueueIterated has been created" << '\n';
+    }
 
     virtual ~QueueIterated() = default;
 
 
 
-    
-    void LinkedList<Type>::push (const Type &data) override {
+    void push (const Type &data) override {
         Iterator<Type> iteratorCurrent = this->LinkedListIterated<Type>::begin();
 
         if (LinkedList<Type>::_size != 0 )
@@ -20,13 +23,13 @@ class QueueIterated : public LinkedListIterated<Type> {
             iteratorCurrent++;
         }
 
-        Node<Type> *newLastNode = new Node<Type>(data, nullptr, iteratorCurrent._iterator);
+        Node<Type> *newLastNode = new Node<Type>(data, nullptr, iteratorCurrent.getNode());
         
         if ( LinkedList<Type>::_size == 0 ) {
             LinkedList<Type>::_end = LinkedList<Type>::_begin = newLastNode;
         }
         else {
-            iteratorCurrent._iterator->Node<Type>::SetSucessor(newLastNode);
+            (iteratorCurrent.getNode())->Node<Type>::SetSucessor(newLastNode);
             LinkedList<Type>::_end = newLastNode;
         }
         
@@ -34,21 +37,20 @@ class QueueIterated : public LinkedListIterated<Type> {
     }
 
     
-    
     const Node<Type> *pop() override {
         if ( LinkedList<Type>::_size == 0 ) {
-            throw std::bad_alloc("Method LinkedList<Type>::pop() : size = 0");
+            throw std::invalid_argument("Method LinkedList<Type>::pop() : size = 0");
         }
         else {
             Iterator<Type> iteratorCurrent = this->LinkedListIterated<Type>::begin();
-            Type nodeDeleted = iteratorCurrent._iterator;
+            Node<Type> *nodeDeleted = &(*iteratorCurrent);
 
             if ( LinkedList<Type>::_size == 1 ) {
                 delete LinkedList<Type>::_begin;
                 LinkedList<Type>::_begin = LinkedList<Type>::_end = nullptr;
             }
             else {
-                Node<Type> *newFirstNode = (iteratorCurrent++)._iterator;
+                Node<Type> *newFirstNode = &( *(iteratorCurrent++) );
                 newFirstNode->SetPredecessor(nullptr);
                 
                 delete LinkedList<Type>::_begin;

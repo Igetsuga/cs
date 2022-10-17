@@ -20,6 +20,9 @@
  *
  */
 template<class Type> LinkedList<Type>::LinkedList() {
+	
+	std::cout << '\n' << "LinkedList has been created" << '\n';
+
 	_begin = _end = nullptr;
 	_size = 0;
 }
@@ -29,7 +32,10 @@ template<class Type> LinkedList<Type>::LinkedList() {
  *
  * \param otherList
  */
-template<class Type> LinkedList<Type>::LinkedList(const LinkedList<Type> &otherList) {
+template<class Type> LinkedList<Type>::LinkedList (const LinkedList<Type> &otherList) {
+	
+	std::cout << '\n' << "LinkedList copy constructor " << '\n';
+	
 	if ( otherList._size != 0 ) {
 		_begin = new Node<Type>(otherList._begin->GetData());
 
@@ -65,7 +71,7 @@ template<class Type> LinkedList<Type>::LinkedList(const LinkedList<Type> &otherL
  * объекту `otherList`, но ячейки памяти не пресекаются.
  */
 template<class Type>
-LinkedList<Type> &LinkedList<Type>::operator=(const LinkedList &otherList) {
+LinkedList<Type> &LinkedList<Type>::operator= (const LinkedList &otherList) {
 
 	Node<Type> *nodeCurrent = _begin;
 	Node<Type> *nodeCurrentOther = otherList._begin;
@@ -113,7 +119,13 @@ LinkedList<Type> &LinkedList<Type>::operator=(const LinkedList &otherList) {
  *
  */
 template<class Type> LinkedList<Type>::~LinkedList() {
-	this->clear();
+	Node<Type> *deleteNext = _begin;
+
+	while ( deleteNext != nullptr ) {
+		Node<Type> *deleteNext = _begin->GetSucessor();
+		delete _begin; _begin = deleteNext;
+	}
+	_size = 0;
 }
 
 
@@ -189,7 +201,7 @@ void LinkedList<Type>::SetEnd(const Node<Type> newEnd) noexcept {
 
 
 
-
+ 
 /**
  * Перегрузка оператора `operator[]`.
  *
@@ -199,7 +211,7 @@ void LinkedList<Type>::SetEnd(const Node<Type> newEnd) noexcept {
  * `pos - 1` в контейнере.
  */
 template<class Type>
-const Node<Type> *LinkedList<Type>::operator[](const int &pos) noexcept(false) {
+Node<Type> &LinkedList<Type>::operator[](const int &pos) noexcept(false) {
 
 	if ( pos < 0 || pos >= _size ) {
 		throw std::out_of_range("Method LinkedList<Type>::operator[] : pos out of range");
@@ -214,6 +226,20 @@ const Node<Type> *LinkedList<Type>::operator[](const int &pos) noexcept(false) {
 	return nodeCurrent;
 }
 
+
+
+template<class Type> void LinkedList<Type>::print() {
+	Node<Type> *current = _begin;
+	
+	std::cout << nline << "{ : ";
+	
+	for ( int i = 0; i < _size; i++ ) {
+		std::cout << current->GetData() << " : ";
+		current = current->GetSucessor();
+	}
+	
+	std::cout << "}; " << nline;
+}
 
 
 /**

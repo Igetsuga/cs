@@ -51,9 +51,11 @@ public:
 
 
 
-	virtual const Node<Type> *operator[](const int &pos) noexcept(false);
+	virtual Node<Type> &operator[](const int &pos) noexcept(false);
 
 
+	
+	virtual void print();
 
 	template<class Type> friend std::ostream &operator<< (std::ostream &output,
 														  LinkedList<Type> &list) noexcept(false);

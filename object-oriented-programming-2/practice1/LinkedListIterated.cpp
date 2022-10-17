@@ -6,7 +6,9 @@
  * 
  */
 template<class Type>
-LinkedListIterated<Type>::LinkedListIterated() : LinkedList<Type>() {};
+LinkedListIterated<Type>::LinkedListIterated() {
+    std::cout << '\n' << "LinkedListIterated has been created" << '\n';
+}
 
 /**
  * Виртуальный деструктор.

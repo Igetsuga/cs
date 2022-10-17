@@ -29,8 +29,8 @@ public:
 
 
 
-	const Node<Type> *GetSucessor() const noexcept;
-	const Node<Type> *GetPredecessor() const noexcept;
+	Node<Type> *GetSucessor() const noexcept;
+	Node<Type> *GetPredecessor() const noexcept;
 	const Type &GetData() const noexcept;
 
 

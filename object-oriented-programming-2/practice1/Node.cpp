@@ -27,6 +27,7 @@ template<class Type> Node<Type>::Node(const Type &data,
 	_data = data;
 }
 
+
 /**
  * Деструктор класса.
  *
@@ -34,23 +35,26 @@ template<class Type> Node<Type>::Node(const Type &data,
  */
 template<class Type> Node<Type>::~Node () = default;
 
+
 /**
  * Предоставляет возможность получить доступ к полю `_sucessor`.
  *
  * \return Указатель на следующий узел.
  */
-template<class Type> const Node<Type> *Node<Type>::GetSucessor() const noexcept {
+template<class Type> Node<Type> *Node<Type>::GetSucessor() const noexcept {
 	return _sucessor;
 }
+
 
 /**
  * Предоставляет возможность получить доступ к полю `_predecessor`.
  *
  * \return Указатель на предыдущий узел.
  */
-template<class Type> const Node<Type> *Node<Type>::GetPredecessor() const noexcept {
+template<class Type> Node<Type> *Node<Type>::GetPredecessor() const noexcept {
 	return _predecessor;
 }
+
 
 /**
  * Предоставляет возможность получить доступ к полю `_data`.
@@ -61,6 +65,7 @@ template<class Type> const Type &Node<Type>::GetData() const noexcept {
 	return _data;
 }
 
+
 /**
  * Предоставляет возможность установить новое значение для поля `_sucessor`.
  *
@@ -69,6 +74,7 @@ template<class Type> const Type &Node<Type>::GetData() const noexcept {
 template<class Type> void Node<Type>::SetSucessor (const Node<Type> *sucessor) noexcept {
 	_sucessor = sucessor;
 }
+
 
 /**
  * Предоставляет возможность установить новое значение для поля `_predecessor`.
@@ -79,6 +85,7 @@ template<class Type> void Node<Type>::SetPredecessor (const Node<Type> *predeces
 	_predecessor = predecessor;
 }
 
+
 /**
  * Предоставляет возможность установить новое значения для поля `_data`.
  *
@@ -87,6 +94,7 @@ template<class Type> void Node<Type>::SetPredecessor (const Node<Type> *predeces
 template<class Type> void Node<Type>::SetData (const Type & data) noexcept {
 	_data = data;
 }
+
 
 /**
  * Проверка равенства объектов(deep).
@@ -106,16 +114,18 @@ template<class Type> bool Node<Type>::DeepEqual (const Node<Type> &node) const n
 	return false;
 }
 
+
 /**
  * \breif Перегрузка оператора `operator=`(shallow).
  * 
  * \param node
  */
-template<class Type> Node<Type> &Node<Type>::operator=(const Node<Type> &node) {
+template<class Type> Node<Type> &Node<Type>::operator= (const Node<Type> &node) {
 	_sucessor = node._sucessor;
 	_predecessor = node._predecessor;
 	_data = node._data;
 }
+
 
 /**
  * \brief Перегрузка оператора `operator==`. 
@@ -135,6 +145,7 @@ template<class Type> bool Node<Type>::operator== (const Node<Type> &node) const 
 	return false;
 }
 
+
 /**
  * \brief Перегрузка оператора `operator`=`.
  * 
@@ -146,19 +157,6 @@ template<class Type> bool Node<Type>::operator!= (const Node<Type> &node) const 
 	return !(*this == node);
 }
 
-/**
- * Перегрузка оператора `operator*`.
- *
- * \return Ссылку на константный объект типа `Type`.
- */
-//template<class Type> const Type &Node<Type>::operator*() const {
-//	if ( this == nullptr ) {
-//		throw std::invalid_argument("Node<Type> : operator*");
-//	}
-//
-//
-//	return _data;
-//}
 
 /**
  * Перегрузка оператора `operator<<`.
