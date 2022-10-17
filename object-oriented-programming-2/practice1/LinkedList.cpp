@@ -19,13 +19,14 @@
  * Конструктор по умолчанию.
  *
  */
-template<class Type> LinkedList<Type>::LinkedList() {
+template<class Type> LinkedList<Type>::LinkedList();
+//{
 	
-	std::cout << '\n' << "LinkedList has been created" << '\n';
+	/*std::cout << '\n' << "LinkedList has been created" << '\n';
 
 	_begin = _end = nullptr;
-	_size = 0;
-}
+	_size = 0;*/
+//}
 
 /**
  * Конструктор копий(Deep copy).
@@ -118,15 +119,15 @@ LinkedList<Type> &LinkedList<Type>::operator= (const LinkedList &otherList) {
  * Деструктор реализовани через вспомогательный метод `LinkedList<Type>::clear()`.
  *
  */
-template<class Type> LinkedList<Type>::~LinkedList() {
-	Node<Type> *deleteNext = _begin;
-
-	while ( deleteNext != nullptr ) {
-		Node<Type> *deleteNext = _begin->GetSucessor();
-		delete _begin; _begin = deleteNext;
-	}
-	_size = 0;
-}
+//template<class Type> LinkedList<Type>::~LinkedList() {
+//	Node<Type> *deleteNext = _begin;
+//
+//	while ( deleteNext != nullptr ) {
+//		Node<Type> *deleteNext = _begin->GetSucessor();
+//		delete _begin; _begin = deleteNext;
+//	}
+//	_size = 0;
+//}
 
 
 

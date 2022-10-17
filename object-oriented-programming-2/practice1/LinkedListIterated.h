@@ -2,17 +2,19 @@
 #include "LinkedList.h"
 #include "Iterator.h"
 
-//template<class Type> using LLIT = LinkedListIterated;
-
 
 template<class Type> class LinkedListIterated : public LinkedList<Type> {
 public:
 	
 	friend class Iterator<Type>;
 
-	LinkedListIterated();
+	LinkedListIterated() {
+		std::cout << '\n' << "LinkedListIterated has been created" << '\n';
+	}
 
-	virtual ~LinkedListIterated();
+	~LinkedListIterated() {
+		std::cout << "cool destructor";
+	}
 	
 
 	/**

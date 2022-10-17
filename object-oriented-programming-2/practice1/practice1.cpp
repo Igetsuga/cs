@@ -21,7 +21,8 @@
 
 #include "Computer.h"
 #include "LinkedList.h"
-#include "QueueIterated.h"
+#include "LinkedListIterated.h"
+//#include "QueueIterated.h"
 
 /**
  * Помещает объект в контейнер std::list, оставляя его отсортированным.
@@ -128,6 +129,179 @@ bool EvaluateFractionalPart (const double p, const double value) {
 
 
 
+
+
+
+template<class Type>
+class QueueIterated : public LinkedListIterated<Type> {
+public:
+
+	//friend class Iterator<Type>;
+
+	QueueIterated() {
+		std::cout << '\n' << "QueueIterated has been created" << '\n';
+	}
+
+	~QueueIterated() = default;
+
+
+	void master() const noexcept;
+	
+	using LinkedListIterated<Type>::push;
+	using LinkedListIterated<Type>::pop;
+
+
+	void push (const Type &data) override {
+		std::cout << "hello" << '\n';
+	}
+
+	virtual const Node<Type> *pop() override;
+
+};
+
+
+template<class Type> void QueueIterated<Type>::master() const noexcept {
+	std::cout << "YA ZDES TT";
+}
+
+
+
+
+template<class Type> const Node<Type> *QueueIterated<Type>::pop() {
+	std::cout << "bingo" << '\n';
+
+
+	return nullptr;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 int main()
 {
 
@@ -208,7 +382,7 @@ int main()
 	//Computer computer_undef; std::cout << computer_undef;
 
 	
-	QueueIterated<int> queue;
+	QueueIterated<double> queue;
 
 	//queue.push(1);
 	//queue.print();

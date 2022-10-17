@@ -17,17 +17,31 @@
 template <class Type> class LinkedList {
 public:
 
-	LinkedList();
+	LinkedList() {
+		std::cout << '\n' << "LinkedList has been created" << '\n';
+
+		_begin = _end = nullptr;
+		_size = 0;
+	}
+
 
 	LinkedList (const LinkedList<Type> &otherList);
 
 	LinkedList<Type> &operator= (const LinkedList<Type> &otherList);
 
-	virtual ~LinkedList();
+	virtual ~LinkedList() {
+		Node<Type> *deleteNext = _begin;
+
+		while ( deleteNext != nullptr ) {
+			Node<Type> *deleteNext = _begin->GetSucessor();
+			delete _begin; _begin = deleteNext;
+		}
+		_size = 0;
+	}
 
 
 
-	virtual void clear() final;
+	void clear();
 
 	const size_t size() const noexcept;
 
@@ -51,11 +65,11 @@ public:
 
 
 
-	virtual Node<Type> &operator[](const int &pos) noexcept(false);
+	Node<Type> &operator[](const int &pos) noexcept(false);
 
 
 	
-	virtual void print();
+	void print();
 
 	template<class Type> friend std::ostream &operator<< (std::ostream &output,
 														  LinkedList<Type> &list) noexcept(false);

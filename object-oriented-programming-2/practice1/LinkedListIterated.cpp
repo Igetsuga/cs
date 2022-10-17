@@ -5,10 +5,10 @@
  * Конструктор по умолчанию. Конструктор унаследован от класса `LinkedList<Type>`.
  * 
  */
-template<class Type>
-LinkedListIterated<Type>::LinkedListIterated() {
-    std::cout << '\n' << "LinkedListIterated has been created" << '\n';
-}
+//template<class Type>
+//LinkedListIterated<Type>::LinkedListIterated() {
+//    std::cout << '\n' << "LinkedListIterated has been created" << '\n';
+//}
 
 /**
  * Виртуальный деструктор.
@@ -16,6 +16,7 @@ LinkedListIterated<Type>::LinkedListIterated() {
  * \warning Определем компилятором.
  * 
  */
-template<class Type>
-LinkedListIterated<Type>::~LinkedListIterated() = default;
+
+//template<class Type>
+//LinkedListIterated<Type>::~LinkedListIterated() = default;
 
