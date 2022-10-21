@@ -147,8 +147,8 @@ public:
 
 	void master() const noexcept;
 	
-	using LinkedListIterated<Type>::push;
-	using LinkedListIterated<Type>::pop;
+	//using LinkedListIterated<Type>::push;
+	//using LinkedListIterated<Type>::pop;
 
 
 	void push (const Type &data) override {

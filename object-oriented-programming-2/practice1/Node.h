@@ -48,8 +48,6 @@ public:
 
 	bool operator!= (const Node<Type> &node) const noexcept;
 
-	const Type &operator*() const;
-
 	template<class Type> friend std::ostream &operator<< (std::ostream &output,
 														  const Node<Type> &node);
 private:

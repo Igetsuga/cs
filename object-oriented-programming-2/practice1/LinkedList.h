@@ -17,27 +17,13 @@
 template <class Type> class LinkedList {
 public:
 
-	LinkedList() {
-		std::cout << '\n' << "LinkedList has been created" << '\n';
-
-		_begin = _end = nullptr;
-		_size = 0;
-	}
-
+	LinkedList();
 
 	LinkedList (const LinkedList<Type> &otherList);
 
 	LinkedList<Type> &operator= (const LinkedList<Type> &otherList);
 
-	virtual ~LinkedList() {
-		Node<Type> *deleteNext = _begin;
-
-		while ( deleteNext != nullptr ) {
-			Node<Type> *deleteNext = _begin->GetSucessor();
-			delete _begin; _begin = deleteNext;
-		}
-		_size = 0;
-	}
+	virtual ~LinkedList();
 
 
 

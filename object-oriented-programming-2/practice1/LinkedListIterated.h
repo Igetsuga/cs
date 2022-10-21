@@ -8,14 +8,14 @@ public:
 	
 	friend class Iterator<Type>;
 
-	LinkedListIterated() {
-		std::cout << '\n' << "LinkedListIterated has been created" << '\n';
-	}
+	LinkedListIterated();
 
-	~LinkedListIterated() {
-		std::cout << "cool destructor";
-	}
+	virtual ~LinkedListIterated();
 	
+	
+	virtual void push (const Type &data) override = 0;
+	virtual const Node<Type> *pop() override = 0;
+
 
 	/**
 	 * Метод позволяет получить итератор начала контейнера.
