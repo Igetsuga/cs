@@ -13,14 +13,9 @@
 /**
  * Абстрактный класс List.
  */
-template<class Type> class List 
+template<class Type> class IList 
 {
 public:
-
-    List();
-    virtual ~List() = 0;
-
-
 
     virtual void push (const Type &data) = 0;
     
