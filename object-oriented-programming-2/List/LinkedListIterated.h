@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 
 #include "LinkedList.h"
@@ -9,9 +9,9 @@ template<class Type> class LinkedListIterated : public LinkedList<Type>
 {
 public:
     
-    class Iterator() : public std::iterator<std::input_iterator_tag, Type>{
+    /*class Iterator() : public std::iterator<std::input_iterator_tag, Type> {
     public:
-        
+
         Iterator() {
             _node = nullptr;
         }
@@ -22,7 +22,7 @@ public:
         }
 
 
-        Iterator (const Type &data) {
+        Iterator (const Type & data) {
             _node = new Node<Type>(data);
         }
 
@@ -35,7 +35,7 @@ public:
 
     protected:
         Node<Type> *_node;
-    }
+    };*/
 
 
     LinkedListIterated() {

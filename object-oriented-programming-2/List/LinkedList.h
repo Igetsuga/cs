@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "IList.h"
 #include <iostream>
@@ -6,12 +6,13 @@
 
 template<class Type> class LinkedList : public IList<Type> {
 public:
-    // checked
+    // nice
     LinkedList() {
+        std::cout << "LinkedList had been created" << nline;
         _begin = _end = nullptr;
         _size = 0;
     }
-    // checked
+    // nice
     LinkedList (const LinkedList<Type> &otherList) noexcept {
         std::cout << '\n' << "LinkedList copy constructor " << '\n';
 
@@ -38,7 +39,7 @@ public:
 
         _size = otherList._size;
     }
-    // checked
+    // nice
     LinkedList<Type> &operator= (const LinkedList<Type> &otherList) noexcept {
         this->clear();
 
@@ -64,7 +65,7 @@ public:
 
         return *this;
     }
-    // checked
+    // nice
     virtual ~LinkedList() {
         while ( _begin != nullptr ) {
             Node<Type> *nodeToDelete = _begin->getSucessor();
@@ -74,38 +75,43 @@ public:
     }
 
 
+    // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
 
-    Node<Type> *getBegin() const noexcept {
-        return _begin;
+
+    Type &front() {
+        return const_cast<Type&>(_begin->getData());
     }
-    Node<Type> *getEnd() const noexcept {
-        return _end;
+    
+    Type &back() {
+        return const_cast<Type &>(_end->getData());
     }
-    const size_t &size() const noexcept {
+    
+
+    // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+
+
+    bool empty() const override {
+        return (_size == 0 ? 1 : 0);
+    }
+    
+    size_t size() const noexcept override {
         return _size;
     }
 
-
-    void setBegin (const Node<Type> *begin) {
-        if ( begin->getSucessor() != _begin->getSucessor() ) {
-            throw std::invalid_argument("Method LinkedList::setBegin(): pointers to sucessors don't match");
-        }
-        _begin = begin;
-    }
-    void setBegin (const Type &data) {
-        _begin->setData(data);
-    }
     
-    void setEnd (const Node<Type> *end) {
-        if ( end->getPredecessor() != _end->getPredecessor() ) {
-            throw std::invalid_argument("Method LinkedList::setEnd(): pointers to predecessors don't match");
-        }
-        _end = end;
-    }
-    void setEnd (const Type &data) {
-        _end->setData(data);
-    }
+    // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
 
+
+    virtual void clear() noexcept override {
+        while ( _begin != nullptr ) {
+            Node<Type> *nodeToDelete = _begin->getSucessor();
+            delete _begin; _begin = nodeToDelete;
+        }
+        _size = 0;
+    }
     // TODO: insert
     virtual void insert (const Type &data, const int &pos) override {
         if ( pos <= 0 ) {
@@ -132,8 +138,29 @@ public:
         size_++;
     }*/
     }
-    // checked
-    virtual void push (const Type &data) override {
+    // TODO: LinkedList<Type>::erase
+    virtual const Node<Type> *erase (const int &pos) override {
+        return nullptr;
+    }
+    // nice
+    virtual void push_back (const Type &data) override {
+        Node<Type> *endNew = new Node<Type>(data, nullptr, _end);
+        if ( _size != 0 ) {
+            _end->setSucessor(endNew);
+        }
+        else {
+            _begin = endNew;
+        }
+
+        _end = endNew;
+        _size++;
+    }
+    // TODO
+    virtual const Node<Type> *pop_back() {
+        return nullptr;
+    }
+    // nice
+    virtual void push_front (const Type &data) override {
         Node<Type> *beginNew = new Node<Type>(data, _begin, nullptr);
         if ( _size != 0 ) {
             _begin->setPredecessor(beginNew);
@@ -145,26 +172,51 @@ public:
         _begin = beginNew;
         _size++;
     }
-
-    // TODO: LinkedList<Type>::remove
-    virtual const Node<Type> *remove (const int &pos) override {
-        return nullptr;
-    }
     // TODO: LinkedList<Type>::pop
-    virtual const Node<Type> *pop() override {
+    virtual const Node<Type> *pop_front() override {
         return nullptr;
     }
-    //checked
-    virtual void clear() {
-        while ( _begin != nullptr ) {
-            Node<Type> *nodeToDelete = _begin->getSucessor();
-            delete _begin; _begin = nodeToDelete;
+    
+    
+    // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+
+
+    Node<Type> *getBegin() const noexcept {
+        return _begin;
+    }
+
+    Node<Type> *getEnd() const noexcept {
+        return _end;
+    }
+
+    void setBegin (const Node<Type> *begin) {
+        if ( begin->getSucessor() != _begin->getSucessor() ) {
+            throw std::invalid_argument("Method LinkedList::setBegin(): pointers to sucessors don't match");
         }
-        _size = 0;
+        _begin = begin;
+    }
+
+    void setBegin (const Type &data) {
+        _begin->setData(data);
+    }
+
+    void setEnd (const Node<Type> *end) {
+        if ( end->getPredecessor() != _end->getPredecessor() ) {
+            throw std::invalid_argument("Method LinkedList::setEnd(): pointers to predecessors don't match");
+        }
+        _end = end;
+    }
+
+    void setEnd (const Type &data) {
+        _end->setData(data);
     }
 
 
-    //checked
+    // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+
+    //nice
     Node<Type> *operator[] (const int &pos) const {
         if ( pos < 0 || pos >= _size ) {
             throw std::out_of_range("Method LinkedList<Type>::operator[] : pos out of range");
@@ -181,7 +233,10 @@ public:
     }
 
 
-    //checked
+    // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+
+    //nice
     void print() const noexcept {
         Node<Type> *current = _begin;
 
@@ -194,10 +249,12 @@ public:
 
         std::cout << "}; " << nline;
     }
+
     template<class otherType> friend std::ostream &operator<< (std::ostream &output,
                                                                LinkedList<otherType> &list) noexcept(false);
 
-
+    // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
 
 protected:
     Node<Type> *_begin;
