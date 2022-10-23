@@ -223,26 +223,43 @@ int main()
         queue.insert(i);
     }
     QueueIterated<int>::Iterator q_it = queue.begin() + 2;
-    std::cout << queue;
-    std::cout << *q_it;
+    std::cout << queue; std::cout << *q_it;
+    
     queue.erase(); queue.erase(); queue.erase();
     std::cout << queue;
+
+
+
     StackIterated<int> stack;
     for ( int i = 0; i < 10; i++ ) {
         stack.insert(i);
     }
+
     StackIterated<int>::Iterator s_it = stack.begin() + 6;
-    std::cout << stack;
-    std::cout << *s_it;
+    std::cout << stack; std::cout << *s_it;
     stack.erase(); stack.erase(); stack.erase();
     std::cout << stack;
     
+
+
+
     LinkedListIterated<int> IT;
     for ( int i = 0; i < 10; i++ ) {
         IT.push_back(i);
     }
     IT.print();
     IT.print_reverse(); 
+
+
+
+
+    Container<int> container;
+    for ( int i = 0; i < 10; i++ ) {
+        container.insert(std::rand());
+    }
+    std::cout << container;
+
+
 
     return 0;
 }
