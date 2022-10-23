@@ -93,23 +93,29 @@ public:
 		_data = data;
 	}
 	
-	// TODO: refactoring
+	bool operator> (const Node<Type> &node) const noexcept {
+		return _data > node._data;
+	}
+	
+	bool operator< (const Node<Type> &node) const noexcept {
+		return _data < node._data;
+	}
+	
 	bool operator== (const Node<Type> &node) const noexcept {
-		// node = nullptr --> data1 --> data2
-		if ( _data == node._data &&
-			_sucessor->_data == node._sucessor->_data &&
-			_predecessor->_data == node._predecessor->_data ) {
-			return true;
-		}
-
-
-		return false;
+		return _data == node._data;
 	}
 
 	bool operator!= (const Node<Type> &node) const noexcept {
 		return !(*this == node);
 	}
 
+	bool operator>= (const Node<Type> &node) const noexcept {
+		return (_data == node._data) || (_data > node._data);
+	}
+
+	bool operator<= (const Node<Type> &node) const noexcept {
+		return (_data == node._data) || (_data < node._data);
+	}
 
 	// ----------------------------------------------------------------------
 	// ----------------------------------------------------------------------

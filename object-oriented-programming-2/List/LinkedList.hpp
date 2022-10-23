@@ -305,7 +305,7 @@ public:
     // ----------------------------------------------------------------------
 
     
-    void print() const noexcept {
+    virtual void print() const noexcept {
         Node<Type> *current = _begin;
 
         std::cout << nline << "{ : ";
@@ -318,7 +318,7 @@ public:
         std::cout << "}; " << nline;
     }
 
-    void print_reverse() const noexcept {
+    virtual void print_reverse() const noexcept {
         Node<Type> *current = _end;
 
         std::cout << nline << "{ : ";

@@ -228,7 +228,7 @@ public:
 
     // Невозможна вставка в конец. Реализация 1. Более правильная, но медленная 
     // из-за дополнительных неявных преобразований.
-    Iterator insert (const_iterator const_pos, const Type &data) {
+    virtual Iterator insert (const_iterator const_pos, const Type &data) final {
         if ( const_pos == nullptr ) {
             throw std::exception("Method LIT<Type>::insert(...): pos = nullptr");
         }
@@ -254,7 +254,7 @@ public:
     }
     
     // Невозможна вставка в конец. Реализация 2. Не по канону, но быстрее.
-    //Iterator insert (const Iterator const_pos, const Type &data) {
+    //virtual Iterator insert (const Iterator const_pos, const Type &data) final {
     //    if ( const_pos == nullptr ) {
     //        throw std::exception("Method LIT<Type>::insert(...): pos = nullptr");
     //    }
@@ -279,7 +279,7 @@ public:
     //}
 
 
-    const_iterator erase (const_iterator const_pos) {
+    virtual const_iterator erase (const_iterator const_pos) final {
         if ( const_pos == nullptr ) {
             throw std::exception("Method LIT<Type>::erase(...): pos = nullptr");
         }
@@ -328,6 +328,30 @@ public:
 
     // ----------------------------------------------------------------------
     // ----------------------------------------------------------------------
+
+    virtual void print() const noexcept override {
+        Iterator itt = this->begin();
+
+        std::cout << nline << "{ : ";
+
+        for ( int i = 0; i < LinkedList<Type>::_size; i++, itt++ ) {
+            std::cout << *itt << " : ";
+        }
+
+        std::cout << "}; " << nline;
+    }
+
+    virtual void print_reverse() const noexcept override {
+        Iterator itt = this->end();
+
+        std::cout << nline << "{ : ";
+
+        for ( int i = 0; i < LinkedList<Type>::_size; i++, itt-- ) {
+            std::cout << *itt << " : ";
+        }
+
+        std::cout << "}; " << nline;
+    }
 };
 
 
