@@ -4,7 +4,6 @@
 
 template<class Type> class QueueIterated : public LinkedListIterated<Type> 
 {
-    //template<class Type> using Iterator = LinkedList<Type>::Iterator;
 public:
 
     QueueIterated() = default;

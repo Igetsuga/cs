@@ -79,34 +79,43 @@ public:
             if ( this == nullptr ) {
                 throw std::exception("Method LIT<Type>::Iterator::operator++(): this == nullptr");
             }
-            _iterator = _iterator->getSucessor();
-            return *this;
+            if ( _iterator->getSucessor() != nullptr ) {
+                _iterator = _iterator->getSucessor();
+                return *this;
+            }
         }
 
         Iterator operator++(int v) {
             if ( this == nullptr ) {
                 throw std::exception("Method LIT<Type>::Iterator::operator++(int v): this = nullptr");
             }
-            Iterator itt_this_old = *this;
-            _iterator = _iterator->getSucessor();
-            return itt_this_old;
+            if ( _iterator->getSucessor() != nullptr ) {
+                Iterator itt_this_old = *this;
+                _iterator = _iterator->getSucessor();
+                return itt_this_old;
+            }
         }
 
         Iterator &operator--() {
             if ( this == nullptr ) {
                 throw std::exception("Method LIT<Type>::Iterator::operator--(): this = nullptr");
             }
-            _iterator = _iterator->getPredecessor();
-            return *this;
+            if ( _iterator->getPredecessor() != nullptr ) {
+                _iterator = _iterator->getPredecessor();
+                return *this;
+            }
         }
 
         Iterator operator--(int v) {
             if ( this == nullptr ) {
                 throw std::exception("Method LIT<Type>::Iterator::operator--(int v): this = nullptr");
             }
-            Iterator itt_this_old = *this;
-            _iterator = _iterator->getPredecessor();
-            return itt_this_old;
+            if ( _iterator->getPredecessor() != nullptr ) {
+                Iterator itt_this_old = *this;
+                _iterator = _iterator->getPredecessor();
+                return itt_this_old;
+            }
+            
         }
 
         Iterator operator+(const int v) noexcept {

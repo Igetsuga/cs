@@ -10,6 +10,7 @@
 #include "QueueIterated.hpp"
 #include "StackIterated.hpp"
 #include "Container.hpp"
+#include "other/Computer.h"
 
 template<class Type> using LIT = LinkedListIterated<Type>;
 
@@ -76,9 +77,6 @@ template<class Type> Type pop (std::list<Type> &list, const int &pos = list.size
  * \param *func_key
  * \return Новый контейнер, элементы которого удовлетворяют функции-ключу.
  */
-// как передавать произвольный контейнер? 
-// ответ: передача итератора начала и конца		
-// или template<class Type1, class Type2> ...
 template<class Type> std::list<Type> filter (const std::list<Type> &list,
                                              bool (*func_key)(const Type, const Type), double param) {
     std::list<Type> ListResult;
@@ -91,9 +89,22 @@ template<class Type> std::list<Type> filter (const std::list<Type> &list,
     return ListResult;
 }
 
-//template< class Container, class Type>
-//std::list filter(const Container<Type> &cont,
-//				 )
+
+template<class Type>
+LinkedList<Type> filter(typename LIT<Type>::const_iterator begin, typename LIT<Type>::const_iterator end,
+                       bool (*func_key)(const Type, const Type), double param) {
+    LinkedList<Type> list_result;
+    //typedef LinkedListIterated<Type>::Iterator;
+
+    typename LinkedListIterated<Type>::Iterator itt;
+    itt = const_cast<Node<Type>*>(begin.getNode());
+    
+    while ( itt != end ) {
+        if ( func_key(param, *itt) ) {
+            list_result.push_back(*itt); } 
+    }
+
+}
 
 
 
@@ -106,7 +117,7 @@ template<class Type> std::list<Type> filter (const std::list<Type> &list,
  */
 template<class Type> void print (const std::list<Type> &list) {
     std::cout << nline << "{ ";
-    std::for_each(list.begin(), list.end(), [](const Type n) { std::cout << n << ", "; });
+    std::for_each( list.begin(), list.end(), [](const Type &n) { std::cout << n << ", "; } );
     std::cout << "}; " << nline;
 }
 
@@ -129,115 +140,83 @@ bool EvaluateFractionalPart (const double p, const double value) {
 
 int main()
 {
-
-   /* QueueIterated<int> queue;
-    for ( int i = 0; i < 10; i++ ) {
-        queue.insert(i);
-    }
-    QueueIterated<int>::Iterator q_it = queue.begin() + 2;
-    std::cout << queue;
-    std::cout << *q_it;
-    queue.erase(); queue.erase(); queue.erase();
-    std::cout << queue;
-
-    StackIterated<int> stack;
-    for ( int i = 0; i < 10; i++ ) {
-        stack.insert(i);
-    }
-    StackIterated<int>::Iterator s_it = stack.begin() + 6;
-    std::cout << stack;
-    std::cout << *s_it;
-    stack.erase(); stack.erase(); stack.erase();
-    std::cout << stack;*/
- /*   LinkedListIterated<int> IT;
-    for ( int i = 0; i < 10; i++ ) {
-        IT.push_back(i);
+    // -------------- p.1 --------------
+    // Cоздаем лист с элементами типа `int`
+    std::list<double> doubleList;
+    for ( int i = 0; i < 20; i++ ) {
+    	push(doubleList, (double) rand());
+    	//doubleList.push_back( (double)rand() );
     }
 
-    IT.print();
-    IT.print_reverse();*/
+    // Проверка функции `print` для объектов типа std::list<Type>
+    print(doubleList);
 
-    Container<int> container; 
-    for ( int i = 0; i < 5; i++ ) {
-        std::cout << container;
-        container.insert(std::rand());
-    }
-    std::cout << container;
+    // Проверка того, что функция `push` добавляет элементы в контейнер, оставляя его отсортированным
+    if ( std::is_sorted(doubleList.begin(), doubleList.end()) ) { std::cout << "SORTED" << nline; }
+    else { std::cout << "UNSORTED" << nline; }
+
+    print(doubleList); std::cout << nline;
+
+    // Удалим из листа несколько значений
+    auto hValue_temp = pop(doubleList, 1); std::cout << hValue_temp << " ";
+    print(doubleList); std::cout << nline;
+
+    hValue_temp = pop(doubleList, 9); std::cout << hValue_temp << " ";
+    print(doubleList); std::cout << nline;
+
+    hValue_temp = pop(doubleList, doubleList.size() - 1); std::cout << hValue_temp << " ";
+    print(doubleList); std::cout << nline;
+
+
+
+    // Выделим из нашего листа новый, элементы которого представляют собой
+    // числа типа `double` с дробной частью не превышающей числа `p`.
+    //bool (*func_key)(const double, const double) = &EvaluateFractionalPart;
+    using func = bool(*)(const double, const double);
+    func efp = &EvaluateFractionalPart;
+
+    double param = 0.4567;
+    std::for_each(doubleList.begin(), doubleList.end(), [](double &n) {n /= 100; });
+
+
+    print(doubleList);
+    //std::list<double> listFiltered = filter(doubleList, func_key, param);
+    std::list<double> listFiltered = filter(doubleList, efp, param);
+
+    std::cout << nline << "listFiltered is: ";
+    print(listFiltered);
+
+    doubleList.clear();
+    listFiltered.clear();
+
+
+
+    // -------------- p.2 --------------
+    std::list<Computer> computerList;
+
+    Computer Apple ((std::string) "apple", 1000, 16, 64, 17.8);
+    Computer Lenovo ((std::string) "lenovo", 500, 16, 16, 15.0);
+    Computer Huawei ((std::string) "huawei", 400, 16, 32, 16.7);
+    Computer HP ((std::string) "hp", 350, 4, 8, 14.5);
+    Computer Dell ((std::string) "dell", 200, 4, 8, 16.2);
+
+    push(computerList, Apple);
+    push(computerList, Lenovo);
+    push(computerList, Huawei);
+    push(computerList, HP);
+    push(computerList, Dell);
+
+    print(computerList);
+
+    auto hvalue = pop(computerList, 2);
+    std::cout << nline << "hvalue is: " << hvalue;
+
+    print(computerList);
+
+
+    Computer computer_undef; std::cout << computer_undef;
+   
 
     return 0;
 }
-// -------------- p.1 --------------
-    // Cоздаем лист с элементами типа `int`
-    //std::list<double> doubleList;
-    //for ( int i = 0; i < 20; i++ ) {
-    //	push(doubleList, (double) rand());
-    //	//doubleList.push_back( (double)rand() );
-    //}
 
-    //// Проверка функции `print` для объектов типа std::list<Type>
-    //print(doubleList);
-
-    //// Проверка того, что функция `push` добавляет элементы в контейнер, оставляя его отсортированным
-    //if ( std::is_sorted(doubleList.begin(), doubleList.end()) ) { std::cout << "SORTED" << nline; }
-    //else { std::cout << "UNSORTED" << nline; }
-
-    //print(doubleList); std::cout << nline;
-
-    //// Удалим из листа несколько значений
-    //auto hValue_temp = pop(doubleList, 1); std::cout << hValue_temp << " ";
-    //print(doubleList); std::cout << nline;
-
-    //hValue_temp = pop(doubleList, 9); std::cout << hValue_temp << " ";
-    //print(doubleList); std::cout << nline;
-
-    //hValue_temp = pop(doubleList, doubleList.size() - 1); std::cout << hValue_temp << " ";
-    //print(doubleList); std::cout << nline;
-
-
-
-    //// Выделим из нашего листа новый, элементы которого представляют собой
-    //// числа типа `double` с дробной частью не превышающей числа `p`.
-    ////bool (*func_key)(const double, const double) = &EvaluateFractionalPart;
-    //using func = bool(*)(const double, const double);
-    //func efp = &EvaluateFractionalPart;
-
-    //double param = 0.4567;
-    //std::for_each(doubleList.begin(), doubleList.end(), [](double &n) {n /= 100; });
-
-
-    //print(doubleList);
-    ////std::list<double> listFiltered = filter(doubleList, func_key, param);
-    //std::list<double> listFiltered = filter(doubleList, efp, param);
-
-    //std::cout << nline << "listFiltered is: ";
-    //print(listFiltered);
-
-    //doubleList.clear();
-    //listFiltered.clear();
-
-
-
-    //// -------------- p.2 --------------
-    //std::list<Computer> computerList;
-
-    //Computer Apple ((std::string) "apple", 1000, 16, 64, 17.8);
-    //Computer Lenovo ((std::string) "lenovo", 500, 16, 16, 15.0);
-    //Computer Huawei ((std::string) "huawei", 400, 16, 32, 16.7);
-    //Computer HP ((std::string) "hp", 350, 4, 8, 14.5);
-    //Computer Dell ((std::string) "dell", 200, 4, 8, 16.2);
-
-    //push(computerList, Apple);
-    //push(computerList, Lenovo);
-    //push(computerList, Huawei);
-    //push(computerList, HP);
-    //push(computerList, Dell);
-
-    //print(computerList);
-
-    //auto hvalue = pop(computerList, 2);
-    //std::cout << nline << "hvalue is: " << hvalue;
-
-    //print(computerList);
-
-
-    //Computer computer_undef; std::cout << computer_undef;
