@@ -22,16 +22,13 @@ template<class Type> class LinkedListIterated : public LinkedList<Type>
 {
 public:
     
-    /**
-     * Класс представляет собой итерирующий объект.
-     */
+    // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // --------------------------/ Iterator /--------------------------------
     class Iterator : public std::iterator<std::input_iterator_tag, Type> {
     public:
 
-        
-
         Iterator() {
-            std::cout << "Iterator had been created" << nline;
             _iterator = nullptr;
         }
 
@@ -159,7 +156,7 @@ public:
 
     // ----------------------------------------------------------------------
     // ----------------------------------------------------------------------
-
+    // ------------------------/ const_iterator /----------------------------
 
     class const_iterator : public std::iterator<std::input_iterator_tag, Type> {
     public:
@@ -223,13 +220,11 @@ public:
 
     // ----------------------------------------------------------------------
     // ----------------------------------------------------------------------
+    // ---------------------/ LinkedListIterated /---------------------------
 
+    LinkedListIterated();
 
-    LinkedListIterated() {
-        std::cout << "LinkedListIterated had been created";
-    }
-
-    virtual ~LinkedListIterated() = default;
+    virtual ~LinkedListIterated();
 
 
     // ----------------------------------------------------------------------
@@ -237,133 +232,194 @@ public:
 
     // Невозможна вставка в конец. Реализация 1. Более правильная, но медленная 
     // из-за дополнительных неявных преобразований.
-    virtual Iterator insert (const_iterator const_pos, const Type &data) final {
-        if ( const_pos == nullptr ) {
-            throw std::exception("Method LIT<Type>::insert(...): pos = nullptr");
-        }
+    virtual Iterator insert (const_iterator const_pos, const Type &data) final;
 
-        Iterator pos = const_cast<Node<Type>*>(const_pos.getNode());
-
-        // Костыль
-        if ( pos == this->begin() ) {
-            this->push_front(data);
-        }
-        else {
-            Node<Type> *node_pos = pos.getNode();
-            Node<Type> *nodeNew = new Node<Type>(data, pos.getNode(), node_pos->getPredecessor());
-
-            (node_pos->getPredecessor())->setSucessor(nodeNew);
-            node_pos->setPredecessor(nodeNew);
-
-            LinkedList<Type>::_size += 1;
-        }
-        
-
-        return --pos;
-    }
-    
-    // Невозможна вставка в конец. Реализация 2. Не по канону, но быстрее.
-    //virtual Iterator insert (const Iterator const_pos, const Type &data) final {
-    //    if ( const_pos == nullptr ) {
-    //        throw std::exception("Method LIT<Type>::insert(...): pos = nullptr");
-    //    }
-
-    //    Iterator pos = const_pos;
-
-    //    // Костыль
-    //    if ( pos == this->begin() ) {
-    //        this->push_front(data);
-    //    }
-    //    else {
-    //        Node<Type> *nodeNew = new Node<Type>(data, pos.getNode(), pos.getNode()->getPredecessor());
-
-    //        (pos.getNode()->getPredecessor())->setSucessor(nodeNew);
-    //        pos.getNode()->setPredecessor(nodeNew);
-
-    //        LinkedList<Type>::_size += 1;
-    //    }
-    //    
-
-    //    return --pos;
-    //}
-
-
-    virtual const_iterator erase (const_iterator const_pos) final {
-        if ( const_pos == nullptr ) {
-            throw std::exception("Method LIT<Type>::erase(...): pos = nullptr");
-        }
-
-        Iterator pos = const_cast<Node<Type>*>(const_pos.getNode());
-
-        // Костыль
-        if ( pos == this->begin() ) {
-            this->pop_front();
-        }
-        else if ( pos == this->end() ) {
-            this->pop_back();
-        }
-        else {
-            Node<Type> *node_pos = pos.getNode();
-            (node_pos->getPredecessor())->setSucessor(node_pos->getSucessor());
-            (node_pos->getSucessor())->setPredecessor(node_pos->getPredecessor());
-            node_pos = nullptr;
-            LinkedList<Type>::_size -= 1;
-        }
-
-
-        return const_pos;
-    }
+    virtual const_iterator erase (const_iterator const_pos) final;
 
     // ----------------------------------------------------------------------
     // ----------------------------------------------------------------------
 
 
-    Iterator begin() const noexcept {
-        return Iterator(LinkedList<Type>::_begin);
-    }
+    Iterator begin() const noexcept;
 
-    Iterator end() const noexcept {
-        return Iterator(LinkedList<Type>::_end);
-    }
+    Iterator end() const noexcept;
 
-    Iterator rbegin() const noexcept {
-        return this->end();
-    }
+    Iterator rbegin() const noexcept;
 
-    Iterator rend() const noexcept {
-        return this->begin();
-    }
+    Iterator rend() const noexcept;
 
 
     // ----------------------------------------------------------------------
     // ----------------------------------------------------------------------
 
-    virtual void print() const noexcept override {
-        Iterator itt = this->begin();
+    virtual void print() const noexcept override;
 
-        std::cout << nline << "{ : ";
-
-        for ( int i = 0; i < LinkedList<Type>::_size; i++, itt++ ) {
-            std::cout << *itt << " : ";
-        }
-
-        std::cout << "}; " << nline;
-    }
-
-    virtual void print_reverse() const noexcept override {
-        Iterator itt = this->end();
-
-        std::cout << nline << "{ : ";
-
-        for ( int i = 0; i < LinkedList<Type>::_size; i++, itt-- ) {
-            std::cout << *itt << " : ";
-        }
-
-        std::cout << "}; " << nline;
-    }
+    virtual void print_reverse() const noexcept;
 };
 
 
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// --------------------------/ Iterator /--------------------------------
 
+// i'm tired
+
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// ------------------------/ const_iterator /----------------------------
+
+
+// i'm tired
+
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// ---------------------/ LinkedListIterated /---------------------------
+
+template<class Type> LinkedListIterated<Type>::LinkedListIterated() = default;
+
+template<class Type> LinkedListIterated<Type>::~LinkedListIterated() = default;
+
+
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+
+// Невозможна вставка в конец. Реализация 1. Более правильная, но медленная 
+// из-за дополнительных неявных преобразований.
+template<class Type>
+typename LinkedListIterated<Type>::Iterator LinkedListIterated<Type>::insert (const_iterator const_pos, const Type & data) {
+    if ( const_pos == nullptr ) {
+        throw std::exception("Method LIT<Type>::insert(...): pos = nullptr");
+    }
+
+    Iterator pos = const_cast<Node<Type>*>(const_pos.getNode());
+
+    // Костыль
+    if ( pos == this->begin() ) {
+        this->push_front(data);
+    }
+    else {
+        Node<Type> *node_pos = pos.getNode();
+        Node<Type> *nodeNew = new Node<Type>(data, pos.getNode(), node_pos->getPredecessor());
+
+        (node_pos->getPredecessor())->setSucessor(nodeNew);
+        node_pos->setPredecessor(nodeNew);
+
+        LinkedList<Type>::_size += 1;
+    }
+
+
+    return --pos;
+}
+
+// Невозможна вставка в конец. Реализация 2. Не по канону, но быстрее.
+//template<class Type> Iterator LinkedListIterated<Type>::insert (const Iterator const_pos, const Type &data) {
+//    if ( const_pos == nullptr ) {
+//        throw std::exception("Method LIT<Type>::insert(...): pos = nullptr");
+//    }
+
+//    Iterator pos = const_pos;
+
+//    // Костыль
+//    if ( pos == this->begin() ) {
+//        this->push_front(data);
+//    }
+//    else {
+//        Node<Type> *nodeNew = new Node<Type>(data, pos.getNode(), pos.getNode()->getPredecessor());
+
+//        (pos.getNode()->getPredecessor())->setSucessor(nodeNew);
+//        pos.getNode()->setPredecessor(nodeNew);
+
+//        LinkedList<Type>::_size += 1;
+//    }
+//    
+
+//    return --pos;
+//}
+
+
+template<class Type>
+typename LinkedListIterated<Type>::const_iterator LinkedListIterated<Type>::erase (const_iterator const_pos) {
+    if ( const_pos == nullptr ) {
+        throw std::exception("Method LIT<Type>::erase(...): pos = nullptr");
+    }
+
+    Iterator pos = const_cast<Node<Type>*>(const_pos.getNode());
+
+    // Костыль
+    if ( pos == this->begin() ) {
+        this->pop_front();
+    }
+    else if ( pos == this->end() ) {
+        this->pop_back();
+    }
+    else {
+        Node<Type> *node_pos = pos.getNode();
+        (node_pos->getPredecessor())->setSucessor(node_pos->getSucessor());
+        (node_pos->getSucessor())->setPredecessor(node_pos->getPredecessor());
+        node_pos = nullptr;
+        LinkedList<Type>::_size -= 1;
+    }
+
+
+    return const_pos;
+}
+
+
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+
+
+template<class Type> typename LinkedListIterated<Type>::Iterator LinkedListIterated<Type>::begin() const noexcept {
+    return Iterator(LinkedList<Type>::_begin);
+}
+
+
+template<class Type> typename LinkedListIterated<Type>::Iterator LinkedListIterated<Type>::end() const noexcept {
+    return Iterator(LinkedList<Type>::_end);
+}
+
+
+template<class Type> typename LinkedListIterated<Type>::Iterator LinkedListIterated<Type>::rbegin() const noexcept {
+    return this->end();
+}
+
+
+template<class Type> typename LinkedListIterated<Type>::Iterator LinkedListIterated<Type>::rend() const noexcept {
+    return this->begin();
+}
+
+
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+
+
+template<class Type> void LinkedListIterated<Type>::print() const noexcept {
+    Iterator itt = this->begin();
+
+    std::cout << nline << "{ : ";
+
+    for ( int i = 0; i < LinkedList<Type>::_size; i++, itt++ ) {
+        std::cout << *itt << " : ";
+    }
+
+    std::cout << "}; " << nline;
+}
+
+
+template<class Type> void LinkedListIterated<Type>::print_reverse() const noexcept {
+    Iterator itt = this->end();
+
+    std::cout << nline << "{ : ";
+
+    for ( int i = 0; i < LinkedList<Type>::_size; i++, itt-- ) {
+        std::cout << *itt << " : ";
+    }
+
+    std::cout << "}; " << nline;
+}
 
 

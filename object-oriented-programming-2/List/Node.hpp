@@ -25,104 +25,61 @@ public:
 
 	Node (const Type &data,
 		  Node<Type> *sucessor = nullptr,
-		  Node<Type> *predecessor = nullptr) {
-		_sucessor = sucessor;
-		_predecessor = predecessor;
-		_data = data;
-	}
+		  Node<Type> *predecessor = nullptr);
 
-	~Node () = default;
+	~Node ();
 
 
 	// ----------------------------------------------------------------------
 	// ----------------------------------------------------------------------
 
 
-	Node<Type> *getSucessor() const noexcept {
-		return _sucessor;
-	}
+	Node<Type> *getSucessor() const noexcept;
 	
-	Node<Type> *getPredecessor() const noexcept {
-		return _predecessor;
-	}
+	Node<Type> *getPredecessor() const noexcept;
 	
-	const Type &getData() const noexcept {
-		return _data;
-	}
+	const Type &getData() const noexcept;
 
 
 	// ----------------------------------------------------------------------
 	// ----------------------------------------------------------------------
 
 
-	void setSucessor (Node<Type> *sucessor) noexcept {
-		_sucessor = sucessor;
-	}
+	void setSucessor (Node<Type> *sucessor) noexcept;
 	
-	void setPredecessor (Node<Type> *predecessor) noexcept {
-		_predecessor = predecessor;
-	}
+	void setPredecessor (Node<Type> *predecessor) noexcept;
 	
-	void setData (const Type &data) noexcept {
-		_data = data;
-	}
+	void setData (const Type &data) noexcept;
 
 
 	// ----------------------------------------------------------------------
 	// ----------------------------------------------------------------------
 
-	// TODO: refactoring
-	bool isShallowEqual (const Node<Type> &node) const noexcept {
-		if ( _data == node._data &&
-			_sucessor == node._sucessor &&
-			_predecessor == node._predecessor ) {
-			return true;
-		}
-
-
-		return false;
-	}
-
-	Node<Type> &operator= (const Node<Type> &node) {
-		_sucessor = node._sucessor;
-		_predecessor = node._predecessor;
-		_data = node._data;
-	}
-
-	Node<Type> &operator= (const Type &data) {
-		_data = data;
-	}
 	
-	bool operator> (const Node<Type> &node) const noexcept {
-		return _data > node._data;
-	}
+	bool isEqualDeep (const Node<Type> &node) const noexcept;
+
+	Node<Type> &operator= (const Node<Type> &node);
+
+	Node<Type> &operator= (const Type &data);
 	
-	bool operator< (const Node<Type> &node) const noexcept {
-		return _data < node._data;
-	}
+	bool operator> (const Node<Type> &node) const noexcept;
 	
-	bool operator== (const Node<Type> &node) const noexcept {
-		return _data == node._data;
-	}
+	bool operator< (const Node<Type> &node) const noexcept;
+	
+	bool operator== (const Node<Type> &node) const noexcept;
 
-	bool operator!= (const Node<Type> &node) const noexcept {
-		return !(*this == node);
-	}
+	bool operator!= (const Node<Type> &node) const noexcept;
 
-	bool operator>= (const Node<Type> &node) const noexcept {
-		return (_data == node._data) || (_data > node._data);
-	}
+	bool operator>= (const Node<Type> &node) const noexcept;
 
-	bool operator<= (const Node<Type> &node) const noexcept {
-		return (_data == node._data) || (_data < node._data);
-	}
+	bool operator<= (const Node<Type> &node) const noexcept;
 
 	// ----------------------------------------------------------------------
 	// ----------------------------------------------------------------------
 
 
 	template<class otherType> friend std::ostream &operator<< (std::ostream &output,
-														  const Node<otherType> &node);
+															   const Node<otherType> &node);
 
 
 	// ----------------------------------------------------------------------
@@ -134,6 +91,139 @@ protected:
 	Node<Type> *_predecessor;
 	Type        _data;
 };
+
+
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+
+
+template<class Type> Node<Type>::Node (const Type &data,
+									   Node<Type> *sucessor,
+									   Node<Type> *predecessor) {
+	_sucessor = sucessor;
+	_predecessor = predecessor;
+	_data = data;
+}
+
+template<class Type> Node<Type>::~Node () = default;
+
+
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+
+
+template<class Type>
+Node<Type> *Node<Type>::getSucessor() const noexcept {
+	return _sucessor;
+}
+
+
+template<class Type>
+Node<Type> *Node<Type>::getPredecessor() const noexcept {
+	return _predecessor;
+}
+
+
+template<class Type>
+const Type &Node<Type>::getData() const noexcept {
+	return _data;
+}
+
+
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+
+
+template<class Type>
+void Node<Type>::setSucessor (Node<Type> *sucessor) noexcept {
+	_sucessor = sucessor;
+}
+
+
+template<class Type>
+void Node<Type>::setPredecessor (Node<Type> *predecessor) noexcept {
+	_predecessor = predecessor;
+}
+
+
+template<class Type>
+void Node<Type>::setData (const Type & data) noexcept {
+	_data = data;
+}
+
+
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+
+
+template<class Type>
+bool Node<Type>::isEqualDeep (const Node<Type> &node) const noexcept {
+	if ( _data == node._data &&
+		_sucessor->getData() == node._sucessor->getData() &&
+		_predecessor->getData() == node._predecessor->getData() ) {
+		return true;
+	}
+
+
+	return false;
+}
+
+
+template<class Type>
+Node<Type> &Node<Type>::operator= (const Node<Type> &node) {
+	_sucessor = node._sucessor;
+	_predecessor = node._predecessor;
+	_data = node._data;
+}
+
+
+template<class Type>
+Node<Type> &Node<Type>::operator= (const Type & data) {
+	_data = data;
+}
+
+
+template<class Type>
+bool Node<Type>::operator> (const Node<Type> &node) const noexcept {
+	return _data > node._data;
+}
+
+
+template<class Type>
+bool Node<Type>::operator< (const Node<Type> &node) const noexcept {
+	return _data < node._data;
+}
+
+
+template<class Type>
+bool Node<Type>::operator== (const Node<Type> &node) const noexcept {
+	return _data == node._data;
+}
+
+
+template<class Type>
+bool Node<Type>::operator!= (const Node<Type> &node) const noexcept {
+	return !(*this == node);
+}
+
+
+template<class Type>
+bool Node<Type>::operator>= (const Node<Type> &node) const noexcept {
+	return (_data == node._data) || (_data > node._data);
+}
+
+
+template<class Type>
+bool Node<Type>::operator<= (const Node<Type> &node) const noexcept {
+	return (_data == node._data) || (_data < node._data);
+}
+
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 
 
 template<class Type> std::ostream &operator<< (std::ostream &output,

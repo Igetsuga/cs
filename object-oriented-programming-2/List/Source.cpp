@@ -217,6 +217,33 @@ int main()
     Computer computer_undef; std::cout << computer_undef;
    
 
+
+    QueueIterated<int> queue;
+    for ( int i = 0; i < 10; i++ ) {
+        queue.insert(i);
+    }
+    QueueIterated<int>::Iterator q_it = queue.begin() + 2;
+    std::cout << queue;
+    std::cout << *q_it;
+    queue.erase(); queue.erase(); queue.erase();
+    std::cout << queue;
+    StackIterated<int> stack;
+    for ( int i = 0; i < 10; i++ ) {
+        stack.insert(i);
+    }
+    StackIterated<int>::Iterator s_it = stack.begin() + 6;
+    std::cout << stack;
+    std::cout << *s_it;
+    stack.erase(); stack.erase(); stack.erase();
+    std::cout << stack;
+    
+    LinkedListIterated<int> IT;
+    for ( int i = 0; i < 10; i++ ) {
+        IT.push_back(i);
+    }
+    IT.print();
+    IT.print_reverse(); 
+
     return 0;
 }
 
