@@ -25,17 +25,13 @@ int main()
     //LinkedListIterated<int> I;
     
 
-    LinkedListIterated<int> IT;
-    for ( int i = 0; i < 5; i++ ) {
-        IT.push_back(i);
-    }
-    std::cout << IT;
-    IT.print();
+    
+    /*IT.print();
     IT.print_reverse();
 
     IT.insert(3, 234);
     IT.print();
-    IT.print_reverse();
+    IT.print_reverse();*/
 
    /* IT.pop_back();
     IT.print();
@@ -73,6 +69,24 @@ int main()
 
     it = IIT.begin();
     std::cout << *it;*/
+
+    LinkedListIterated<int> IT;
+    for ( int i = 0; i < 10; i++ ) {
+        IT.push_back(i);
+    }
+    std::cout << IT;
+
+    LinkedListIterated<int>::Iterator it = IT.begin();
+   
+    auto a = IT.insert(it, 32423);
+    IT.print();
+    IT.print_reverse();
+    std::cout << *a;
+
+    auto b = IT.insert(IT.begin() + 4, 888);
+    IT.print();
+    IT.print_reverse();
+    std::cout << *b;
 
     return 0;
 }

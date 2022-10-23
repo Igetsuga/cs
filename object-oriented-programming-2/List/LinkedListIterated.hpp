@@ -1,10 +1,10 @@
 ﻿/*****************************************************************//**
  * \file   LinkedListIterated.h
- * \brief  .
+ * \brief  Файл реализации параметризованного класса `LinkedListIterated`.
  * 
- * \author Sirazetdinov Rustem
- * \version
- * \date   October 2022
+ * \author  Sirazetdinov Rustem
+ * \version 
+ * \date    October 2022
  *********************************************************************/
 #pragma once
 
@@ -14,13 +14,21 @@
 
 // TODO: template<class Type> class ... : public IListIterated, public LinkedList<Type>
 // how to override that without multiple inheritance??
+/**
+ * Класс полностью наследует интейфейс родительского класса, добавляя к нему опции работы 
+ * с итерирующими объектами.
+ */
 template<class Type> class LinkedListIterated : public LinkedList<Type>
 {
 public:
     
-    // TODO: const_iterator
+    /**
+     * Класс представляет собой итерирующий объект.
+     */
     class Iterator : public std::iterator<std::input_iterator_tag, Type> {
     public:
+
+        
 
         Iterator() {
             std::cout << "Iterator had been created" << nline;
@@ -30,6 +38,12 @@ public:
         Iterator (Node<Type> *node) {
             _iterator = node;
         }
+
+        /*operator Iterator() {
+            Iterator::_iterator = const_cast<Node<Type>*>(const_iterator::_const_iterator);
+        }*/
+
+        //Iterator (const_iterator c_it) {}
 
         Iterator (const Iterator &iterator) {
             _iterator = iterator._iterator;
@@ -95,16 +109,42 @@ public:
             return itt_this_old;
         }
 
+        Iterator operator+(const int v) noexcept {
+            for ( int i = 0; i < v; i++ ) {
+                if ( this == nullptr ) {
+                    break;
+                }
+                else {
+                    ++(*this);
+                }
+            }
 
-        // ----------------------------------------------------------------------
-        // ----------------------------------------------------------------------
-
-        const Node<Type> *getNode() const noexcept {
-            return const_cast<const Node<Type>*>(_iterator);
+            return *this;
         }
 
-    protected:
+        Iterator operator-(const int v) noexcept {
+            for ( int i = 0; i < v; i++ ) {
+                if ( this == nullptr ) {
+                    break;
+                }
+                else {
+                    --(*this);
+                }
+            }
+
+            return *this;
+        }
+
+        // ----------------------------------------------------------------------
+        // ----------------------------------------------------------------------
+
+        Node<Type> *getNode() const noexcept {
+            return _iterator;
+        }
+
+    private:
         Node<Type> *_iterator;
+        friend class LinkedListIterated<Type>::const_iterator;
     };
 
 
@@ -114,6 +154,8 @@ public:
 
     class const_iterator : public std::iterator<std::input_iterator_tag, Type> {
     public:
+
+        
 
         const_iterator() {
             std::cout << "const_iterator had been created" << nline;
@@ -125,7 +167,7 @@ public:
         }
 
         const_iterator (const Iterator &iterator) {
-            _const_iterator = const_cast<const Node<Type>*>(iterator._const_iterator);
+            _const_iterator = const_cast<const Node<Type>*>(iterator._iterator);
         }
 
         const_iterator (const const_iterator &itt) {
@@ -137,40 +179,24 @@ public:
             _const_iterator = const_cast<const Node<Type>*>(_const_iterator);
         }
 
-        ~const_iterator() {
-            delete _const_iterator;
-        }
-
 
         // ----------------------------------------------------------------------
         // ----------------------------------------------------------------------
 
 
-        bool operator== (const const_iterator &itt) const noexcept {
+        bool operator== (const const_iterator itt) const noexcept {
             return _const_iterator == itt._const_iterator;
         }
 
-        bool operator!= (const const_iterator &itt) const noexcept {
+        bool operator!= (const const_iterator itt) const noexcept {
             return _const_iterator != itt._const_iterator;
         }
 
-        const Node<Type> &operator* () {
+        const Node<Type> &operator* () const {
+            if ( this == nullptr ) {
+                throw std::exception("Method LIT<Type>::const_iterator::operator*(): this == nullptr");
+            }
             return *_const_iterator;
-        }
-
-        //TODO: add exception
-        const_iterator &operator++() {
-            //if (  ) { throw; }
-            _const_iterator = _const_iterator->getSucessor();
-            return *this;
-        }
-
-        //Iterator operator++(const Iterator &itt) {}
-        //TODO: add exception
-        const_iterator &operator--() {
-            //if ( ) { throw; }
-            _const_iterator = _const_iterator->getPredecessor();
-            return *this;
         }
 
 
@@ -178,11 +204,11 @@ public:
         // ----------------------------------------------------------------------
 
         const Node<Type> *getNode() const noexcept {
-            return const_cast<const Node<Type>*>(_const_iterator);
+            return _const_iterator;
         }
 
-    protected:
-        Node<Type> *_const_iterator;
+    private:
+        const Node<Type> *_const_iterator;
     };
 
 
@@ -195,6 +221,52 @@ public:
     }
 
     virtual ~LinkedListIterated() = default;
+
+
+    // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+
+    // Невозможна вставка в конец.
+    /*Iterator insert (const_iterator const_pos, const Type &data) {
+        if ( const_pos == nullptr ) {
+            throw std::exception("Method LIT<Type>::insert(...): pos = nullptr");
+        }
+
+        Iterator pos = const_pos;
+        //Iterator pos = static_cast<Iterator>(const_pos);
+        
+        Node<Type> *nodeNew = new Node<Type>(data, pos.getNode(), pos.getNode()->getPredecessor());
+        pos.getNode()->getPredecessor()->setSucessor(nodeNew);
+        pos.getNode()->setPredecessor(nodeNew);
+
+        
+        return --pos;
+    }*/
+    
+    // Невозможна вставка в конец. 
+    Iterator insert (const Iterator const_pos, const Type &data) {
+        if ( const_pos == nullptr ) {
+            throw std::exception("Method LIT<Type>::insert(...): pos = nullptr");
+        }
+
+        Iterator pos = const_pos;
+
+        // Костыль
+        if ( pos == this->begin() ) {
+            this->push_front(data);
+        }
+        else {
+            Node<Type> *nodeNew = new Node<Type>(data, pos.getNode(), pos.getNode()->getPredecessor());
+
+            pos.getNode()->getPredecessor()->setSucessor(nodeNew);
+            pos.getNode()->setPredecessor(nodeNew);
+
+        }
+        
+
+        return --pos;
+    }
+
 
 
     // ----------------------------------------------------------------------
@@ -220,12 +292,6 @@ public:
 
     // ----------------------------------------------------------------------
     // ----------------------------------------------------------------------
-
-
-
-
-
-
 };
 
 
