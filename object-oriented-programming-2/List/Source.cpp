@@ -280,7 +280,16 @@ int main()
     IT.print();
     IT.print_reverse();
     std::cout << *b;
+    IT.insert(IT.end(), 999);
+    IT.print();
+    IT.print_reverse();
 
+    IT.erase(a);
+    IT.print();
+    IT.print_reverse();
+    IT.erase(b);
+    IT.print();
+    IT.print_reverse();
     return 0;
 }
 

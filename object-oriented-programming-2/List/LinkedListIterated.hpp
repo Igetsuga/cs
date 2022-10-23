@@ -226,48 +226,84 @@ public:
     // ----------------------------------------------------------------------
     // ----------------------------------------------------------------------
 
-    // Невозможна вставка в конец.
-    /*Iterator insert (const_iterator const_pos, const Type &data) {
+    // Невозможна вставка в конец. Реализация 1. Более правильная, но медленная 
+    // из-за дополнительных неявных преобразований.
+    Iterator insert (const_iterator const_pos, const Type &data) {
         if ( const_pos == nullptr ) {
             throw std::exception("Method LIT<Type>::insert(...): pos = nullptr");
         }
 
-        Iterator pos = const_pos;
-        //Iterator pos = static_cast<Iterator>(const_pos);
-        
-        Node<Type> *nodeNew = new Node<Type>(data, pos.getNode(), pos.getNode()->getPredecessor());
-        pos.getNode()->getPredecessor()->setSucessor(nodeNew);
-        pos.getNode()->setPredecessor(nodeNew);
-
-        
-        return --pos;
-    }*/
-    
-    // Невозможна вставка в конец. 
-    Iterator insert (const Iterator const_pos, const Type &data) {
-        if ( const_pos == nullptr ) {
-            throw std::exception("Method LIT<Type>::insert(...): pos = nullptr");
-        }
-
-        Iterator pos = const_pos;
+        Iterator pos = const_cast<Node<Type>*>(const_pos.getNode());
 
         // Костыль
         if ( pos == this->begin() ) {
             this->push_front(data);
         }
         else {
-            Node<Type> *nodeNew = new Node<Type>(data, pos.getNode(), pos.getNode()->getPredecessor());
+            Node<Type> *node_pos = pos.getNode();
+            Node<Type> *nodeNew = new Node<Type>(data, pos.getNode(), node_pos->getPredecessor());
 
-            pos.getNode()->getPredecessor()->setSucessor(nodeNew);
-            pos.getNode()->setPredecessor(nodeNew);
+            (node_pos->getPredecessor())->setSucessor(nodeNew);
+            node_pos->setPredecessor(nodeNew);
 
+            LinkedList<Type>::_size += 1;
         }
         
 
         return --pos;
     }
+    
+    // Невозможна вставка в конец. Реализация 2. Не по канону, но быстрее.
+    //Iterator insert (const Iterator const_pos, const Type &data) {
+    //    if ( const_pos == nullptr ) {
+    //        throw std::exception("Method LIT<Type>::insert(...): pos = nullptr");
+    //    }
+
+    //    Iterator pos = const_pos;
+
+    //    // Костыль
+    //    if ( pos == this->begin() ) {
+    //        this->push_front(data);
+    //    }
+    //    else {
+    //        Node<Type> *nodeNew = new Node<Type>(data, pos.getNode(), pos.getNode()->getPredecessor());
+
+    //        (pos.getNode()->getPredecessor())->setSucessor(nodeNew);
+    //        pos.getNode()->setPredecessor(nodeNew);
+
+    //        LinkedList<Type>::_size += 1;
+    //    }
+    //    
+
+    //    return --pos;
+    //}
 
 
+    const_iterator erase (const_iterator const_pos) {
+        if ( const_pos == nullptr ) {
+            throw std::exception("Method LIT<Type>::erase(...): pos = nullptr");
+        }
+
+        Iterator pos = const_cast<Node<Type>*>(const_pos.getNode());
+
+        // Костыль
+        if ( pos == this->begin() ) {
+            this->pop_front();
+        }
+        else if ( pos == this->end() ) {
+            this->pop_back();
+        }
+        else {
+            Node<Type> *node_pos = pos.getNode();
+            (node_pos->getPredecessor())->setSucessor(node_pos->getSucessor());
+            (node_pos->getSucessor())->setPredecessor(node_pos->getPredecessor());
+            node_pos = nullptr;
+            LinkedList<Type>::_size -= 1;
+        }
+
+
+        return const_pos;
+    }
 
     // ----------------------------------------------------------------------
     // ----------------------------------------------------------------------
