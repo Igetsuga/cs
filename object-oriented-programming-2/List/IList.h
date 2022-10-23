@@ -1,6 +1,6 @@
 ﻿/*****************************************************************//**
- * \file   List.h
- * \brief  Заголовочный файл объявления абстрактного класса List.
+ * \file   IList.h
+ * \brief  Заголовочный файл объявления абстрактного класса IList.
  * 
  * \author  Sirazetdinov Rustem
  * \version
@@ -8,18 +8,19 @@
  *********************************************************************/
 #pragma once
 
-#include "Node.h"
+#include "Node.hpp"
 
 /**
- * Абстрактный класс List.
+ * Класс представляет собой интерфейс для контейнера `LinkedList<Type>` и других
+ * унаследованных / основанных от него.
  */
 template<class Type> class IList 
 {
 public:
 
-    virtual Type &front() = 0;
+    virtual Type &front() const = 0;
     
-    virtual Type &back() = 0;
+    virtual Type &back() const = 0;
 
 
     // ----------------------------------------------------------------------
@@ -37,16 +38,16 @@ public:
 
     virtual void clear() = 0;
     
-    virtual void insert (const Type &data, const int &pos) = 0;
+    virtual void insert (const int &pos, const Type &data) = 0;
     
-    virtual const Node<Type> *erase (const int &pos) = 0;
+    virtual Type &erase (const int &pos) = 0;
     
     virtual void push_back (const Type &data) = 0;
     
-    virtual const Node<Type> *pop_back() = 0;
+    virtual Type &pop_back() = 0;
     
     virtual void push_front (const Type &data) = 0;
     
-    virtual const Node<Type> *pop_front() = 0;
+    virtual Type &pop_front() = 0;
 };
 

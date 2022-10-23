@@ -1,18 +1,29 @@
-﻿#pragma once
+﻿/*****************************************************************//**
+ * \file   LinkedList.h
+ * \brief  Файл реализации параметризованного класса `LinkedList`.
+ * 
+ * \author  Sirazetdinov Rustem
+ * \version
+ * \date    October 2022
+ *********************************************************************/
+#pragma once
 
 #include "IList.h"
 #include <iostream>
 #include <fstream>
 
+/**
+ * /brief Класс представляет собой параметризованный двусвязный список.
+ */
 template<class Type> class LinkedList : public IList<Type> {
 public:
-    // nice
+    
     LinkedList() {
         std::cout << "LinkedList had been created" << nline;
         _begin = _end = nullptr;
         _size = 0;
     }
-    // nice
+    
     LinkedList (const LinkedList<Type> &otherList) noexcept {
         std::cout << '\n' << "LinkedList copy constructor " << '\n';
 
@@ -39,7 +50,7 @@ public:
 
         _size = otherList._size;
     }
-    // nice
+    
     LinkedList<Type> &operator= (const LinkedList<Type> &otherList) noexcept {
         this->clear();
 
@@ -65,7 +76,7 @@ public:
 
         return *this;
     }
-    // nice
+    
     virtual ~LinkedList() {
         while ( _begin != nullptr ) {
             Node<Type> *nodeToDelete = _begin->getSucessor();
@@ -79,11 +90,11 @@ public:
     // ----------------------------------------------------------------------
 
 
-    Type &front() {
+    Type &front() const noexcept {
         return const_cast<Type&>(_begin->getData());
     }
     
-    Type &back() {
+    Type &back() const noexcept {
         return const_cast<Type &>(_end->getData());
     }
     
@@ -92,7 +103,7 @@ public:
     // ----------------------------------------------------------------------
 
 
-    bool empty() const override {
+    bool empty() const noexcept override {
         return (_size == 0 ? 1 : 0);
     }
     
@@ -112,38 +123,62 @@ public:
         }
         _size = 0;
     }
-    // TODO: insert
-    virtual void insert (const Type &data, const int &pos) override {
-        if ( pos <= 0 ) {
-            throw std::out_of_range("LinkedList<Type>::insert: pos out of range");
+    
+    virtual void insert (const int &pos, const Type &data) override {
+        if ( pos <= 0 || pos >= _size) {
+            throw std::out_of_range("LinkedList<Type>::insert(...): pos out of range");
         }
-        /*if ( pos == 1 ) {
-        this->pushFront(data);
-    }
-    else if ( pos == size_ + 1 ) {
-        this->pushBack(data);
-    }
-    else {
-        Object *objectCurrent = head_;
-
-        for ( int position = 1; position < pos - 1; position++ ) {
-            objectCurrent = objectCurrent->getSucessor();
+        
+        if ( pos == _size - 1 ) {
+            return this->push_back(data);
         }
+        else if ( pos == 0 ) {
+            return this->push_front(data);
+        }
+        else {
+            Node<Type> *nodeBeforeInsert = _begin;
+            for ( int i = 0; i < pos; i++ ) {
+                nodeBeforeInsert = nodeBeforeInsert->getSucessor();
+            }
 
-        Object *objectInsert = new Object(data, objectCurrent->getSucessor(), objectCurrent);
+            Node<Type> *nodeInsert = new Node<Type>(data, nodeBeforeInsert->getSucessor(), nodeBeforeInsert);
 
-        objectCurrent->setSucessor(objectInsert);
-        (objectInsert->getSucessor())->setPredecessor(objectInsert);
+            nodeBeforeInsert->setSucessor(nodeInsert);
+            (nodeInsert->getSucessor())->setPredecessor(nodeInsert);
 
-        size_++;
-    }*/
+            _size += 1;
+        }
     }
-    // TODO: LinkedList<Type>::erase
-    virtual const Node<Type> *erase (const int &pos) override {
-        return nullptr;
+    
+    virtual Type &erase (const int &pos) override {
+        if ( _size == 0 ) {
+            throw std::exception("Method LinkedList<Type>::erase(...): size = 0");
+        }
+        
+        if ( pos == _size - 1 ) {
+            return this->pop_back();
+        }
+        else if ( pos == 0 ) {
+            return this->pop_front();
+        }
+        else {
+            Node<Type> *nodeErased = _begin;
+            for ( int i = 0; i < pos; i++ ) {
+                nodeErased = nodeErased->getSucessor();
+            }
+
+            Type &dataErased = const_cast<Type &>(nodeErased->getData());
+
+            (nodeErased->getPredecessor())->setSucessor(nodeErased->getSucessor());
+            (nodeErased->getSucessor())->setPredecessor(nodeErased->getPredecessor());
+            delete nodeErased;
+
+            _size -= 1;
+            return dataErased;
+        }
     }
-    // nice
-    virtual void push_back (const Type &data) override {
+    
+    virtual void push_back (const Type &data) noexcept override {
         Node<Type> *endNew = new Node<Type>(data, nullptr, _end);
         if ( _size != 0 ) {
             _end->setSucessor(endNew);
@@ -153,14 +188,31 @@ public:
         }
 
         _end = endNew;
-        _size++;
+        _size += 1;
     }
-    // TODO
-    virtual const Node<Type> *pop_back() {
-        return nullptr;
+    
+    virtual Type &pop_back() {
+        if ( _size == 0 ) {
+            throw std::exception("Method LinkedList<Type>::pop_back(): size = 0");
+        }
+
+        Type &dataErased = const_cast<Type &>(_end->getData());
+        if ( _size == 1 ) {
+            delete _end;
+            _begin = _end = nullptr;
+        }
+        else {
+            _end = _end->getPredecessor();
+            delete (_end->getSucessor());
+            _end->setSucessor(nullptr);
+        }
+
+
+        _size -= 1;
+        return dataErased;
     }
-    // nice
-    virtual void push_front (const Type &data) override {
+    
+    virtual void push_front (const Type &data) noexcept override {
         Node<Type> *beginNew = new Node<Type>(data, _begin, nullptr);
         if ( _size != 0 ) {
             _begin->setPredecessor(beginNew);
@@ -170,11 +222,27 @@ public:
         }
 
         _begin = beginNew;
-        _size++;
+        _size += 1;
     }
-    // TODO: LinkedList<Type>::pop
-    virtual const Node<Type> *pop_front() override {
-        return nullptr;
+    
+    virtual Type &pop_front() override {
+        if ( _size == 0 ) {
+            throw std::exception("Method LinkedList<Type>::pop_front(): size = 0");
+        }
+
+        Type &dataErased = const_cast<Type &>(_end->getData());
+        if ( _size == 1 ) {
+            delete _begin;
+            _begin = _end = nullptr;
+        }
+        else {
+            _begin = _begin->getSucessor();
+            delete (_begin->getPredecessor());
+            _begin->setPredecessor(nullptr);
+        }
+
+        _size -= 1;
+        return dataErased;
     }
     
     
@@ -192,7 +260,7 @@ public:
 
     void setBegin (const Node<Type> *begin) {
         if ( begin->getSucessor() != _begin->getSucessor() ) {
-            throw std::invalid_argument("Method LinkedList::setBegin(): pointers to sucessors don't match");
+            throw std::invalid_argument("Method LinkedList<Type>::setBegin(...): pointers to sucessors don't match");
         }
         _begin = begin;
     }
@@ -203,7 +271,7 @@ public:
 
     void setEnd (const Node<Type> *end) {
         if ( end->getPredecessor() != _end->getPredecessor() ) {
-            throw std::invalid_argument("Method LinkedList::setEnd(): pointers to predecessors don't match");
+            throw std::invalid_argument("Method LinkedList<Type>::setEnd(...): pointers to predecessors don't match");
         }
         _end = end;
     }
@@ -216,10 +284,10 @@ public:
     // ----------------------------------------------------------------------
     // ----------------------------------------------------------------------
 
-    //nice
+
     Node<Type> *operator[] (const int &pos) const {
         if ( pos < 0 || pos >= _size ) {
-            throw std::out_of_range("Method LinkedList<Type>::operator[] : pos out of range");
+            throw std::out_of_range("Method LinkedList<Type>::operator[...] : pos out of range");
         }
 
         Node<Type> *node = _begin;
@@ -236,7 +304,7 @@ public:
     // ----------------------------------------------------------------------
     // ----------------------------------------------------------------------
 
-    //nice
+    
     void print() const noexcept {
         Node<Type> *current = _begin;
 
@@ -245,6 +313,19 @@ public:
         for ( int i = 0; i < _size; i++ ) {
             std::cout << current->getData() << " : ";
             current = current->getSucessor();
+        }
+
+        std::cout << "}; " << nline;
+    }
+
+    void print_reverse() const noexcept {
+        Node<Type> *current = _end;
+
+        std::cout << nline << "{ : ";
+
+        for ( int i = 0; i < _size; i++ ) {
+            std::cout << current->getData() << " : ";
+            current = current->getPredecessor();
         }
 
         std::cout << "}; " << nline;
@@ -262,7 +343,7 @@ protected:
     size_t      _size;
 };
 
-//ckecked
+
 template<class Type> std::ostream &operator<< (std::ostream &output,
                                                LinkedList<Type> &list) noexcept(false) {
     if ( list.LinkedList<Type>::_size != 0 ) {
@@ -270,7 +351,7 @@ template<class Type> std::ostream &operator<< (std::ostream &output,
 
         if ( typeid(output).name() == typeid(std::ofstream).name() ) {
             if ( output.fail() ) {
-                throw std::ios_base::failure("LinkedList<Type>::operator<< : could not open the file");
+                throw std::ios_base::failure("LinkedList<Type>::operator<<: could not open the file");
             }
             output << list.size() << nline;
 
