@@ -26,10 +26,20 @@ public:
 template<typename Type1, typename Type2> class pair : ipair<Type1, Type2> {
 public:
 
-	pair(const Type1 &value1, const Type2 &value2) {
+	pair (const Type1 &value1, const Type2 &value2) {
 		_value1 = value1;
 		_value2 = value2;
 	}
+
+	pair (const pair &pair_other) {
+		_value1 = pair_other._value1;
+		_value2 = pair_other._value2;
+	}
+
+	/*pair (pair pair_other) {
+		_value1 = pair_other._value1;
+		_value2 = pair_other._value2;
+	}*/
 
 	virtual ~pair() = default;
 
@@ -131,31 +141,35 @@ public:
 // ---------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------
 
-
-lib::bike_value &find_value (lib::bike_key &key, std::map<lib::bike_key, lib::bike_value> &map) noexcept {
-	/*for ( auto element : map ) {
+// Почему срабатывает деструктор, почему так не работает
+//lib::bike_value &find_value (lib::bike_key &key, std::map<lib::bike_key, lib::bike_value> &map) noexcept {
+lib::bike_value find_value (lib::bike_key &key, std::map<lib::bike_key, lib::bike_value> &map) noexcept {
+	lib::bike_value answer("NONE", "0");
+	
+	for ( const auto &element : map ) {
 		if ( element.first == key ) {
-			return element.second;
-		}
-	}*/
-    lib::bike_value answer("NONE", "")
-	for ( auto element : map ) {
-		if ( element.first == key ) {
-			= 
-			return element.second;
+			answer = element.second;
+			break;
 		}
 	}
 
-	//return nullptr;
+
+	return answer;
 }
 
-//const lib::bike_key &find_key (lib::bike_value &value, std::map<lib::bike_key, lib::bike_value> &map) noexcept {
-//	for ( auto element : map ) {
-//		if ( element.second == value ) {
-//			return element.first;
-//		}
-//	}
-//}
+const lib::bike_key &find_key (lib::bike_value &value, std::map<lib::bike_key, lib::bike_value> &map) noexcept {
+	lib::bike_key answer("NONE", -1);
+
+	for ( const auto &element : map ) {
+		if ( element.second == value ) {
+			answer = element.first;
+			break;
+		}
+	}
+
+
+	return answer;
+}
 
 // ---------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------
@@ -181,10 +195,13 @@ int main() {
 		std::cout << kv.first << kv.second;
 	}
 
-
-	auto find_value_key11 = find_value(vector_key[1], bike_map);
-	std::cout << "----" << find_value_key11 << "----" << vector_value[10];
-
+	// Поиск по ключу
+	auto find_value_key1 = find_value(vector_key[1], bike_map);
+	std::cout << "----" << find_value_key1 << "----" << vector_value[1];
+	std::cout << "______";
+	// Поиск по значению
+	auto find_key_value1 = find_key(vector_value[1], bike_map);
+	std::cout << find_key_value1;
 
 	//std::cout << k1 << k2;
 
