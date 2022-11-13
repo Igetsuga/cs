@@ -1,6 +1,7 @@
 #pragma once
 #include "Node.h"
 
+//TODO: разделить key и data
 
 template<class Type> class BinaryTree {
 public:

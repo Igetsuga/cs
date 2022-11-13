@@ -15,9 +15,9 @@ public:
     // ----------------------------------------------------------------------
 
 
-    virtual LinkedListIterated<Type>::Iterator insert (const Type &data);
+    virtual typename LinkedListIterated<Type>::Iterator insert (const Type &data);
 
-    virtual LinkedListIterated<Type>::const_iterator erase();
+    virtual typename LinkedListIterated<Type>::const_iterator erase();
 };
 
 

@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <fstream>
 
 #include <list>
@@ -92,16 +92,17 @@ template<class Type> std::list<Type> filter (const std::list<Type> &list,
 
 template<class Type>
 LinkedList<Type> filter(typename LIT<Type>::const_iterator begin, typename LIT<Type>::const_iterator end,
-                       bool (*func_key)(const Type, const Type), double param) {
+                        bool (*func_key)(const Type, const Type), double param) {
     LinkedList<Type> list_result;
     //typedef LinkedListIterated<Type>::Iterator;
 
     typename LinkedListIterated<Type>::Iterator itt;
     itt = const_cast<Node<Type>*>(begin.getNode());
-    
+
     while ( itt != end ) {
         if ( func_key(param, *itt) ) {
-            list_result.push_back(*itt); } 
+            list_result.push_back(*itt);
+        }
     }
 
 }
@@ -117,7 +118,7 @@ LinkedList<Type> filter(typename LIT<Type>::const_iterator begin, typename LIT<T
  */
 template<class Type> void print (const std::list<Type> &list) {
     std::cout << nline << "{ ";
-    std::for_each( list.begin(), list.end(), [](const Type &n) { std::cout << n << ", "; } );
+    std::for_each(list.begin(), list.end(), [](const Type &n) { std::cout << n << ", "; });
     std::cout << "}; " << nline;
 }
 
@@ -144,8 +145,8 @@ int main()
     // Cоздаем лист с элементами типа `int`
     std::list<double> doubleList;
     for ( int i = 0; i < 20; i++ ) {
-    	push(doubleList, (double) rand());
-    	//doubleList.push_back( (double)rand() );
+        push(doubleList, (double) rand());
+        //doubleList.push_back( (double)rand() );
     }
 
     // Проверка функции `print` для объектов типа std::list<Type>
@@ -215,7 +216,7 @@ int main()
 
 
     Computer computer_undef; std::cout << computer_undef;
-   
+
 
 
     QueueIterated<int> queue;
@@ -224,7 +225,7 @@ int main()
     }
     QueueIterated<int>::Iterator q_it = queue.begin() + 2;
     std::cout << queue; std::cout << *q_it;
-    
+
     queue.erase(); queue.erase(); queue.erase();
     std::cout << queue;
 
@@ -239,7 +240,7 @@ int main()
     std::cout << stack; std::cout << *s_it;
     stack.erase(); stack.erase(); stack.erase();
     std::cout << stack;
-    
+
 
 
 
@@ -248,7 +249,7 @@ int main()
         IT.push_back(i);
     }
     IT.print();
-    IT.print_reverse(); 
+    IT.print_reverse();
 
 
 
@@ -263,4 +264,3 @@ int main()
 
     return 0;
 }
-
