@@ -90,6 +90,7 @@ std::ostream &operator<< (std::ostream &output, const pair<Type1, Type2> &pair) 
 	// output << '\n' << "first: " << pair.first() << '\n' << "second: " << pair.second() << '\n';
 	output << '\n' << "{first, second} : {" << pair.first() << ", " << pair.second() << "}; " << '\n';
 
+
 	return output;
 }
 
@@ -157,9 +158,8 @@ lib::bike_value find_value (lib::bike_key &key, std::map<lib::bike_key, lib::bik
 	return answer;
 }
 
-const lib::bike_key &find_key (lib::bike_value &value, std::map<lib::bike_key, lib::bike_value> &map) noexcept {
+const lib::bike_key find_key (lib::bike_value &value, std::map<lib::bike_key, lib::bike_value> &map) noexcept {
 	lib::bike_key answer("NONE", -1);
-
 	for ( const auto &element : map ) {
 		if ( element.second == value ) {
 			answer = element.first;
@@ -170,6 +170,30 @@ const lib::bike_key &find_key (lib::bike_value &value, std::map<lib::bike_key, l
 
 	return answer;
 }
+
+const std::string foo (std::vector<std::string> vector) {
+	std::string answet;
+	for ( const auto &element : vector ) {
+		if ( element == "key" ) {
+			answet = element;
+		}
+	}
+	return answet;
+}
+
+
+
+template<typename Type1, typename Type2> void print_itt (std::map<Type1, Type2> &map) {
+	auto itt = map.begin();
+
+	while ( itt != map.end() ) {
+		std::cout << '\n' << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" <<
+			(*itt).first << '\n' << (*itt).second << "***************************************************";
+
+		itt++;
+	}
+}
+
 
 // ---------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------
@@ -191,9 +215,9 @@ int main() {
 		bike_map.insert({vector_key[i], vector_value[i]});
 	}
 	// Проверка правильного постороения структуры std::map
-	for ( const auto kv : bike_map ) {
-		std::cout << kv.first << kv.second;
-	}
+	//for ( const auto kv : bike_map ) {
+	//	std::cout << kv.first << kv.second;
+	//}
 
 	// Поиск по ключу
 	auto find_value_key1 = find_value(vector_key[1], bike_map);
@@ -207,6 +231,10 @@ int main() {
 
 	// std::cout<< map[k1];
 
+	//std::vector<std::string> vector{"gal;d", "g;fgs", "ert", "etewrt", "key", "adgs", "gterw"};
+	//std::cout << foo(vector);
+
+	print_itt(bike_map);
 
 	return 0;
 }
