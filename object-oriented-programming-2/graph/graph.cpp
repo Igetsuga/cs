@@ -1,6 +1,8 @@
 ﻿// релаксация ребра 
 // алгоритм Дейкстры
 // алгоритм Прима
+// алгоритм Белмана-Форда
+// алгоритм Крускала 2 варианта 
 // TestGraph.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 //
 #include <iostream>
@@ -54,7 +56,7 @@ int main()
 	};
 
 	//used[i] = 0 вершина еще не появлялась при обработке
-	//vector<int> used(7, 0);
+	vector<int> used(7, 0);
 	// vector<int> dist(7, -1);
 	vector<int> dist(7, 10000000); // inf
 
@@ -123,12 +125,28 @@ int main()
 	vector<Edge> edges;		//рассматриваемые ребра
 	vector<Edge> tree_edges;	//ребра в минимальном остове
 
-	edges.push_back(Edge(0, 0, 0));     //Начнём с вершины 0.
+	edges.push_back(Edge(0, 0, 0));     //Начнём с вершины 0. // фиктивная вершина
 
 
-	//while ( !edges.empty() ) {
+	while ( !edges.empty() ) {
+		auto it = min_element(edges.begin(), edges.end());
+		int to = it->to;
+		int from = it->from;
+		int w = it->weight;
+		mst_weight += w;
+		edges.erase(it);
 
-	//}
+		if ( used[to] ) continue;
+		used[to] = 1;
+
+		tree_edges.push_back(Edge(from, to, w));
+		
+		for ( int i = 0; i < 7 ; i++ ) {
+			if ( mat[to][i] > 0 && used[i] ) {
+				edges.push_back(Edge(to, i, mat[to][i]));
+			}
+		}
+	}
 
 	std::cout << "\nMinimum spanning tree weight: " << mst_weight << endl;
 	for ( int i = 1; i < tree_edges.size(); i++ ) {
