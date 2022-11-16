@@ -1,5 +1,6 @@
 ﻿// релаксация ребра 
-
+// алгоритм Дейкстры
+// алгоритм Прима
 // TestGraph.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 //
 #include <iostream>
@@ -85,7 +86,7 @@ int main()
 		//}
 		
 		// case: inf
-		for ( int i = 0; i < 7; i++ ) {
+		for ( int i = 6; i >= 0; i-- ) {
 			//есть ребро vertex->i, в i не заходили
 			if ( mat[vertex][i] > 0 && dist[vertex] + mat[vertex][i] < dist[i] ) {
 				dist[i] = dist[vertex] + mat[vertex][i];
@@ -125,9 +126,9 @@ int main()
 	edges.push_back(Edge(0, 0, 0));     //Начнём с вершины 0.
 
 
-	while ( !edges.empty() ) {
+	//while ( !edges.empty() ) {
 
-	}
+	//}
 
 	std::cout << "\nMinimum spanning tree weight: " << mst_weight << endl;
 	for ( int i = 1; i < tree_edges.size(); i++ ) {
@@ -135,6 +136,7 @@ int main()
 		cout << tree_edges[i];
 	}
 
-	char c; cin >> c;
+	//char c; cin >> c;
+
 	return 0;
 }
