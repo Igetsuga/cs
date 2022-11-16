@@ -5,7 +5,11 @@
 #include <iostream>
 #include <vector>
 
-namespace lib {
+
+
+
+
+namespace ds_lib {
 
 	// ---------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------
@@ -36,10 +40,7 @@ public:
 		_value2 = pair_other._value2;
 	}
 
-	/*pair (pair pair_other) {
-		_value1 = pair_other._value1;
-		_value2 = pair_other._value2;
-	}*/
+
 
 	virtual ~pair() = default;
 
@@ -96,8 +97,8 @@ std::ostream &operator<< (std::ostream &output, const pair<Type1, Type2> &pair) 
 
 
 template<typename Type1, typename Type2>
-lib::pair<Type1, Type2> &make_pair (const Type1 &value1, const Type2 &value2) noexcept {
-	return lib::pair<Type1,Type2>(value1, value2);
+ds_lib::pair<Type1, Type2> &make_pair (const Type1 &value1, const Type2 &value2) noexcept {
+	return ds_lib::pair<Type1,Type2>(value1, value2);
 }
 
 template<typename Type1, typename Type2>
@@ -109,7 +110,7 @@ std::pair<Type1, Type2> &make_std_pair (const Type1 &value1, const Type2 &value2
 // ---------------------------------------------------------------------------------------------
 
 
-class bike_key : public lib::pair<std::string, int> {
+class bike_key : public ds_lib::pair<std::string, int> {
 public:
 
 	bike_key (const std::string &brand, int diameter) : pair (brand, diameter) {};
@@ -123,7 +124,7 @@ public:
 // ---------------------------------------------------------------------------------------------
 
 
-class bike_value : public lib::pair<std::string, bool> {
+class bike_value : public ds_lib::pair<std::string, bool> {
 public:
 
 	bike_value (const std::string &type, bool is_absorb) : pair (type, is_absorb) {};
@@ -142,10 +143,13 @@ public:
 // ---------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------------------------
+// --------------------------------------------task2--------------------------------------------
+// ---------------------------------------------------------------------------------------------
 // Почему срабатывает деструктор, почему так не работает
-//lib::bike_value &find_value (lib::bike_key &key, std::map<lib::bike_key, lib::bike_value> &map) noexcept {
-lib::bike_value find_value (lib::bike_key &key, std::map<lib::bike_key, lib::bike_value> &map) noexcept {
-	lib::bike_value answer("NONE", "0");
+//ds_lib::bike_value &find_value (ds_lib::bike_key &key, std::map<ds_lib::bike_key, ds_lib::bike_value> &map) noexcept {
+ds_lib::bike_value find_value (ds_lib::bike_key &key, std::map<ds_lib::bike_key, ds_lib::bike_value> &map) noexcept {
+	ds_lib::bike_value answer("NONE", "0");
 	
 	for ( const auto &element : map ) {
 		if ( element.first == key ) {
@@ -158,8 +162,8 @@ lib::bike_value find_value (lib::bike_key &key, std::map<lib::bike_key, lib::bik
 	return answer;
 }
 
-const lib::bike_key find_key (lib::bike_value &value, std::map<lib::bike_key, lib::bike_value> &map) noexcept {
-	lib::bike_key answer("NONE", -1);
+const ds_lib::bike_key find_key (ds_lib::bike_value &value, std::map<ds_lib::bike_key, ds_lib::bike_value> &map) noexcept {
+	ds_lib::bike_key answer("NONE", -1);
 	for ( const auto &element : map ) {
 		if ( element.second == value ) {
 			answer = element.first;
@@ -172,37 +176,79 @@ const lib::bike_key find_key (lib::bike_value &value, std::map<lib::bike_key, li
 }
 
 const std::string foo (std::vector<std::string> vector) {
-	std::string answet;
+	std::string answer;
 	for ( const auto &element : vector ) {
 		if ( element == "key" ) {
-			answet = element;
+			answer = element;
+			break;
 		}
 	}
-	return answet;
+
+
+	return answer;
 }
 
 
-
-template<typename Type1, typename Type2> void print_itt (std::map<Type1, Type2> &map) {
+// ---------------------------------------------------------------------------------------------
+// --------------------------------------------task3--------------------------------------------
+// ---------------------------------------------------------------------------------------------
+template<typename Type1, typename Type2> void print_iter (std::map<Type1, Type2> &map) {
 	auto itt = map.begin();
 
 	while ( itt != map.end() ) {
-		std::cout << '\n' << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" <<
-			(*itt).first << '\n' << (*itt).second << "***************************************************";
-
+		std::cout << '\n' << (*itt).second;
 		itt++;
 	}
 }
 
 
 // ---------------------------------------------------------------------------------------------
+// --------------------------------------------task4--------------------------------------------
 // ---------------------------------------------------------------------------------------------
 
-using namespace lib;
+bool func_key (const ds_lib::bike_value &value, const int &threshold = 0) {
+	return (value.second() > threshold);
+}
+
+using func = bool(*)(const ds_lib::bike_value&, const int&);
+func func_task4 = &func_key;
+
+//tempalate<typename Type1, typename Type2> 
+std::map<ds_lib::bike_key, ds_lib::bike_value> &filter (std::map<ds_lib::bike_key, ds_lib::bike_value> map,
+												  bool(*func_key)(const ds_lib::bike_value&, const int&)) {
+	std::map<ds_lib::bike_key, ds_lib::bike_value> map_result;
+	
+	for ( auto &element : map ) {
+		if ( func_key(element.second, 0) == true ) {
+			//std::cout << typeid(element).name();
+			map_result.insert(element);
+		}
+	}
+
+
+	return map_result;
+}
+
+// ---------------------------------------------------------------------------------------------
+// --------------------------------------------task5--------------------------------------------
+// ---------------------------------------------------------------------------------------------
+
+//std::map<ds_lib::bike_key, ds_lib::bike_value> &insert(std::map<ds_lib::bike_key, ds_lib::bike_value> map,
+//													   std::pair<ds_lib::bike_key, ds_lib::bike_value> pait) {
+
+//}
+
+// ---------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
+
+using namespace ds_lib;
 int main() {
 
-	std::vector<lib::bike_key> vector_key;
-	std::vector<lib::bike_value> vector_value;
+// ---------------------------------------------------------------------------------------------
+// --------------------------------------------task1--------------------------------------------
+// ---------------------------------------------------------------------------------------------
+	std::vector<ds_lib::bike_key> vector_key;
+	std::vector<ds_lib::bike_value> vector_value;
 	std::string value = "value";
 	std::string key = "key";
 
@@ -211,7 +257,7 @@ int main() {
 	for ( int i = 0; i < 13; i++ ) {
 		vector_key.push_back(bike_key(key + std::to_string(i), std::rand()));
 		vector_value.push_back(bike_value(value + std::to_string(i), std::rand()));
-
+ 
 		bike_map.insert({vector_key[i], vector_value[i]});
 	}
 	// Проверка правильного постороения структуры std::map
@@ -234,7 +280,18 @@ int main() {
 	//std::vector<std::string> vector{"gal;d", "g;fgs", "ert", "etewrt", "key", "adgs", "gterw"};
 	//std::cout << foo(vector);
 
-	print_itt(bike_map);
+    // Вывод через итераторы
+	print_iter(bike_map);
+
+
+	auto map_result = filter(bike_map, func_task4);
+	print_iter(map_result);
+
+
+
+
+
+
 
 	return 0;
 }
