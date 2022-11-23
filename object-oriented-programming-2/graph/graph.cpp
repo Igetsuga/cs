@@ -57,7 +57,7 @@ private:
 	int _weight;
 };
 
-std::ostream &operator << (std::ostream &output, edge &edge)
+std::ostream &operator << (std::ostream &output, const edge &edge)
 {
 	output << nline << "From: " << edge.get_source() << ", to: " << edge.get_target() 
 		<< ", weight: " << edge.get_weight();
