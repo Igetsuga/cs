@@ -162,8 +162,6 @@ public:
 // ---------------------------------------------------------------------------------------------
 // --------------------------------------------task2--------------------------------------------
 // ---------------------------------------------------------------------------------------------
-// Почему срабатывает деструктор, почему так не работает
-//ds_lib::bike_value &find_value (ds_lib::bike_key &key, std::map<ds_lib::bike_key, ds_lib::bike_value> &map) noexcept {
 ds_lib::bike_value find_value (const std::map<ds_lib::bike_key, ds_lib::bike_value> &map,
 							   const ds_lib::bike_key &key) noexcept {
 	ds_lib::bike_value answer("NONE", 0);
@@ -356,16 +354,28 @@ protected:
 
 
 
-template <typename Key, typename Value>
-std::pair<typename std::map<Key, Value>::iteraror, bool> &insert(std::map<Key, Value> &map,
-														         const std::pair<ds_lib::bike_key, ds_lib::bike_value> &pair) {
-	if ( find_key(map, pair.second) != map.end() ) {
-		throw repeated_key("invalid_kye: key already exists in container", pair.first, map);
-	}
-	else {
-		return map.insert(pair);
-	}
-}
+//template <typename Key, typename Value>
+//std::pair<typename std::map<Key, Value>::iteraror, bool> &insert(std::map<Key, Value> &map,
+//														         std::pair<ds_lib::bike_key, ds_lib::bike_value> &pair) {
+//	if ( find_key(map, pair.second) != map.end() ) {
+//		throw repeated_key("invalid_kye: key already exists in container", pair.first, map);
+//	}
+//	else {
+//		auto pair_result = map.insert(pair);
+//		return pair_result;
+//	}
+//}
+
+//std::pair<typename std::map<ds_lib::bike_key, ds_lib::bike_value>::iteraror, bool> &insert(std::map<ds_lib::bike_key, ds_lib::bike_value> &map,
+//																                           std::pair<ds_lib::bike_key, ds_lib::bike_value> &pair) {
+//	if ( find_key(map, pair.second) != map.end() ) {
+//		throw repeated_key("invalid_kye: key already exists in container", pair.first, map);
+//	}
+//	else {
+//		auto pair_result = map.insert(pair);
+//		return pair_result;
+//	}
+//}
 
 // ---------------------------------------------------------------------------------------------
 // --------------------------- ------------------------------------------------------------------
@@ -446,8 +456,11 @@ int main() {
 // --------------------------------------------task5--------------------------------------------
 // ---------------------------------------------------------------------------------------------
 
-	auto pair_new = std::make_pair(ds_lib::bike_key("key_new", 999), ds_lib::bike_value("value_new", 1));
+	/*auto pair_new = std::make_pair(ds_lib::bike_key("key_new", 999), ds_lib::bike_value("value_new", 1));
 	std::cout << pair_new.first << pair_new.second;
+	
+	std::map<int, int> map;
+	insert<ds_lib::bike_key, ds_lib::bike_value>(bike_map, pair_new);*/
 
 
 	return 0;
