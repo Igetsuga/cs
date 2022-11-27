@@ -1,4 +1,5 @@
 ﻿#include <map>
+#include <set>
 
 #include <utility>
 #include <string>
@@ -221,7 +222,7 @@ const std::string foo (std::vector<std::string> vector) {
 // ------------------------------------------task(2.1.3)----------------------------------------
 // ---------------------------------------------------------------------------------------------
 
-template<typename Type1, typename Type2> void print_iter (const std::map<Type1, Type2> &map) {
+template<typename Key, typename Value> void print_iter (const std::map<Key, Value> &map) {
 	auto itt = map.begin();
 
 	std::cout << "{" << '\n';
@@ -245,6 +246,18 @@ void print_iter (Iterator_type begin, Iterator_type end) {
 	std::cout << "};" << '\n';
 }
 
+template<typename Iterator_type>
+void print_iter_set (Iterator_type begin, Iterator_type end) {
+
+	std::cout << "{" << '\n';
+
+	while ( begin != end ) {
+		std::cout << *begin << '\n';
+		begin++;
+	}
+	std::cout << "};" << '\n';
+}
+
 
 // ---------------------------------------------------------------------------------------------
 // ------------------------------------------task(2.1.4)----------------------------------------
@@ -258,11 +271,11 @@ using func = bool(*)(const ds_lib::bike_value &, const int &);
 func func_task4 = &func_key;
 
 // TODO: doesn't work with &filter, idk
-template<typename Type1, typename Type2>
-std::map<Type1, Type2> filter (const std::map<Type1, Type2> &map,
-							   bool(*func_key)(const ds_lib::bike_value &, const int &),
+template<typename Key, typename Value>
+std::map<Key, Value> filter (const std::map<Key, Value> &map,
+							   bool(*func_key)(const Value &, const int &),
 							   const int &threshold) {
-	std::map<Type1, Type2> map_result;
+	std::map<Key, Value> map_result;
 
 	for ( const auto &element : map ) {
 		if ( func_key(element.second, threshold) == true ) {
@@ -289,87 +302,61 @@ std::map<Type1, Type2> filter (const std::map<Type1, Type2> &map,
 class Exception : public std::exception {
 public:
 
-	Exception()
-	{
-		message_ = nullptr;
+	Exception() {
+		message_ = "";
 	}
 
-
-	Exception (const std::string &message)
-	{
-
-		message_ = new std::string(message);
-		// message_ = new char[strlen(message) + 1];   // strlen(С-string) <=> string::message.size();	
-		// strcpy_s(message_, strlen(message) + 1, message);   // method from C, idk, better to use methods with `string`
+	Exception (const std::string &message) {
+		message_ = std::string(message);
 	}
 
-	// constructor_copy
-	Exception (const Exception &exception)
-	{
-		message_ = new std::string(*exception.message_);
-		// message_ = new char[strlen(exception.message_) + 1];
-		// strcpy_s(message_, strlen(exception.message_) + 1, exception.message_);
+	Exception (const Exception &exception) {
+		message_ = exception.message_;
 	}
 
-	// destructor
-	virtual ~Exception()
-	{
-		delete [] message_; message_ = nullptr;
-	}
+	virtual ~Exception() = default;
 
-	virtual void what()
-	{
+
+
+	virtual void what() {
 		std::cout << '\n' << "{Exception}: " << message_ << "; " << std::exception::what();
 	}
 
 protected:
-	std::string *message_; // error message
+	std::string message_; // error message
 };
 
 class invalid_key : public Exception {
 public:
 	
-	invalid_key (const std::string &message, ds_lib::bike_key &key) : Exception(message) {
+	invalid_key (const std::string &message,
+				 ds_lib::bike_key &key,
+				 std::map<ds_lib::bike_key, ds_lib::bike_value> &map) : Exception(message) {
 		key_ = key;
+		map_ = map;
 	}
 
 	virtual ~invalid_key() = default;
 
+
+
 	virtual void what() override {
-		std::cout << '\n' << "{invalid_value}: " << message_ << "; " << std::exception::what();
+		std::cout << '\n' << "{invalid_value} --> " << message_ << "; " << std::exception::what();
 	}
 
 protected:
 	ds_lib::bike_key key_;
-};
-
-class repeated_key : public invalid_key {
-public:
-
-	repeated_key (const std::string &message, ds_lib::bike_key &key,
-				  std::map<ds_lib::bike_key, ds_lib::bike_value> &map) : invalid_key(message, key) {
-		map_ = map;
-	}
-
-	virtual ~repeated_key() = default;
-
-	virtual void what() override {
-		std::cout << '\n' << "{repeated_key}: " << message_ << "; " << std::exception::what();
-	}
-
-protected:
 	std::map<ds_lib::bike_key, ds_lib::bike_value> map_;
 };
 
 
 
 
-
 template <typename Key, typename Value>
 std::pair<typename std::map<Key, Value>::iterator, bool> insert(std::map<Key, Value> &map,
-																	  std::pair<ds_lib::bike_key, ds_lib::bike_value> &pair) {
+																std::pair<ds_lib::bike_key, ds_lib::bike_value> &pair) {
 	if ( find_key(map, pair.second) != map.end() ) {
-		throw repeated_key("invalid_kye: key already exists in container", pair.first, map);
+		throw invalid_key("invalid_key: key already exists in container", pair.first, map);
 	}
 	else {
 		auto pair_result = map.insert(pair);
@@ -379,15 +366,38 @@ std::pair<typename std::map<Key, Value>::iterator, bool> insert(std::map<Key, Va
 
 //using myIterator = typename std::map<ds_lib::bike_key, ds_lib::bike_value>::iterator;
 //std::pair<myIterator, bool> &insert(std::map<ds_lib::bike_key, ds_lib::bike_value> &map,
-//																                           std::pair<ds_lib::bike_key, ds_lib::bike_value> &pair) {
+//				                      std::pair<ds_lib::bike_key, ds_lib::bike_value> &pair) {
 //	if ( find_key(map, pair.second) != map.end() ) {
-//		throw repeated_key("invalid_kye: key already exists in container", pair.first, map);
+//		throw invalid_key("invalid_kye: key already exists in container", pair.first, map);
 //	}
 //	else {
 //		auto pair_result = map.insert(pair);
 //		return pair_result;
 //	}
 //}
+
+// ---------------------------------------------------------------------------------------------
+// ------------------------------------------task(2.1.6)----------------------------------------
+// ---------------------------------------------------------------------------------------------
+
+template<typename Key, typename Value>
+std::set<Value> filterSet (const std::map<Key, Value> &map,
+						  bool(*func_key)(const Value &, const int &),
+						  const int &threshold) {
+	std::set<Value> set_result;
+
+	for ( const auto &element : map ) {
+		if ( func_key(element.second, threshold) == true ) {
+			//std::cout << typeid(element).name();
+			set_result.insert(element.second);
+		}
+	}
+
+
+	return set_result;
+}
+
+
 
 // ---------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------
@@ -477,6 +487,19 @@ int main() {
 	print_iter(map_result.begin(), map_result.end());
 
 // ---------------------------------------------------------------------------------------------
+// ------------------------------------------task(2.1.4)----------------------------------------
+// ---------------------------------------------------------------------------------------------
+	
+	std::cout << '\n' << "----------------------------------" << '\n';
+
+	std::set<ds_lib::bike_value> set_result;
+
+	set_result = filterSet(bike_map, func_task4, 0);
+	print_iter_set(set_result.begin(), set_result.end());
+
+	std::cout << '\n' << "----------------------------------" << '\n';
+
+// ---------------------------------------------------------------------------------------------
 // ------------------------------------------task(2.1.5)----------------------------------------
 // ---------------------------------------------------------------------------------------------
 
@@ -484,7 +507,21 @@ int main() {
 	std::cout << pair_new.first << pair_new.second;
 	
 	auto iter_pair_inserted = insert<ds_lib::bike_key, ds_lib::bike_value>(bike_map, pair_new);
-	std::cout << '\n' << (*(iter_pair_inserted.first)).first << (*(iter_pair_inserted.first)).second;
+	std::cout << '\n' << (*(iter_pair_inserted.first)).first << (*(iter_pair_inserted.first)).second << '\n';
+	
+	print_iter(bike_map.begin(), bike_map.end());
+
+	try
+	{
+		insert<ds_lib::bike_key, ds_lib::bike_value>(bike_map, pair_new);
+	}
+	catch (invalid_key exceptionKey) 
+	{
+		exceptionKey.what();
+
+		// exception handling ...
+	}
+	catch(...) {}
 
 	//std::map<ds_lib::bike_key, ds_lib::bike_value>::iterator iter = map_result.begin();
 
