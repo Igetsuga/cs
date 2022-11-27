@@ -69,15 +69,15 @@ public:
 	}
 
 	bool operator < (const pair &pair_other) const noexcept {
-		return !(*this > pair_other);
+		return !(*this >= pair_other );
 	}
 
 	bool operator >= (const pair &pair_other) const noexcept {
-		return (this > pair_other || this == pair_other);
+		return (*this > pair_other || *this == pair_other);
 	}
 
 	bool operator <= (const pair &pair_other) const noexcept {
-		return (this < pair_other || this == pair_other);
+		return !(*this > pair_other);
 	}
 
 
@@ -162,34 +162,47 @@ public:
 // ---------------------------------------------------------------------------------------------
 // --------------------------------------------task2--------------------------------------------
 // ---------------------------------------------------------------------------------------------
-ds_lib::bike_value find_value (const std::map<ds_lib::bike_key, ds_lib::bike_value> &map,
-							   const ds_lib::bike_key &key) noexcept {
-	ds_lib::bike_value answer("NONE", 0);
+//using
+//template <typename Key, typename Value>
 
-	for ( const auto &element : map ) {
-		if ( element.first == key ) {
-			answer = element.second;
-			break;
-		}
-	}
-
-
-	return answer;
+// CONSTANT realisation
+// TODO: doesn't work with `&find_value`, mb because result_iter is pointer and &(pointer) is undefined
+//std::map<ds_lib::bike_key, ds_lib::bike_value>::const_iterator find_value (const std::map<ds_lib::bike_key, ds_lib::bike_value> &map,
+//																			 const ds_lib::bike_key &key) noexcept {
+//	auto result_iter = map.find(key);
+//	return result_iter;
+//}
+// CONSTANT + TEMPLATE realisation
+template <typename Key, typename Value>
+typename std::map<Key, Value>::const_iterator find_value (const std::map<Key, Value> &map,
+														  const ds_lib::bike_key &key) noexcept {
+	auto result_iter = map.find(key);
+	return result_iter;
 }
 
-const ds_lib::bike_key find_key (const std::map<ds_lib::bike_key, ds_lib::bike_value> &map,
-								 const ds_lib::bike_value &value) noexcept {
-	ds_lib::bike_key answer("NONE", -1);
+// NON CONSTANT realisation
+//std::map<ds_lib::bike_key, ds_lib::bike_value>::iterator find_value (std::map<ds_lib::bike_key, ds_lib::bike_value> &map,
+//																	   const ds_lib::bike_key &key) noexcept {
+//	auto result_iter = map.find(key);
+//	return result_iter;
+//}
 
-	for ( const auto &element : map ) {
-		if ( element.second == value ) {
-			answer = element.first;
-			break;
-		}
+
+
+// CONSTANT + TEMPLATE realisation
+template <typename Key, typename Value>
+typename std::map<Key, Value>::const_iterator find_key (const std::map<Key, Value> &map,
+														const ds_lib::bike_value &value) noexcept {
+	auto iter = map.begin();
+
+	while ( iter != map.end() ) {
+		if ( iter->second == value ) { break; }
+
+		iter++;
 	}
 
 
-	return answer;
+	return iter;
 }
 
 const std::string foo (std::vector<std::string> vector) {
@@ -413,14 +426,26 @@ int main() {
 	// Поиск по ключу
 	auto find_value_key1 = find_value(bike_map, vector_key[1]);
 	auto find_value_key10 = find_value(bike_map, vector_key[10]);
-	std::cout << "RESULT VALUE: " << find_value_key1 << " --> TRUE VALUE: " << vector_value[1] << '\n';
-	std::cout << "RESULT VALUE: " << find_value_key10 << " --> TRUE VALUE: " << vector_value[10] << '\n';
+	if ( find_value_key1 != bike_map.end() ) 		{
+		std::cout << "RESULT VALUE: " << find_value_key1->second << " --> TRUE VALUE: " << vector_value[1] << '\n';
+	}
+	if ( find_value_key10 != bike_map.end() ) {
+		std::cout << "RESULT VALUE: " << find_value_key10->second << " --> TRUE VALUE: " << vector_value[10] << '\n';
+	}
+	
 
 	// Поиск по значению
 	auto find_key_value1 = find_key(bike_map, vector_value[1]);
 	auto find_key_value11 = find_key(bike_map, vector_value[11]);
-	std::cout << "RESULT KEY: " << find_key_value1 << " --> TRUE KEY: " << vector_key[1] << '\n';
-	std::cout << "RESULT KEY: " << find_key_value11 << " --> TRUE KEY: " << vector_key[11] << '\n';
+	if ( find_key_value1 != bike_map.end() ) {
+		std::cout << "RESULT KEY: " << find_key_value1->first << " --> TRUE KEY: " << vector_key[1] << '\n';
+	}
+	if ( find_key_value11 != bike_map.end() ) {
+		std::cout << "RESULT KEY: " << find_key_value11->first << " --> TRUE KEY: " << vector_key[11] << '\n';
+	}
+
+	
+	
 
 	//std::cout << k1 << k2;
 
@@ -462,6 +487,10 @@ int main() {
 	std::map<int, int> map;
 	insert<ds_lib::bike_key, ds_lib::bike_value>(bike_map, pair_new);*/
 
+
+	std::map<ds_lib::bike_key, ds_lib::bike_value>::iterator iter = map_result.begin();
+
+	std::cout << (*iter).second;
 
 	return 0;
 }
