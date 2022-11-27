@@ -217,6 +217,34 @@ const std::string foo (std::vector<std::string> vector) {
 	return answer;
 }
 
+// ---------------------------------------------------------------------------------------------
+// ------------------------------------------task(2.2.2)----------------------------------------
+// ---------------------------------------------------------------------------------------------
+// CONSTANT + TEMPLATE realisation
+template <typename Key, typename Value>
+typename std::multimap<Key, Value>::const_iterator find_value_multi (const std::map<Key, Value> &multimap,
+														  			 const ds_lib::bike_key &key) noexcept {
+	auto result_iter = multimap.find(key);
+	return result_iter;
+}
+
+
+// CONSTANT + TEMPLATE realisation
+template <typename Key, typename Value>
+typename std::multimap<Key, Value>::const_iterator find_key_multi (const std::map<Key, Value> &multimap,
+																   const ds_lib::bike_value &value) noexcept {
+	auto iter = multimap.begin();
+
+	while ( iter != multimap.end() ) {
+		if ( iter->second == value ) { break; }
+
+		iter++;
+	}
+
+
+	return iter;
+}
+
 
 // ---------------------------------------------------------------------------------------------
 // ------------------------------------------task(2.1.3)----------------------------------------
@@ -233,6 +261,11 @@ template<typename Key, typename Value> void print_iter (const std::map<Key, Valu
 	std::cout << "};" << '\n';
 
 }
+
+// ---------------------------------------------------------------------------------------------
+// ------------------------------------------task(2.2.3)----------------------------------------
+// ---------------------------------------------------------------------------------------------
+
 
 template<typename Iterator_type>
 void print_iter (Iterator_type begin, Iterator_type end) {
@@ -273,13 +306,12 @@ func func_task4 = &func_key;
 // TODO: doesn't work with &filter, idk
 template<typename Key, typename Value>
 std::map<Key, Value> filter (const std::map<Key, Value> &map,
-							   bool(*func_key)(const Value &, const int &),
-							   const int &threshold) {
+							 bool(*func_key)(const Value &, const int &),
+							 const int &threshold) {
 	std::map<Key, Value> map_result;
 
 	for ( const auto &element : map ) {
 		if ( func_key(element.second, threshold) == true ) {
-			//std::cout << typeid(element).name();
 			map_result.insert(element);
 		}
 	}
@@ -293,6 +325,26 @@ std::map<Key, Value> filter (const std::map<Key, Value> &map,
 	}*/
 
 	return map_result;
+}
+
+// ---------------------------------------------------------------------------------------------
+// ------------------------------------------task(2.2.4)----------------------------------------
+// ---------------------------------------------------------------------------------------------
+
+template<typename Key, typename Value>
+std::multimap<Key, Value> filter_multi (const std::multimap<Key, Value> &map,
+							      		bool(*func_key)(const Value &, const int &),
+							      		const int &threshold) {
+	std::multimap<Key, Value> multimap_result;
+
+	for ( const auto &element : map ) {
+		if ( func_key(element.second, threshold) == true ) {
+			multimap_result.insert(element);
+		}
+	}
+
+	
+	return multimap_result;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -388,7 +440,6 @@ std::set<Value> filterSet (const std::map<Key, Value> &map,
 
 	for ( const auto &element : map ) {
 		if ( func_key(element.second, threshold) == true ) {
-			//std::cout << typeid(element).name();
 			set_result.insert(element.second);
 		}
 	}
@@ -397,7 +448,25 @@ std::set<Value> filterSet (const std::map<Key, Value> &map,
 	return set_result;
 }
 
+// ---------------------------------------------------------------------------------------------
+// ------------------------------------------task(2.2.6)----------------------------------------
+// ---------------------------------------------------------------------------------------------
 
+template<typename Key, typename Value>
+std::multiset<Value> filterSet_multi (const std::multimap<Key, Value> &map,
+						  bool(*func_key)(const Value &, const int &),
+						  const int &threshold) {
+	std::multiset<Value> multiset_result;
+
+	for ( const auto &element : map ) {
+		if ( func_key(element.second, threshold) == true ) {
+			multiset_result.insert(element.second);
+		}
+	}
+
+
+	return multiset_result;
+}
 
 // ---------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------
@@ -487,7 +556,7 @@ int main() {
 	print_iter(map_result.begin(), map_result.end());
 
 // ---------------------------------------------------------------------------------------------
-// ------------------------------------------task(2.1.4)----------------------------------------
+// ------------------------------------------task(2.1.6)----------------------------------------
 // ---------------------------------------------------------------------------------------------
 	
 	std::cout << '\n' << "----------------------------------" << '\n';
@@ -523,10 +592,195 @@ int main() {
 	}
 	catch(...) {}
 
-	//std::map<ds_lib::bike_key, ds_lib::bike_value>::iterator iter = map_result.begin();
+	for (int i = 0; i < 5; i++) {
+		std::cout << '\n';
+	}
+	
+	
 
-	//std::cout << (*iter).second;
 
-	//std::map<ds_lib::bike_key, ds_lib::bike_value>::iteraror iter = bike_map.begin();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ---------------------------------------------------------------------------------------------
+// ------------------------------------------task(2.2.0)----------------------------------------
+// ---------------------------------------------------------------------------------------------
+
+
+
+	// Контейнер может содержать значения с одинаковыми ключами.
+	// insert - вставка всегда происходит успешно 
+	// erase - удаляет все входящие в  контейнер элементы с заданным ключем
+	// find - возвращает первый встретившийся элемент с заданным ключем
+	std::multimap<int, int> m = {{1,10},{2,2},{3,3},{4,4},{5,5},{4,4},{3,3},{2,2},{1,100}};
+ 	for(auto& p: m) std::cout << p.first << ' ' << p.second << '\n';
+	std::cout << (*( m.find(1) )).second;
+
+
+	std::multimap<bike_key, bike_value> bike_multimap;
+
+	for ( int i = 0; i < 13; i++ ) {
+		vector_key.push_back(bike_key(key + std::to_string(i), std::rand()));
+		vector_value.push_back(bike_value(value + std::to_string(i), std::rand() % 2));
+
+		bike_multimap.insert({vector_key[i], vector_value[i]});
+	}
+	// Проверка правильного постороения(правилность сортировки по ключу) структуры std::map
+	print_iter(bike_multimap.begin(), bike_multimap.end() );
+
+// ---------------------------------------------------------------------------------------------
+// ------------------------------------------task(2.2.2)----------------------------------------
+// ---------------------------------------------------------------------------------------------
+
+	// Поиск по ключу
+	auto find_value_key2 = find_value_multi(bike_map, vector_key[2]);
+	auto find_value_key11 = find_value_multi(bike_map, vector_key[11]);
+	if ( find_value_key2 != bike_map.end() ) 		{
+		std::cout << "RESULT VALUE: " << find_value_key2->second << " --> TRUE VALUE: " << vector_value[2] << '\n';
+	}
+	if ( find_value_key11 != bike_map.end() ) {
+		std::cout << "RESULT VALUE: " << find_value_key11->second << " --> TRUE VALUE: " << vector_value[11] << '\n';
+	}
+	
+
+	// Поиск по значению
+	auto find_key_value2 = find_key_multi(bike_map, vector_value[2]);
+	auto find_key_value12 = find_key_multi(bike_map, vector_value[12]);
+	if ( find_key_value2 != bike_map.end() ) {
+		std::cout << "RESULT KEY: " << find_key_value2->first << " --> TRUE KEY: " << vector_key[2] << '\n';
+	}
+	if ( find_key_value12 != bike_map.end() ) {
+		std::cout << "RESULT KEY: " << find_key_value12->first << " --> TRUE KEY: " << vector_key[12] << '\n';
+	}
+
+// ---------------------------------------------------------------------------------------------
+// ------------------------------------------task(2.2.3)----------------------------------------
+// ---------------------------------------------------------------------------------------------
+
+	// Вывод через итераторы
+	print_iter(bike_multimap.begin(), bike_multimap.end() );
+
+// ---------------------------------------------------------------------------------------------
+// ------------------------------------------task(2.1.4)----------------------------------------
+// ---------------------------------------------------------------------------------------------
+
+	std::cout << '\n' << "----------------------------------" << '\n';
+
+	//auto iter = bike_map.begin();
+	std::multimap<ds_lib::bike_key, ds_lib::bike_value> map_result_multi;
+	//std::map<ds_lib::bike_key, ds_lib::bike_value> map_train;
+	//map_train.insert({vector_key[0], vector_value[0]});
+	//map_train.insert({vector_key[1], vector_value[1]});
+
+
+	map_result_multi = filter_multi(bike_multimap, func_task4, 0);
+	print_iter(map_result_multi.begin(), map_result_multi.end());
+
+// ---------------------------------------------------------------------------------------------
+// ------------------------------------------task(2.2.6)----------------------------------------
+// ---------------------------------------------------------------------------------------------
+	
+	std::cout << '\n' << "----------------------------------" << '\n';
+
+	std::multiset<ds_lib::bike_value> multi_set_result;
+
+	multi_set_result = filterSet_multi(bike_multimap, func_task4, 0);
+	print_iter_set(multi_set_result.begin(), multi_set_result.end());
+
+	std::cout << '\n' << "----------------------------------" << '\n';
+
+
 	return 0;
 }
