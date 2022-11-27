@@ -160,11 +160,8 @@ public:
 // ---------------------------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------------------------
-// --------------------------------------------task2--------------------------------------------
+// ------------------------------------------task(2.1.2)----------------------------------------
 // ---------------------------------------------------------------------------------------------
-//using
-//template <typename Key, typename Value>
-
 // CONSTANT realisation
 // TODO: doesn't work with `&find_value`, mb because result_iter is pointer and &(pointer) is undefined
 //std::map<ds_lib::bike_key, ds_lib::bike_value>::const_iterator find_value (const std::map<ds_lib::bike_key, ds_lib::bike_value> &map,
@@ -172,6 +169,7 @@ public:
 //	auto result_iter = map.find(key);
 //	return result_iter;
 //}
+
 // CONSTANT + TEMPLATE realisation
 template <typename Key, typename Value>
 typename std::map<Key, Value>::const_iterator find_value (const std::map<Key, Value> &map,
@@ -220,7 +218,7 @@ const std::string foo (std::vector<std::string> vector) {
 
 
 // ---------------------------------------------------------------------------------------------
-// --------------------------------------------task3--------------------------------------------
+// ------------------------------------------task(2.1.3)----------------------------------------
 // ---------------------------------------------------------------------------------------------
 
 template<typename Type1, typename Type2> void print_iter (const std::map<Type1, Type2> &map) {
@@ -249,7 +247,7 @@ void print_iter (Iterator_type begin, Iterator_type end) {
 
 
 // ---------------------------------------------------------------------------------------------
-// --------------------------------------------task4--------------------------------------------
+// ------------------------------------------task(2.1.4)----------------------------------------
 // ---------------------------------------------------------------------------------------------
 
 bool func_key (const ds_lib::bike_value &value, const int &threshold = 0) {
@@ -285,7 +283,7 @@ std::map<Type1, Type2> filter (const std::map<Type1, Type2> &map,
 }
 
 // ---------------------------------------------------------------------------------------------
-// --------------------------------------------task5--------------------------------------------
+// ------------------------------------------task(2.1.5)----------------------------------------
 // ---------------------------------------------------------------------------------------------
 
 class Exception : public std::exception {
@@ -367,19 +365,20 @@ protected:
 
 
 
-//template <typename Key, typename Value>
-//std::pair<typename std::map<Key, Value>::iteraror, bool> &insert(std::map<Key, Value> &map,
-//														         std::pair<ds_lib::bike_key, ds_lib::bike_value> &pair) {
-//	if ( find_key(map, pair.second) != map.end() ) {
-//		throw repeated_key("invalid_kye: key already exists in container", pair.first, map);
-//	}
-//	else {
-//		auto pair_result = map.insert(pair);
-//		return pair_result;
-//	}
-//}
+template <typename Key, typename Value>
+std::pair<typename std::map<Key, Value>::iterator, bool> insert(std::map<Key, Value> &map,
+																	  std::pair<ds_lib::bike_key, ds_lib::bike_value> &pair) {
+	if ( find_key(map, pair.second) != map.end() ) {
+		throw repeated_key("invalid_kye: key already exists in container", pair.first, map);
+	}
+	else {
+		auto pair_result = map.insert(pair);
+		return pair_result;
+	}
+}
 
-//std::pair<typename std::map<ds_lib::bike_key, ds_lib::bike_value>::iteraror, bool> &insert(std::map<ds_lib::bike_key, ds_lib::bike_value> &map,
+//using myIterator = typename std::map<ds_lib::bike_key, ds_lib::bike_value>::iterator;
+//std::pair<myIterator, bool> &insert(std::map<ds_lib::bike_key, ds_lib::bike_value> &map,
 //																                           std::pair<ds_lib::bike_key, ds_lib::bike_value> &pair) {
 //	if ( find_key(map, pair.second) != map.end() ) {
 //		throw repeated_key("invalid_kye: key already exists in container", pair.first, map);
@@ -391,13 +390,13 @@ protected:
 //}
 
 // ---------------------------------------------------------------------------------------------
-// --------------------------- ------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
 
 using namespace ds_lib;
 int main() {
 
 // ---------------------------------------------------------------------------------------------
-// --------------------------------------------task1--------------------------------------------
+// ------------------------------------------task(2.1.1)----------------------------------------
 // ---------------------------------------------------------------------------------------------
 	std::vector<ds_lib::bike_key> vector_key;
 	std::vector<ds_lib::bike_value> vector_value;
@@ -420,7 +419,7 @@ int main() {
 	std::cout << "};" << '\n';
 
 // ---------------------------------------------------------------------------------------------
-// --------------------------------------------task2--------------------------------------------
+// ------------------------------------------task(2.1.2)----------------------------------------
 // ---------------------------------------------------------------------------------------------
 
 	// Поиск по ключу
@@ -455,14 +454,14 @@ int main() {
 	//std::cout << foo(vector);
 
 // ---------------------------------------------------------------------------------------------
-// --------------------------------------------task3--------------------------------------------
+// ------------------------------------------task(2.1.3)----------------------------------------
 // ---------------------------------------------------------------------------------------------
 
 	// Вывод через итераторы
 	print_iter(bike_map);
 
 // ---------------------------------------------------------------------------------------------
-// --------------------------------------------task4--------------------------------------------
+// ------------------------------------------task(2.1.4)----------------------------------------
 // ---------------------------------------------------------------------------------------------
 
 	std::cout << '\n' << "----------------------------------" << '\n';
@@ -478,19 +477,19 @@ int main() {
 	print_iter(map_result.begin(), map_result.end());
 
 // ---------------------------------------------------------------------------------------------
-// --------------------------------------------task5--------------------------------------------
+// ------------------------------------------task(2.1.5)----------------------------------------
 // ---------------------------------------------------------------------------------------------
 
-	/*auto pair_new = std::make_pair(ds_lib::bike_key("key_new", 999), ds_lib::bike_value("value_new", 1));
+	auto pair_new = std::make_pair(ds_lib::bike_key("key_new", 999), ds_lib::bike_value("value_new", 1));
 	std::cout << pair_new.first << pair_new.second;
 	
-	std::map<int, int> map;
-	insert<ds_lib::bike_key, ds_lib::bike_value>(bike_map, pair_new);*/
+	auto iter_pair_inserted = insert<ds_lib::bike_key, ds_lib::bike_value>(bike_map, pair_new);
+	std::cout << '\n' << (*(iter_pair_inserted.first)).first << (*(iter_pair_inserted.first)).second;
 
+	//std::map<ds_lib::bike_key, ds_lib::bike_value>::iterator iter = map_result.begin();
 
-	std::map<ds_lib::bike_key, ds_lib::bike_value>::iterator iter = map_result.begin();
+	//std::cout << (*iter).second;
 
-	std::cout << (*iter).second;
-
+	//std::map<ds_lib::bike_key, ds_lib::bike_value>::iteraror iter = bike_map.begin();
 	return 0;
 }
