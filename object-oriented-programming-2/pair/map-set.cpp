@@ -10,7 +10,7 @@
 
 
 
-namespace ds_lib {
+namespace ds {
 
 // ---------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------
@@ -99,8 +99,8 @@ std::ostream &operator<< (std::ostream &output, const pair<Type1, Type2> &pair) 
 
 
 template<typename Type1, typename Type2>
-ds_lib::pair<Type1, Type2> &make_pair (const Type1 &value1, const Type2 &value2) noexcept {
-	return ds_lib::pair<Type1, Type2>(value1, value2);
+ds::pair<Type1, Type2> &make_pair (const Type1 &value1, const Type2 &value2) noexcept {
+	return ds::pair<Type1, Type2>(value1, value2);
 }
 
 template<typename Type1, typename Type2>
@@ -112,7 +112,7 @@ std::pair<Type1, Type2> &make_std_pair (const Type1 &value1, const Type2 &value2
 // ---------------------------------------------------------------------------------------------
 
 
-class bike_key final : public ds_lib::pair<std::string, int> {
+class bike_key final : public ds::pair<std::string, int> {
 public:
 
 	bike_key (const std::string &brand = "", int diameter = -1) : pair (brand, diameter) {};
@@ -141,7 +141,7 @@ public:
 // ---------------------------------------------------------------------------------------------
 
 
-class bike_value final : public ds_lib::pair<std::string, bool> {
+class bike_value final : public ds::pair<std::string, bool> {
 public:
 
 	bike_value (const std::string &type, bool is_absorb) : pair (type, is_absorb) {};
@@ -165,8 +165,8 @@ public:
 // ---------------------------------------------------------------------------------------------
 // CONSTANT realisation
 // TODO: doesn't work with `&find_value`, mb because result_iter is pointer and &(pointer) is undefined
-//std::map<ds_lib::bike_key, ds_lib::bike_value>::const_iterator find_value (const std::map<ds_lib::bike_key, ds_lib::bike_value> &map,
-//																			 const ds_lib::bike_key &key) noexcept {
+//std::map<ds::bike_key, ds::bike_value>::const_iterator find_value (const std::map<ds::bike_key, ds::bike_value> &map,
+//																			 const ds::bike_key &key) noexcept {
 //	auto result_iter = map.find(key);
 //	return result_iter;
 //}
@@ -174,14 +174,14 @@ public:
 // CONSTANT + TEMPLATE realisation
 template <typename Key, typename Value>
 typename std::map<Key, Value>::const_iterator find_value (const std::map<Key, Value> &map,
-														  const ds_lib::bike_key &key) noexcept {
+														  const ds::bike_key &key) noexcept {
 	auto result_iter = map.find(key);
 	return result_iter;
 }
 
 // NON CONSTANT realisation
-//std::map<ds_lib::bike_key, ds_lib::bike_value>::iterator find_value (std::map<ds_lib::bike_key, ds_lib::bike_value> &map,
-//																	   const ds_lib::bike_key &key) noexcept {
+//std::map<ds::bike_key, ds::bike_value>::iterator find_value (std::map<ds::bike_key, ds::bike_value> &map,
+//																	   const ds::bike_key &key) noexcept {
 //	auto result_iter = map.find(key);
 //	return result_iter;
 //}
@@ -191,7 +191,7 @@ typename std::map<Key, Value>::const_iterator find_value (const std::map<Key, Va
 // CONSTANT + TEMPLATE realisation
 template <typename Key, typename Value>
 typename std::map<Key, Value>::const_iterator find_key (const std::map<Key, Value> &map,
-														const ds_lib::bike_value &value) noexcept {
+														const ds::bike_value &value) noexcept {
 	auto iter = map.begin();
 
 	while ( iter != map.end() ) {
@@ -223,7 +223,7 @@ const std::string foo (std::vector<std::string> vector) {
 // CONSTANT + TEMPLATE realisation
 template <typename Key, typename Value>
 typename std::multimap<Key, Value>::const_iterator find_value_multi (const std::map<Key, Value> &multimap,
-														  			 const ds_lib::bike_key &key) noexcept {
+														  			 const ds::bike_key &key) noexcept {
 	auto result_iter = multimap.find(key);
 	return result_iter;
 }
@@ -232,7 +232,7 @@ typename std::multimap<Key, Value>::const_iterator find_value_multi (const std::
 // CONSTANT + TEMPLATE realisation
 template <typename Key, typename Value>
 typename std::multimap<Key, Value>::const_iterator find_key_multi (const std::map<Key, Value> &multimap,
-																   const ds_lib::bike_value &value) noexcept {
+																   const ds::bike_value &value) noexcept {
 	auto iter = multimap.begin();
 
 	while ( iter != multimap.end() ) {
@@ -296,11 +296,11 @@ void print_iter_set (Iterator_type begin, Iterator_type end) {
 // ------------------------------------------task(2.1.4)----------------------------------------
 // ---------------------------------------------------------------------------------------------
 
-bool func_key (const ds_lib::bike_value &value, const int &threshold = 0) {
+bool func_key (const ds::bike_value &value, const int &threshold = 0) {
 	return (value.second() > threshold);
 }
 
-using func = bool(*)(const ds_lib::bike_value &, const int &);
+using func = bool(*)(const ds::bike_value &, const int &);
 func func_task4 = &func_key;
 
 // TODO: doesn't work with &filter, idk
@@ -382,8 +382,8 @@ class invalid_key : public Exception {
 public:
 	
 	invalid_key (const std::string &message,
-				 ds_lib::bike_key &key,
-				 std::map<ds_lib::bike_key, ds_lib::bike_value> &map) : Exception(message) {
+				 ds::bike_key &key,
+				 std::map<ds::bike_key, ds::bike_value> &map) : Exception(message) {
 		key_ = key;
 		map_ = map;
 	}
@@ -397,8 +397,8 @@ public:
 	}
 
 protected:
-	ds_lib::bike_key key_;
-	std::map<ds_lib::bike_key, ds_lib::bike_value> map_;
+	ds::bike_key key_;
+	std::map<ds::bike_key, ds::bike_value> map_;
 };
 
 
@@ -406,7 +406,7 @@ protected:
 
 template <typename Key, typename Value>
 std::pair<typename std::map<Key, Value>::iterator, bool> insert(std::map<Key, Value> &map,
-																std::pair<ds_lib::bike_key, ds_lib::bike_value> &pair) {
+																std::pair<ds::bike_key, ds::bike_value> &pair) {
 	if ( find_key(map, pair.second) != map.end() ) {
 		throw invalid_key("invalid_key: key already exists in container", pair.first, map);
 	}
@@ -416,9 +416,9 @@ std::pair<typename std::map<Key, Value>::iterator, bool> insert(std::map<Key, Va
 	}
 }
 
-//using myIterator = typename std::map<ds_lib::bike_key, ds_lib::bike_value>::iterator;
-//std::pair<myIterator, bool> &insert(std::map<ds_lib::bike_key, ds_lib::bike_value> &map,
-//				                      std::pair<ds_lib::bike_key, ds_lib::bike_value> &pair) {
+//using myIterator = typename std::map<ds::bike_key, ds::bike_value>::iterator;
+//std::pair<myIterator, bool> &insert(std::map<ds::bike_key, ds::bike_value> &map,
+//				                      std::pair<ds::bike_key, ds::bike_value> &pair) {
 //	if ( find_key(map, pair.second) != map.end() ) {
 //		throw invalid_key("invalid_kye: key already exists in container", pair.first, map);
 //	}
@@ -471,14 +471,14 @@ std::multiset<Value> filterSet_multi (const std::multimap<Key, Value> &map,
 // ---------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------
 
-using namespace ds_lib;
+using namespace ds;
 int main() {
 
 // ---------------------------------------------------------------------------------------------
 // ------------------------------------------task(2.1.1)----------------------------------------
 // ---------------------------------------------------------------------------------------------
-	std::vector<ds_lib::bike_key> vector_key;
-	std::vector<ds_lib::bike_value> vector_value;
+	std::vector<ds::bike_key> vector_key;
+	std::vector<ds::bike_value> vector_value;
 	std::string value = "v";
 	std::string key = "k";
 
@@ -546,8 +546,8 @@ int main() {
 	std::cout << '\n' << "----------------------------------" << '\n';
 
 	//auto iter = bike_map.begin();
-	std::map<ds_lib::bike_key, ds_lib::bike_value> map_result;
-	//std::map<ds_lib::bike_key, ds_lib::bike_value> map_train;
+	std::map<ds::bike_key, ds::bike_value> map_result;
+	//std::map<ds::bike_key, ds::bike_value> map_train;
 	//map_train.insert({vector_key[0], vector_value[0]});
 	//map_train.insert({vector_key[1], vector_value[1]});
 
@@ -561,7 +561,7 @@ int main() {
 	
 	std::cout << '\n' << "----------------------------------" << '\n';
 
-	std::set<ds_lib::bike_value> set_result;
+	std::set<ds::bike_value> set_result;
 
 	set_result = filterSet(bike_map, func_task4, 0);
 	print_iter_set(set_result.begin(), set_result.end());
@@ -572,17 +572,17 @@ int main() {
 // ------------------------------------------task(2.1.5)----------------------------------------
 // ---------------------------------------------------------------------------------------------
 
-	auto pair_new = std::make_pair(ds_lib::bike_key("key_new", 999), ds_lib::bike_value("value_new", 1));
+	auto pair_new = std::make_pair(ds::bike_key("key_new", 999), ds::bike_value("value_new", 1));
 	std::cout << pair_new.first << pair_new.second;
 	
-	auto iter_pair_inserted = insert<ds_lib::bike_key, ds_lib::bike_value>(bike_map, pair_new);
+	auto iter_pair_inserted = insert<ds::bike_key, ds::bike_value>(bike_map, pair_new);
 	std::cout << '\n' << (*(iter_pair_inserted.first)).first << (*(iter_pair_inserted.first)).second << '\n';
 	
 	print_iter(bike_map.begin(), bike_map.end());
 
 	try
 	{
-		insert<ds_lib::bike_key, ds_lib::bike_value>(bike_map, pair_new);
+		insert<ds::bike_key, ds::bike_value>(bike_map, pair_new);
 	}
 	catch (invalid_key exceptionKey) 
 	{
@@ -759,8 +759,8 @@ int main() {
 	std::cout << '\n' << "----------------------------------" << '\n';
 
 	//auto iter = bike_map.begin();
-	std::multimap<ds_lib::bike_key, ds_lib::bike_value> map_result_multi;
-	//std::map<ds_lib::bike_key, ds_lib::bike_value> map_train;
+	std::multimap<ds::bike_key, ds::bike_value> map_result_multi;
+	//std::map<ds::bike_key, ds::bike_value> map_train;
 	//map_train.insert({vector_key[0], vector_value[0]});
 	//map_train.insert({vector_key[1], vector_value[1]});
 
@@ -774,7 +774,7 @@ int main() {
 	
 	std::cout << '\n' << "----------------------------------" << '\n';
 
-	std::multiset<ds_lib::bike_value> multi_set_result;
+	std::multiset<ds::bike_value> multi_set_result;
 
 	multi_set_result = filterSet_multi(bike_multimap, func_task4, 0);
 	print_iter_set(multi_set_result.begin(), multi_set_result.end());
