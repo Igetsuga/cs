@@ -222,16 +222,30 @@ const std::string foo (std::vector<std::string> vector) {
 // ---------------------------------------------------------------------------------------------
 // CONSTANT + TEMPLATE realisation
 template <typename Key, typename Value>
-typename std::multimap<Key, Value>::const_iterator find_value_multi (const std::map<Key, Value> &multimap,
+typename std::multimap<Key, Value>::const_iterator find_value_multi (const std::multimap<Key, Value> &multimap,
 														  			 const ds::bike_key &key) noexcept {
 	auto result_iter = multimap.find(key);
 	return result_iter;
 }
 
+template <typename Key, typename Value>
+std::vector<typename std::multimap<Key, Value>::const_iterator> find_value_multi_variative (const std::multimap<Key, Value> &multimap,
+														  			 						const ds::bike_key &key) noexcept {
+	std::vector<typename std::multimap<Key, Value>::const_iterator>vector_result(0); 
+	
+	auto iter = multimap.begin();
+	while ( iter != multimap.end() ) {
+		if ( iter->first == key ) { vector_result.push_back(iter); }
+
+		iter++;
+	}
+	return vector_result;
+}
+
 
 // CONSTANT + TEMPLATE realisation
 template <typename Key, typename Value>
-typename std::multimap<Key, Value>::const_iterator find_key_multi (const std::map<Key, Value> &multimap,
+typename std::multimap<Key, Value>::const_iterator find_key_multi (const std::multimap<Key, Value> &multimap,
 																   const ds::bike_value &value) noexcept {
 	auto iter = multimap.begin();
 
@@ -604,96 +618,6 @@ int main() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ---------------------------------------------------------------------------------------------
 // ------------------------------------------task(2.2.0)----------------------------------------
 // ---------------------------------------------------------------------------------------------
@@ -717,6 +641,17 @@ int main() {
 
 		bike_multimap.insert({vector_key[i], vector_value[i]});
 	}
+
+	bike_multimap.insert({vector_key[2], vector_value[2]});
+	bike_multimap.insert({vector_key[2], vector_value[2]});
+
+	auto vector_result = find_value_multi_variative(bike_multimap, vector_key[2]);
+	std::cout << '\n' << "{find_value_multi_variative:";
+	for (auto element : vector_result) {
+		std::cout << '\n' << element->first << " --- " << element->second; 
+		  
+	}
+	std::cout << '\n' << "}" << '\n' << '\n';
 	// Проверка правильного постороения(правилность сортировки по ключу) структуры std::map
 	print_iter(bike_multimap.begin(), bike_multimap.end() );
 
@@ -725,8 +660,8 @@ int main() {
 // ---------------------------------------------------------------------------------------------
 
 	// Поиск по ключу
-	auto find_value_key2 = find_value_multi(bike_map, vector_key[2]);
-	auto find_value_key11 = find_value_multi(bike_map, vector_key[11]);
+	auto find_value_key2 = find_value_multi(bike_multimap, vector_key[2]);
+	auto find_value_key11 = find_value_multi(bike_multimap, vector_key[11]);
 	if ( find_value_key2 != bike_map.end() ) 		{
 		std::cout << "RESULT VALUE: " << find_value_key2->second << " --> TRUE VALUE: " << vector_value[2] << '\n';
 	}
@@ -736,8 +671,8 @@ int main() {
 	
 
 	// Поиск по значению
-	auto find_key_value2 = find_key_multi(bike_map, vector_value[2]);
-	auto find_key_value12 = find_key_multi(bike_map, vector_value[12]);
+	auto find_key_value2 = find_key_multi(bike_multimap, vector_value[2]);
+	auto find_key_value12 = find_key_multi(bike_multimap, vector_value[12]);
 	if ( find_key_value2 != bike_map.end() ) {
 		std::cout << "RESULT KEY: " << find_key_value2->first << " --> TRUE KEY: " << vector_key[2] << '\n';
 	}
