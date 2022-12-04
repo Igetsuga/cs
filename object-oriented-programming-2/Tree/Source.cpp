@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <cassert>
 #include <iterator>
+#include <utility>
 //#define NDEBUG
 //#include <map>
 
@@ -125,14 +126,18 @@ protected:
     usI              height_;
 };
 
-
+// TODO: inherate from ContainerInterface
 template <typename Dt, typename K> class BinarySearchTree {
 public:
+
+    //using value_type = typename std::pair<Dt, K>;
 
     BinarySearchTree() { root_ = nullptr; }
 
     ~BinarySearchTree() = default;
-
+    
+    // TODO: dont i need change * to & in iterator and node classes?
+    BinarySearchTree &operator = (const BinarySearchTree &other) {}
 
 
     class iterator : public std::iterator<std::input_iterator_tag, TreeNode<Dt, K>> {
@@ -142,9 +147,9 @@ public:
         
         iterator(iterator *other) { iterator_ = other->iterator_; }
 
-        operator const_iterator() const {
+       /*explicit operator typename const_iterator() const {
             return const_cast<TreeNode<Dt, K>*>(iterator_);
-        }
+        }*/
 
         ~iterator() = default;
 
@@ -176,7 +181,6 @@ public:
         //iterator *operator-- () {}
         //iterator *operator-- (int) {}
 
-
     protected:
         TreeNode<Dt, K> *iterator_;
         friend class BinarySearchTree::const_iterator;
@@ -192,8 +196,8 @@ public:
             const_iterator_ = const_cast<const TreeNode<Dt, K>*>(other->iterator_);
         }
 
-        operator iterator() const {
-            return const_cast<TreeNode<Dt, K>*>(const_iterator_);
+        explicit operator iterator() const {
+            return const_cast<const TreeNode<Dt, K>*>(const_iterator_);
         }
 
         const_iterator (const_iterator *other) {
@@ -207,6 +211,59 @@ public:
         friend class BinarySearchTree::iterator;
     };
     
+
+    const Dt &at (const K &key) const {}
+
+    Dt &operator [] (const K &key) const {}
+    Dt &operator [] (K &&key) const {}
+
+
+
+    iterator begin() const noexcept {}
+    const_iterator begin() const noexcept {}
+    const_iterator cbegin() const noexcept {}
+
+    iterator end() const noexcept {}
+    const_iterator end() const noexcept {}
+    const_iterator cend() const noexcept {}
+
+    //std::map<Key, T, Compare, Allocator>::rbegin ??
+    //std::map<Key, T, Compare, Allocator>::crbegin ??
+    //std::map<Key, T, Compare, Allocator>::rend ??
+    //std::map<Key, T, Compare, Allocator>::crend ??
+
+
+
+    bool empty() const noexcept {}
+
+    size_t size() const noexcept {}
+
+
+
+    void clear() noexcept {}
+
+    std::pair<iterator, bool> insert(const Dt &value) {}
+    std::pair<const_iterator, bool> insert(const Dt &value) {}
+    std::pair<iterator, bool> insert(Dt &&value) {}
+    void insert(std::initializer_list<Dt> ilist) {}
+    std::pair<iterator, bool> insert_or_assign(const K &k, const Dt &data) {}
+    std::pair<iterator, bool> insert_or_assign(K &&k, Dt &&data) {}
+
+
+    iterator erase(const_iterator pos) {}
+    iterator erase(const_iterator first, const_iterator last) {}
+
+    void swap(BinarySearchTree &other) {}
+
+
+
+    size_t count(const K &x) const {} // return 0 or 1
+
+    iterator find(const K &key) const {}
+    const_iterator find(const K &key) const{}
+
+
+    bool contains(const K &key) const {}
 protected:
     TreeNode<Dt, K> root_;
 };
