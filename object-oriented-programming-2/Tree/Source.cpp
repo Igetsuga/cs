@@ -2,6 +2,7 @@
 #include <cassert>
 #include <iterator>
 #include <utility>
+#include <xtree>
 //#define NDEBUG
 //#include <map>
 
@@ -39,7 +40,7 @@ public:
         height_ = other->height_;
     }
 
-    TreeNode *operator = (const TreeNode *other) {
+    TreeNode *operator = (const TreeNode *other) noexcept {
         assert(other != nullptr);
 
         parent_ = other->parent_;
@@ -63,10 +64,11 @@ public:
     const K &getKey() const noexcept { return key_; }
 
 
-    void setParent(TreeNode parent) noexcept { parent_ = parent; }
-    void setRight(TreeNode right) noexcept { right_ = right; }
-    void setLeft(TreeNode left) noexcept { left_ = left; }
+    void setParent(TreeNode *parent) noexcept { parent_ = parent; }
+    void setRight(TreeNode *right) noexcept { right_ = right; }
+    void setLeft(TreeNode *left) noexcept { left_ = left; }
     void setData(const Dt &data) noexcept { data_ = data; }
+    // TODO: ckeck the new key
     void setKey(const K &key) noexcept { key_ = key; }
     void setHeight(const usI &height) { height_ = height; }
 
@@ -132,12 +134,18 @@ public:
 
     //using value_type = typename std::pair<Dt, K>;
 
-    BinarySearchTree() { root_ = nullptr; }
+    BinarySearchTree() { root_ = nullptr; size_ = 0; }
 
     ~BinarySearchTree() = default;
     
-    // TODO: dont i need change * to & in iterator and node classes?
-    BinarySearchTree &operator = (const BinarySearchTree &other) {}
+    // TODO: do i need change * to & in iterator and node classes?
+    BinarySearchTree &operator = (const BinarySearchTree &other) {
+        // delete old tree
+        // root_ = other->root_;
+        // size_ = other->size_;
+        
+        // return *this;
+    }
 
 
     class iterator : public std::iterator<std::input_iterator_tag, TreeNode<Dt, K>> {
@@ -145,7 +153,15 @@ public:
 
         iterator() { iterator_ = nullptr; }
         
-        iterator(iterator *other) { iterator_ = other->iterator_; }
+        iterator (iterator *other) { iterator_ = other->iterator_; }
+
+        iterator (TreeNode *treeNode) {
+            iterator_ = treeNode;
+        }
+
+        iterator *operator = (const iterator *other) {
+            iterator_ = other->iterator_;
+        }
 
        /*explicit operator typename const_iterator() const {
             return const_cast<TreeNode<Dt, K>*>(iterator_);
@@ -196,13 +212,23 @@ public:
             const_iterator_ = const_cast<const TreeNode<Dt, K>*>(other->iterator_);
         }
 
-        explicit operator iterator() const {
-            return const_cast<const TreeNode<Dt, K>*>(const_iterator_);
-        }
-
         const_iterator (const_iterator *other) {
             const_iterator_ = other;
         }
+
+        const_iterator (TreeNode *treeNode) {
+            const_iterator_ = const_cast<const TreeNode<Dt, K>*>(treeNode);
+        }
+
+        const_iterator *operator = (const_iterator *other) {
+            const_iterator_ = other->const_iterator_;
+        }
+
+
+        /*explicit operator iterator() const {
+            return const_cast<const TreeNode<Dt, K>*>(const_iterator_);
+        }*/
+
         ~const_iterator() = default;
 
         
@@ -234,38 +260,73 @@ public:
 
 
 
-    bool empty() const noexcept {}
+    bool empty() const noexcept final {
+        return size() == 0;
+    }
 
-    size_t size() const noexcept {}
+    size_t size() const noexcept final {
+        return size_;
+    }
 
 
 
-    void clear() noexcept {}
+    void clear() noexcept {
 
-    std::pair<iterator, bool> insert(const Dt &value) {}
-    std::pair<const_iterator, bool> insert(const Dt &value) {}
-    std::pair<iterator, bool> insert(Dt &&value) {}
-    void insert(std::initializer_list<Dt> ilist) {}
-    std::pair<iterator, bool> insert_or_assign(const K &k, const Dt &data) {}
-    std::pair<iterator, bool> insert_or_assign(K &&k, Dt &&data) {}
+    }
+
+    std::pair<iterator, bool> insert (const Dt &value) {}
+    std::pair<const_iterator, bool> insert (const Dt &value) {}
+    std::pair<iterator, bool> insert (Dt &&value) {}
+    void insert (std::initializer_list<Dt> ilist) {}
+    std::pair<iterator, bool> insert_or_assign (const K &k, const Dt &data) {}
+    std::pair<iterator, bool> insert_or_assign (K &&k, Dt &&data) {}
 
 
     iterator erase(const_iterator pos) {}
     iterator erase(const_iterator first, const_iterator last) {}
 
-    void swap(BinarySearchTree &other) {}
+    void swap(BinarySearchTree &other) {
+        // поменять местами корни и размеры
+    }
 
 
 
     size_t count(const K &x) const {} // return 0 or 1
 
-    iterator find(const K &key) const {}
-    const_iterator find(const K &key) const{}
+protected:
+    // O(h), h - height of tree
+    TreeNode *_FIND(const TreeNode *subTree_root, const K &key) const {
+        if ( subTree_root == nullptr ) {
+            return nullptr;
+        }
+        else if ( subTree_root->key_ == key ) {
+            return subTree_root;
+        }
+        else if ( subTree_root->key_ > key ) {
+            return _FIND(subTree_root->left_, key);
+        }
+        else {
+            return _FIND(subTree_root->right_, key);
+        }
+    }
+
+public:
+    iterator find(const K &key) const {
+        auto nodeResult = _FIND(root_, key);
+
+        return iterator(nodeResult);
+    }
+    const_iterator find(const K &key) const {
+        auto nodeResult = _FIND(root_, key);
+
+        return const_iterator(nodeResult);
+    }
 
 
     bool contains(const K &key) const {}
 protected:
-    TreeNode<Dt, K> root_;
+    TreeNode<Dt, K> *root_;
+    size_t size_;
 };
 
 
