@@ -1,31 +1,33 @@
 ﻿#include <iostream>
 #include <cassert>
 #include <iterator>
+#include <memory>
 #include <utility>
 #include <xtree>
+#include <map>
 //#define NDEBUG
 //#include <map>
 
 using usI = unsigned short int;
 // class ContainerNodeInterface {};
 
-// template <typename Dt, typename K> class TreeNode : public ContainerNodeInterface {
-template <typename Dt, typename K> class TreeNode {
+// template <typename Kty_, typename Ty_> class TreeNode : public ContainerNodeInterface {
+template <typename Kty_, typename Ty_> class TreeNode {
 public:
 
     TreeNode(
-        const Dt        &data,
-        const K         &key,
+        const Kty_       &key,
+        const Ty_        &data,
         const usI        height = 0,
-        TreeNode<Dt, K> *parent  = nullptr,
-        TreeNode<Dt, K> *right   = nullptr,
-        TreeNode<Dt, K> *left    = nullptr
+        TreeNode<const Kty_, Ty_> *parent  = nullptr,
+        TreeNode<const Kty_, Ty_> *right   = nullptr,
+        TreeNode<const Kty_, Ty_> *left    = nullptr
     ) {
         parent_ = parent;
         right_  = right;
         left_   = left;
-        data_   = data;
         key_    = key;
+        data_   = data;
         height_ = height;
     }
 
@@ -35,8 +37,8 @@ public:
         parent_ = other->parent_;
         right_  = other->right_;
         left_   = other->left_;
-        data_   = other->data_;
         key_    = other->key_;
+        data_   = other->data_;
         height_ = other->height_;
     }
 
@@ -46,8 +48,8 @@ public:
         parent_ = other->parent_;
         right_  = other->right_;
         left_   = other->left_;
-        data_   = other->data_;
         key_    = other->key_;
+        data_   = other->data_;
         height_ = other->height_;
 
         return this;
@@ -60,21 +62,21 @@ public:
     TreeNode *getParent() const noexcept { return parent_; }
     TreeNode *getRight() const noexcept { return right_; } 
     TreeNode *getLeft() const noexcept { return left_; }
-    const Dt &getData() const noexcept { return data_; } 
-    const K &getKey() const noexcept { return key_; }
+    const Ty_ &getData() const noexcept { return data_; } 
+    const Kty_ &getKey() const noexcept { return key_; }
 
 
     void setParent(TreeNode *parent) noexcept { parent_ = parent; }
     void setRight(TreeNode *right) noexcept { right_ = right; }
     void setLeft(TreeNode *left) noexcept { left_ = left; }
-    void setData(const Dt &data) noexcept { data_ = data; }
+    void setData(const Ty_ &data) noexcept { data_ = data; }
     // TODO: ckeck the new key
-    void setKey(const K &key) noexcept { key_ = key; }
+    void setKey(const Kty_ &key) noexcept { key_ = key; }
     void setHeight(const usI &height) { height_ = height; }
 
 
     
-    const Dt &operator * () const { 
+    const Ty_ &operator * () const { 
         assert(this != nullptr);
 
         return data_;
@@ -118,21 +120,26 @@ public:
 
 
 protected:
-    TreeNode<Dt, K> *parent_;
-    TreeNode<Dt, K> *right_;
-    TreeNode<Dt, K> *left_;
+    TreeNode<const Kty_, Ty_> *parent_;
+    TreeNode<const Kty_, Ty_> *right_;
+    TreeNode<const Kty_, Ty_> *left_;
     
-    Dt               data_;
-    K                key_;
+    const Kty_                 key_;
+    Ty_                        data_;
 
-    usI              height_;
+    usI                        height_;
 };
 
 // TODO: inherate from ContainerInterface
-template <typename Dt, typename K> class BinarySearchTree {
+// change std::pait to my own pait class
+template <class Kty_, class Ty_, class Pr_ = std::less<Kty_>,
+    class Alloc_ = std::allocator<std::pair<const Kty_, Ty_>>> class BinarySearchTree {
 public:
 
-    //using value_type = typename std::pair<Dt, K>;
+    using key_type    = typename Kty_;
+    using mapped_type = typename Ty_;
+    using key_compare = Pr_;
+    using value_type  = typename std::pair<const Kty_, Ty_>;
 
     BinarySearchTree() { root_ = nullptr; size_ = 0; }
 
@@ -147,15 +154,20 @@ public:
         // return *this;
     }
 
-
-    class iterator : public std::iterator<std::input_iterator_tag, TreeNode<Dt, K>> {
+    // TODO: 
+    // need: *iterator = std::pair<const Kty_, Ty_>
+    //  now: *iterator = *TreeNode<Kty_, Ty_>
+    // вынести key из класса TreeNode наружу, возможно ввести класс key_compare
+    // как сравнивать 
+    // как сделать шаблон по умолчанию
+    class iterator : public std::iterator<std::input_iterator_tag, TreeNode<const Kty_, Ty_>> {
     public:
 
         iterator() { iterator_ = nullptr; }
         
         iterator (iterator *other) { iterator_ = other->iterator_; }
 
-        iterator (TreeNode *treeNode) {
+        iterator (const TreeNode *treeNode) {
             iterator_ = treeNode;
         }
 
@@ -164,7 +176,7 @@ public:
         }
 
        /*explicit operator typename const_iterator() const {
-            return const_cast<TreeNode<Dt, K>*>(iterator_);
+            return const_cast<TreeNode<Kty_, Ty_>*>(iterator_);
         }*/
 
         ~iterator() = default;
@@ -179,7 +191,7 @@ public:
             return (iterator_ != other->iterator_);
         }
 
-        const Dt &operator * () const noexcept {
+        const Ty_ &operator * () const noexcept {
             assert(this != nullptr);
             
             return *iterator_;
@@ -198,18 +210,18 @@ public:
         //iterator *operator-- (int) {}
 
     protected:
-        TreeNode<Dt, K> *iterator_;
+        TreeNode<const Kty_, Ty_> *iterator_;
         friend class BinarySearchTree::const_iterator;
     };
 
-    class const_iterator : public std::iterator<std::input_iterator_tag, TreeNode<Dt, K>> {
+    class const_iterator : public std::iterator<std::input_iterator_tag, TreeNode<const Kty_, Ty_>> {
     public:
         const_iterator() {
             const_iterator_ = nullptr;
         }
 
         const_iterator (iterator *other) { 
-            const_iterator_ = const_cast<const TreeNode<Dt, K>*>(other->iterator_);
+            const_iterator_ = const_cast<const TreeNode<const Kty_, Ty_>*>(other->iterator_);
         }
 
         const_iterator (const_iterator *other) {
@@ -217,7 +229,11 @@ public:
         }
 
         const_iterator (TreeNode *treeNode) {
-            const_iterator_ = const_cast<const TreeNode<Dt, K>*>(treeNode);
+            const_iterator_ = const_cast<const TreeNode<const Kty_, Ty_>*>(treeNode);
+        }
+
+        const_iterator (const TreeNode *treeNode) {
+            const_iterator_ = treeNode;
         }
 
         const_iterator *operator = (const_iterator *other) {
@@ -226,30 +242,30 @@ public:
 
 
         /*explicit operator iterator() const {
-            return const_cast<const TreeNode<Dt, K>*>(const_iterator_);
+            return const_cast<const TreeNode<const Kty_, Ty_>*>(const_iterator_);
         }*/
 
         ~const_iterator() = default;
 
         
     protected:
-        const TreeNode<Dt, K> *const_iterator_;
+        const TreeNode<const Kty_, Ty_> *const_iterator_;
         friend class BinarySearchTree::iterator;
     };
     
 
-    const Dt &at (const K &key) const {}
+    const Ty_ &at (const Kty_ &key) const {}
 
-    Dt &operator [] (const K &key) const {}
-    Dt &operator [] (K &&key) const {}
+    Ty_ &operator [] (const Kty_ &key) const {}
+    Ty_ &operator [] (Kty_ &&key) const {}
 
 
 
-    iterator begin() const noexcept {}
+    iterator begin() noexcept {}
     const_iterator begin() const noexcept {}
     const_iterator cbegin() const noexcept {}
 
-    iterator end() const noexcept {}
+    iterator end() noexcept {}
     const_iterator end() const noexcept {}
     const_iterator cend() const noexcept {}
 
@@ -274,12 +290,12 @@ public:
 
     }
 
-    std::pair<iterator, bool> insert (const Dt &value) {}
-    std::pair<const_iterator, bool> insert (const Dt &value) {}
-    std::pair<iterator, bool> insert (Dt &&value) {}
-    void insert (std::initializer_list<Dt> ilist) {}
-    std::pair<iterator, bool> insert_or_assign (const K &k, const Dt &data) {}
-    std::pair<iterator, bool> insert_or_assign (K &&k, Dt &&data) {}
+    std::pair<iterator, bool> insert (const Ty_ &value) {}
+    std::pair<const_iterator, bool> insert (const Ty_ &value) {}
+    std::pair<iterator, bool> insert (Ty_ &&value) {}
+    void insert (std::initializer_list<Ty_> ilist) {}
+    std::pair<iterator, bool> insert_or_assign (const Kty_ &k, const Ty_ &data) {}
+    std::pair<iterator, bool> insert_or_assign (Kty_ &&k, Ty_ &&data) {}
 
 
     iterator erase(const_iterator pos) {}
@@ -291,11 +307,11 @@ public:
 
 
 
-    size_t count(const K &x) const {} // return 0 or 1
+    size_t count(const Kty_ &x) const {} // return 0 or 1
 
 protected:
-    // O(h), h - height of tree
-    TreeNode *_FIND(const TreeNode *subTree_root, const K &key) const {
+    // O(h), h - height of the tree
+    TreeNode *_FIND (const TreeNode *subTree_root, const Kty_ &key) const noexcept {
         if ( subTree_root == nullptr ) {
             return nullptr;
         }
@@ -309,23 +325,101 @@ protected:
             return _FIND(subTree_root->right_, key);
         }
     }
+    // O(h)
+    TreeNode *_MAX () const noexcept {
+        assert(root_ != nullptr);
+        
+        if ( root_ == nullptr ) { return root_; }
+        TreeNode<key_type, mapped_type> *result = new TreeNode<key_type, mapped_type>(root_);
+        //auto *node_current = new TreeNode<key_type, mapped_type>(root_);
+        //auto *node_current = new TreeNode(root_);
+        while ( true ) {
+            if ( result->getRight() == nullptr ) {
+                break;
+            }
+            else {
+                result = result->getRight();
+            }
+        }
+
+        return result;
+    }
+    // O(h)
+    TreeNode *_MIN () const noexcept {
+        assert(root_ != nullptr);
+        
+        if ( root_ == nullptr ) { return root_; }
+        TreeNode<key_type, mapped_type> *result = new TreeNode<key_type, mapped_type>(root_);
+        //auto *node_current = new TreeNode<key_type, mapped_type>(root_);
+        //auto *node_current = new TreeNode(root_);
+        while ( true ) {
+            if ( result->getLeft() == nullptr ) {
+                break;
+            }
+            else {
+                result = result->getLeft();
+            }
+        }
+
+        return result;
+    }
 
 public:
-    iterator find(const K &key) const {
+    // O(h)
+    iterator find (const Kty_ &key) {
         auto nodeResult = _FIND(root_, key);
 
         return iterator(nodeResult);
     }
-    const_iterator find(const K &key) const {
+    // O(h)
+    const_iterator find (const Kty_ &key) const {
         auto nodeResult = _FIND(root_, key);
 
         return const_iterator(nodeResult);
     }
 
+    // O(h)
+    bool contains (const Kty_ &key) const {
+        return (_FIND(root_, key) != nullptr);
+    }
 
-    bool contains(const K &key) const {}
 protected:
-    TreeNode<Dt, K> *root_;
+    // O(h), h - height of the tree
+    // not less
+    TreeNode *_FIND_LOWER_BOUND (const key_type &key) const noexcept {
+        auto *result = _FIND(root_, key);
+
+        if ( result->right != nullptr ) {
+            result = result->right_;
+            
+            while ( true ) {
+                if ( result->left_ != nullptr ) {
+                    result = result->left_;
+                }
+                else { break; }
+            }
+        }
+        else {
+            auto result_parent = result->parent_;
+
+            if (result_parent->left_->key_ == key_ )
+        }
+        
+        
+    }
+public:
+    iterator lower_bound (const key_type &key) {
+
+    }
+    const_iterator lower_bound (const key_type &key) {}
+
+    iterator upper_bound (const key_type &key) {}
+    const_iterator upper_bound (const key_type &key) {}
+
+
+
+protected:
+    TreeNode<const Kty_, Ty_> *root_;
     size_t size_;
 };
 
@@ -358,7 +452,9 @@ int main() {
 
     TreeNode<int, int> node(1,32);
     std::cout << node.getKey();
-
+    
+    
+    std::map<int, int>;
      
     return 0;
 }
