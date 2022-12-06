@@ -128,14 +128,15 @@ protected:
 
 // TODO: inherate from ContainerInterface
 // change std::pait to my own pait class
-template <class Kty_, class Ty_, class Pr_ = std::less<Kty_>,
-    class Alloc_ = std::allocator<std::pair<const Kty_, Ty_>>> class BinarySearchTree {
+template <class Kty_, class Dty_, class Compare_ = std::less<Kty_>,
+    class Alloc_ = std::allocator<std::pair<const Kty_, Dty_>>> class BinarySearchTree {
 public:
 
-    using key_type    = typename Kty_;
-    using mapped_type = typename Ty_;
-    using key_compare = Pr_;
-    using value_type  = typename std::pair<const Kty_, Ty_>;
+    //std::pmr::polymorphic_allocator
+    //using key_type    = typename Kty_;
+    //using mapped_type = typename Dty_;
+    //using key_compare = Pr_;
+    using value_type  = typename std::pair<const Kty_, Dty_>;
 
     BinarySearchTree() { root_ = nullptr; size_ = 0; }
 
@@ -151,8 +152,8 @@ public:
     }
 
     // TODO: 
-    // need: *iterator = std::pair<Value_type_>
-    //  now: *iterator = *TreeNode<Kty_, Ty_>
+    // need: *iterator = std::pair<mapped_type>
+    //  now: *iterator = *TreeNode<Kty_, Dty_>
     // вынести key из класса TreeNode наружу, возможно ввести класс key_compare
     // как сравнивать 
     // как сделать шаблон по умолчанию
@@ -172,7 +173,7 @@ public:
         }
 
        /*explicit operator typename const_iterator() const {
-            return const_cast<TreeNode<Kty_, Ty_>*>(iterator_);
+            return const_cast<TreeNode<Kty_, Dty_>*>(iterator_);
         }*/
 
         ~iterator() = default;
@@ -187,7 +188,7 @@ public:
             return (iterator_ != other->iterator_);
         }
 
-        const Ty_ &operator * () const noexcept {
+        const Dty_ &operator * () const noexcept {
             assert(this != nullptr);
             
             return *iterator_;
@@ -250,10 +251,10 @@ public:
     };
     
 
-    const Ty_ &at (const Kty_ &key) const {}
+    const Dty_ &at (const Kty_ &key) const {}
 
-    Ty_ &operator [] (const Kty_ &key) const {}
-    Ty_ &operator [] (Kty_ &&key) const {}
+    Dty_ &operator [] (const Kty_ &key) const {}
+    Dty_ &operator [] (Kty_ &&key) const {}
 
 
 
@@ -286,12 +287,12 @@ public:
 
     }
 
-    std::pair<iterator, bool> insert (const Ty_ &value) {}
-    std::pair<const_iterator, bool> insert (const Ty_ &value) {}
-    std::pair<iterator, bool> insert (Ty_ &&value) {}
-    void insert (std::initializer_list<Ty_> ilist) {}
-    std::pair<iterator, bool> insert_or_assign (const Kty_ &k, const Ty_ &data) {}
-    std::pair<iterator, bool> insert_or_assign (Kty_ &&k, Ty_ &&data) {}
+    std::pair<iterator, bool> insert (const Dty_ &value) {}
+    std::pair<const_iterator, bool> insert (const Dty_ &value) {}
+    std::pair<iterator, bool> insert (Dty_ &&value) {}
+    void insert (std::initializer_list<Dty_> ilist) {}
+    std::pair<iterator, bool> insert_or_assign (const Kty_ &k, const Dty_ &data) {}
+    std::pair<iterator, bool> insert_or_assign (Kty_ &&k, Dty_ &&data) {}
 
 
     iterator erase(const_iterator pos) {}
@@ -415,7 +416,7 @@ public:
 
 
 protected:
-    TreeNode<Value_type_> *root_;
+    std::pair<Kty_, TreeNode<Dty_>*> root_;
     size_t size_;
 };
 
@@ -446,8 +447,8 @@ protected:
 int main() {
     
 
-    TreeNode<int, int> node(1,32);
-    std::cout << node.getKey();
+    TreeNode<int> node(1);
+    std::cout << node.getData();
     
     
     std::map<int, int>;
