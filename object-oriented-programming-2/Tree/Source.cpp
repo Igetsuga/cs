@@ -2,6 +2,7 @@
 #include <cassert>    // to get assert() and static assert()
 #include <iterator>   // to get iterators' tags
 #include <cstddef>    // to get std::ptrdiff_t
+#include <limits.h>
 #include <memory>     // to get 
 #include <utility>    // to get std::pair<,>
 // #include <xtree>
@@ -37,33 +38,33 @@ public:
     TreeNode(
         reference                  &pairValue,
         usI                         height  = 0,
-        TreeNode<const Kty_, Dty_> *left    = nullptr,
         TreeNode<const Kty_, Dty_> *parent  = nullptr,
+        TreeNode<const Kty_, Dty_> *left    = nullptr,
         TreeNode<const Kty_, Dty_> *right   = nullptr
     ) {
-        left_   = left;
-        parent_ = parent;
-        right_  = right;
+        left_       = left;
+        parent_     = parent;
+        right_      = right;
         pairValue_  = pairValue;
-        height_ = height;
+        height_     = height;
     }
 
     TreeNode (const TreeNode *other) {
         assert(other != nullptr);
 
-        parent_ = other->parent_;
-        right_  = other->right_;
-        left_   = other->left_;
+        left_       = other->left_;
+        parent_     = other->parent_;
+        right_      = other->right_;
         pairValue_  = other->pairValue_;
-        height_ = other->height_;
+        height_     = other->height_;
     }
 
     TreeNode *operator = (const TreeNode *other) noexcept {
-        assert(other != nullptr);
+        // assert(other != nullptr);  // TODO: what is other == nullptr
 
+        left_       = other->left_;
         parent_     = other->parent_;
         right_      = other->right_;
-        left_       = other->left_;
         pairValue_  = other->pairValue_;
         height_     = other->height_;
 
@@ -79,6 +80,8 @@ public:
     TreeNode *getRight() const noexcept { return right_; } 
     const Dty_ &getData() const noexcept { return pairValue_.second; } 
     const Kty_ &getKey() const noexcept { return pairValue_.first; }
+    usI getHeight() const noexcept { return height_; }
+
 
 
     void setLeft(TreeNode *left) noexcept { left_ = left; }
@@ -88,6 +91,9 @@ public:
     void setHeight(const usI &height) { height_ = height; }
     void setValue(reference value_pair) { pairValue_ = value_pair; }
 
+
+    reference operator *() {} // TODO
+    pointer operator ->() {}  // TODO
 private:
     void setKey (const Kty_ &key) noexcept { pairValue_.first = key; }
 
@@ -152,6 +158,8 @@ protected:
 
 // TODO: inherate from ContainerInterface
 // TODO: change std::pait to my own pait class
+// BinarySearchTree dosn't allow store values with the same keys
+// TODO: make a container that allow store values with the same keys based on BinarySearchTree
 template <
     class Kty_,
     class Dty_, 
@@ -166,7 +174,7 @@ public:
     using key_type        = Kty_;
     using mapped_type     = Dty_;
     using Nodeptr         = TreeNode<Kty_, Dty_>*;                // a pointer to node of BST
-    using reference       = value_type&;    
+    using reference       = value_type&;                        
     using const_Nodeptr   = const TreeNode<Kty_, Dty_>*;                      
     using const_reference = const value_type&;
 
@@ -199,21 +207,22 @@ public:
         using iterator_category  = std::input_iterator_tag;  // read-only iterator 
         using difference_type    = std::ptrdiff_t;
         using value_type         = TreeNode<Kty_, Dty_>;
-        using pointer            = value_type*;              // it_pointer = const Nodeptr 
+        using pointer            = value_type*;              // it_pointer = Nodeptr = TreeNode<,>* 
         using reference          = value_type&;
         using const_pointer      = const value_type*;
         using const_reference    = const value_type&;
         
 
+    public:
 
-        const_iterator(pointer ptr) : itt_(ptr) {}        
+        const_iterator(pointer ptr) : itt_(ptr) {}     
+           
 
-
-        const_reference operator *() const noexcept { return const_cast<const_reference>(*itt_); }
+        virtual const_reference operator *() const noexcept { return const_cast<const_reference>(*itt_); }
         
-        const_pointer operator ->() const noexcept { return const_cast<const_pointer>(itt_); }
+        virtual const_pointer operator ->() const noexcept { return const_cast<const_pointer>(itt_); }
 
-    private:
+    protected:
 
         pointer itt_;
 
@@ -397,55 +406,176 @@ public:
 
 
     void clear() noexcept {
+        _CLEAR_SUBTREE(root_);
+    }
+
+    // O(h)
+    std::pair<iterator, bool> insert (const_reference value) {
+        assert (size_ < SIZE_MAX );
+
+        auto node = root_;
+        auto node_parent = root_;
+        auto key = value.first;
+        bool flag = true;
+
+        while ( node != nullptr ) {
+            node_parent = node;
+
+            if ( key > node->getKey() ) {
+                node = node->getRight();
+            }
+            else if ( key == node->getKey() ) {
+                flag = false;
+                break;
+            }
+            else {
+                node = node->getLeft();
+            }
+        }
+
+        if (flag == true) { // value with the same key doens't exists 
+            auto nodeptrInserting = new TreeNode<key_type, mapped_type>(value,
+                                                                       (root_ != nullptr ? node_parent->getHeight + 1 : 1),
+                                                                        node_parent);
+            size_++;
+            return std::make_pair(iterator(nodeptrInserting), flag);
+        }
+
+        return std::make_pair(iterator(node), flag); // value with the same key already exists
+    }
+
+    iterator insert (const_iterator pos, const_reference value) { // TODO
 
     }
 
-    std::pair<iterator, bool> insert (const Dty_ &value) {}
-    std::pair<const_iterator, bool> insert (const Dty_ &value) {}
-    std::pair<iterator, bool> insert (Dty_ &&value) {}
-    void insert (std::initializer_list<Dty_> ilist) {}
-    std::pair<iterator, bool> insert_or_assign (const Kty_ &k, const Dty_ &data) {}
-    std::pair<iterator, bool> insert_or_assign (Kty_ &&k, Dty_ &&data) {}
+    void insert (std::initializer_list<Dty_> ilist) {}  // TODO
+    std::pair<iterator, bool> insert_or_assign (const Kty_ &k, const Dty_ &data) {} // TODO
 
+    // O(h)
+    iterator erase (const_iterator pos) {
+        // case 1: no children
+        // case 2: only child
+        // case 3: two children
 
-    iterator erase(const_iterator pos) {}
-    iterator erase(const_iterator first, const_iterator last) {}
+        Nodeptr nodeptrErasing = &(const_cast<reference>(*pos));
+        
+        iterator itt_returning = itearator(pos); // TODO: type cast
+        itt_returning++; 
 
-    void swap(BinarySearchTree &other) {
-        // поменять местами корни и размеры
+        if ( nodeptrErasing->getRight() != nullptr && nodeptrErasing->getLeft() != nullptr ) { // case 3
+            auto nodeptrSubMin = _MIN(nodeptrErasing); 
+
+            _SWAP_NODES(nodeptrSubMin, nodeptrErasing);
+        }
+        else if (nodeptrErasing->getRight() != nullptr || nodeptrErasing->getLeft() != nullptr) { // case 2
+            auto nodeptr_child = (nodeptrErasing->getRight() != nullptr ? nodeptrErasing->getRight() : nodeptrErasing->getLeft());
+
+            _SWAP_NODES(nodeptrErasing, nodeptr_child);
+        }
+
+        _ERASE_NODE_UNCHECK(nodeptrErasing); 
+        
+        return itt_returning;
+    }
+
+    // O(h * std::ptrdiff_t(first, last))
+    iterator erase (const_iterator first, const_iterator last) { // [first, last) // TODO 
+    }
+
+    // O(h + cont.count(key)) ~ O(h)
+    size_t erase (const key_type &key) {
+
+        auto nodeptrErasing = _FIND(root_, key);
+        if ( nodeptrErasing != nullptr ) {
+            this->erase(const_iterator(nodeptrErasing));
+            return 1;
+        }
+
+        return 0;
+    }
+
+    void swap (BinarySearchTree &other) {
+        auto tmp = root_;
+        root_ = other.root_;
+        other.root_ = tmp;
+
+        size_ = (size_ + other.size_); 
+        other.size_ = size_ - other.size_;
+        size_ = size_ - other.size_;
+
+//         void swap(int* xp, int* yp)
+// {
+ // https://www.geeksforgeeks.org/swap-two-numbers-without-using-temporary-variable/#:~:text=Let%20us%20see%20the%20following%20program.%C2%A0
+//     // Check if the two addresses are same
+//     if (xp == yp)
+//         return;
+//     *xp = *xp + *yp;
+//     *yp = *xp - *yp;
+//     *xp = *xp - *yp;
+// }
+
     }
 
 
 
-    size_t count(const key_type &key) const {
-        return contains(key);
+    size_t count (const key_type &key) const {
+        return static_cast<size_t>(contains(key));
     } // return 0 or 1
 
 protected:
 
+    // O(h)
+    void _CLEAR_SUBTREE (Nodeptr subTreeRoot) {
+        if (subTreeRoot == nullptr) { // recursion stop point 
+            return;
+        }
+        else { // recursion base
+            if (subTreeRoot->getLeft() != nullptr && subTreeRoot->getRight() != nullptr) {
+                delete subTreeRoot;
+                subTreeRoot = nullptr;
+            }
+            else { // recursion step
+                _CLEAR_SUBTREE(subTreeRoot->getLeft());
+                _CLEAR_SUBTREE(subTreeRoot->getRight());
+            }
+        }
+
+    }
+    // O(1)
+    void _ERASE_NODE_UNCHECK (Nodeptr node) {
+        delete node;
+    } 
+
+    // O(1); no std::swap
+    void _SWAP_NODES (Nodeptr a, Nodeptr b) {  
+        auto tmp = a;
+        a = b;
+        b = tmp; 
+    }
+
     // O(h), h - height of the tree
-    Nodeptr _FIND (const Nodeptr subTree_root, const Kty_ &key) const noexcept {
-        if ( subTree_root == nullptr ) {
+    Nodeptr _FIND (const Nodeptr subTreeRoot, const Kty_ &key) const noexcept {
+        if ( subTreeRoot == nullptr ) {
             return nullptr;
         }
-        else if ( subTree_root->key_ == key ) {
-            return subTree_root;
+        else if ( subTreeRoot->key_ == key ) {
+            return subTreeRoot;
         }
-        else if ( subTree_root->key_ > key ) {
-            return _FIND(subTree_root->left_, key);
+        else if ( subTreeRoot->key_ > key ) {
+            return _FIND(subTreeRoot->left_, key);
         }
         else {
-            return _FIND(subTree_root->right_, key);
+            return _FIND(subTreeRoot->right_, key);
         }
     }
 
     // O(h)
-    Nodeptr _MAX () const noexcept {
+    Nodeptr _MAX (const Nodeptr subTreeRoot) const noexcept {
         // assert(root_ != nullptr); // is empty tree
         
-        if ( root_ == nullptr ) { return root_; }
+        if ( subTreeRoot == nullptr ) { return subTreeRoot; }
         
-        Nodeptr result = new Nodeptr(root_);
+        Nodeptr result = subTreeRoot; // TODO static or dynamic
         while ( true ) {
             if ( result->getRight() == nullptr ) {
                 break;
@@ -459,12 +589,12 @@ protected:
     }
 
     // O(h)
-    Nodeptr _MIN () const noexcept {
+    Nodeptr _MIN (const Nodeptr subTreeRoot) const noexcept {
         // assert(root_ != nullptr); // is empty tree
         
-        if ( root_ == nullptr ) { return root_; }
+        if ( subTreeRoot == nullptr ) { return subTreeRoot; }
         
-        Nodeptr result = new Nodeptr(root_);
+        Nodeptr result = subTreeRoot;
         while ( true ) {
             if ( result->getLeft() == nullptr ) {
                 break;
@@ -531,17 +661,10 @@ protected:
         return this->end();
     }
 
-    // O(nh); return firts greater;
-    // DOESNT WORK
+    // O(h); return firts greater; equivalent _FIND_LOWER_BOUND because of container doesn't allow store
+                                // value_types with the same keys
     Nodeptr _FIND_UPPER_BOUND (Nodeptr node, const key_type &key) const {
-     
-        auto nodeLB = _FIND_LOWER_BOUND(node, key);
-        
-        if ( nodeLB != nullptr && nodeLB->pairValue_->firts == key ) {
-            return _FIND_UPPER_BOUND(nodeLB, key);
-        }
-
-        return nodeLB;    
+        return _FIND_LOWER_BOUND(node, key);  
     }
 public:
     
@@ -560,19 +683,19 @@ public:
     iterator upper_bound (const key_type &key) {
         auto node = _FIND(root_, key);
         
-        return _FIND_UPPER_BOUND(key);
+        return _FIND_UPPER_BOUND(node, key);
     }
     const_iterator upper_bound (const key_type &key) const { 
         auto node = _FIND(root_, key);
         
-        return _FIND_UPPER_BOUND(key);
+        return _FIND_UPPER_BOUND(node, key);
     }
 
 
 
 protected:
-    Nodeptr* root_;
-    size_t size_;
+    Nodeptr *root_;
+    size_t   size_;
 };
 
 
@@ -606,7 +729,7 @@ int main() {
     //std::cout << node.getData();
     
     
-    std::map<int, int>;
+    // std::map<int, int>;
      
     return 0;
 }
