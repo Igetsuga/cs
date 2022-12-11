@@ -173,9 +173,9 @@ public:
     using value_type      = typename std::pair<const Kty_, Dty_>; // a type that BST store
     using key_type        = Kty_;
     using mapped_type     = Dty_;
-    using Nodeptr         = TreeNode<Kty_, Dty_>*;                // a pointer to node of BST
+    using Nodeptr         = TreeNode<const Kty_, Dty_>*;                // a pointer to node of BST
+    using const_Nodeptr   = const Nodeptr;                      
     using reference       = value_type&;                        
-    using const_Nodeptr   = const TreeNode<Kty_, Dty_>*;                      
     using const_reference = const value_type&;
 
 
@@ -188,7 +188,7 @@ public:
     }
 
     BinarySearchTree &operator = (const BinarySearchTree *other) {
-        // this->clear;
+        this->_CLEAR_SUBTREE(root_);
 
         root_ = other->root_;
         size_ = other->size_;
@@ -206,7 +206,7 @@ public:
         // tags:
         using iterator_category  = std::input_iterator_tag;  // read-only iterator 
         using difference_type    = std::ptrdiff_t;
-        using value_type         = TreeNode<Kty_, Dty_>;
+        using value_type         = TreeNode<const Kty_, Dty_>;
         using pointer            = value_type*;              // it_pointer = Nodeptr = TreeNode<,>* 
         using reference          = value_type&;
         using const_pointer      = const value_type*;
@@ -216,11 +216,11 @@ public:
     public:
 
         const_iterator(pointer ptr) : itt_(ptr) {}     
-           
 
-        virtual const_reference operator *() const noexcept { return const_cast<const_reference>(*itt_); }
+
+        virtual const_reference operator *() const noexcept { return *itt_; }
         
-        virtual const_pointer operator ->() const noexcept { return const_cast<const_pointer>(itt_); }
+        virtual const_pointer operator ->() const noexcept { return itt_; }
 
     protected:
 
@@ -228,154 +228,133 @@ public:
 
     };
 
-    class forward_iterator {
-    public:
+    class forward_iterator : public const_iterator {
+    private:
 
         // tags:
         using iterator_category  = std::forward_iterator_tag;  // read-only iterator 
         using difference_type    = std::ptrdiff_t;
-        using value_type         = TreeNode<Kty_, Dty_>;
+        using value_type         = TreeNode<const Kty_, Dty_>;
         using pointer            = value_type*;             // it_pointer = Nodeptr 
         using reference          = value_type&;
 
+        using const_iterator::itt_;
 
+    public:
 
-        forward_iterator(pointer ptr) : f_itt_(ptr) {}
+        forward_iterator(pointer ptr) : const_iterator(ptr) {}
 
+        forward_iterator(const_iterator c_itt) {
+            itt_ = c_itt;
+        }
 
-        reference operator *() const noexcept { return *f_itt_; }
+        virtual reference operator *() const noexcept { return const_cast<reference>(*itt_); }
         
-        pointer operator ->() const { return f_itt_; }
+        virtual pointer operator ->() const { return itt_; }
 
 
-        forward_iterator& operator ++() { f_itt_++; return *this; }
+        virtual forward_iterator& operator ++() { itt_++; return *this; }
         
-        forward_iterator operator ++(int) { // why we dont return a reference? 
-            auto tmp = *this;
+        virtual forward_iterator operator ++(int) { // why we dont return a reference? 
+            forward_iterator tmp = *this;
             ++(*this);
 
             return tmp;
         }    
 
         friend bool operator == (const forward_iterator& a, const forward_iterator& b) {
-            return a.m_ptr == b.m_ptr;
+            return a.itt_ == b.itt_;
         };
 
 
         friend bool operator != (const forward_iterator& a, const forward_iterator& b) {
-            return a.m_ptr != b.m_ptr; 
+            return a.itt_ != b.itt_; 
         };  
-
-    private:
-
-        pointer f_itt_;
-
+    
     };
 
-    class iterator {
-    public:
+    class iterator : public forward_iterator {
+    private:
 
         // tags:
         using iterator_category  = std::bidirectional_iterator_tag;  // read-only iterator 
         using difference_type    = std::ptrdiff_t;
-        using value_type         = TreeNode<Kty_, Dty_>;
+        using value_type         = TreeNode<const Kty_, Dty_>;
         using pointer            = value_type*;                     // it_pointer = Nodeptr 
         using reference          = value_type&;
 
+        using const_iterator::itt_;
 
+    public:
 
-        iterator(pointer ptr) : i_itt_(ptr) {}
+        iterator(pointer ptr) : forward_iterator(ptr) {}
 
+        iterator(forward_iterator f_itt) {
+            itt_ = f_itt.itt_;
+        }
 
-        reference operator *() const noexcept { return *i_itt_; }
+        virtual reference operator *() const noexcept { return *itt_; }
         
-        pointer operator ->() const { return i_itt_; }
+        virtual pointer operator ->() const { return itt_; }
 
 
-        iterator& operator ++() { i_itt_++; return *this; }
+        virtual iterator& operator ++() { itt_++; return *this; }
         
-        iterator operator ++(int) { // why we dont return a reference? 
-            auto tmp = *this;
+        virtual iterator operator ++(int) { // why we dont return a reference? 
+            iterator tmp = *this;
             ++(*this);
 
             return tmp;
         }
 
-        iterator& operator --() { i_itt_--; return *this; }
+        virtual iterator& operator --() { itt_--; return *this; }
         
-        iterator operator --(int) { // why we dont return a reference? 
+        virtual iterator operator --(int) { // why we dont return a reference? 
             auto tmp = *this;
             --(*this);
 
             return tmp;
-        }     
-
-        friend bool operator == (const iterator& a, const iterator& b) {
-            return a.m_ptr == b.m_ptr;
-        };
-
-
-        friend bool operator != (const iterator& a, const iterator& b) {
-            return a.m_ptr != b.m_ptr; 
-        };  
-
-    private:
-
-        pointer i_itt_;
-
+        }      
     };
 
-    class reverse_iterator {
+    class reverse_iterator : public forward_iterator {
     public:
 
         // tags:
         using iterator_category  = std::bidirectional_iterator_tag;  // read-only iterator 
         using difference_type    = std::ptrdiff_t;
-        using value_type         = TreeNode<Kty_, Dty_>;
+        using value_type         = TreeNode<const Kty_, Dty_>;
         using pointer            = value_type*;                     // it_pointer = Nodeptr 
         using reference          = value_type&;
 
+        using const_iterator::itt_;
 
 
-        reverse_iterator(pointer ptr) : r_itt_(ptr) {}
+        reverse_iterator(pointer ptr) : const_iterator::itt_(ptr) {}
 
 
-        reference operator *() const noexcept { return *r_itt_; }
+        virtual reference operator *() const noexcept { return *itt_; }
         
-        pointer operator ->() const { return r_itt_; }
+        virtual pointer operator ->() const { return itt_; }
 
 
-        reverse_iterator& operator --() { r_itt_++; return *this; }
+        virtual reverse_iterator& operator --() { itt_++; return *this; }
         
-        reverse_iterator operator --(int) { // why we dont return a reference? 
-            auto tmp = *this;
+        virtual reverse_iterator operator --(int) { // why we dont return a reference? 
+            reverse_iterator tmp = *this;
             ++(*this);
 
             return tmp;
         }
 
-        reverse_iterator& operator ++() { r_itt_--; return *this; }
+        virtual reverse_iterator& operator ++() { itt_--; return *this; }
         
-        reverse_iterator operator ++(int) { // why we dont return a reference? 
-            auto tmp = *this;
+        virtual reverse_iterator operator ++(int) { // why we dont return a reference? 
+            reverse_iterator tmp = *this;
             --(*this);
 
             return tmp;
         }     
-
-        friend bool operator == (const reverse_iterator& a, const reverse_iterator& b) {
-            return a.m_ptr == b.m_ptr;
-        }; 
-
-
-        friend bool operator != (const reverse_iterator& a, const reverse_iterator& b) {
-            return a.m_ptr != b.m_ptr; 
-        };  
-
-    private:
-
-        pointer r_itt_;
-
     };
     
 
@@ -403,10 +382,11 @@ public:
         return size_;
     }
 
+    Nodeptr getRoot() { return root_; }
 
 
     void clear() noexcept {
-        _CLEAR_SUBTREE(root_);
+        this->_CLEAR_SUBTREE(root_);
     }
 
     // O(h)
@@ -541,6 +521,7 @@ protected:
         }
 
     }
+
     // O(1)
     void _ERASE_NODE_UNCHECK (Nodeptr node) {
         delete node;
@@ -608,6 +589,7 @@ protected:
     }
 
 public:
+
     // O(h)
     iterator find (const key_type &key) {
         return iterator(_FIND(root_, key));
@@ -622,6 +604,8 @@ public:
     bool contains (const key_type &key) const {
         return (_FIND(root_, key) != nullptr);
     }
+
+
 
 protected:
 
@@ -666,6 +650,7 @@ protected:
     Nodeptr _FIND_UPPER_BOUND (Nodeptr node, const key_type &key) const {
         return _FIND_LOWER_BOUND(node, key);  
     }
+
 public:
     
     iterator lower_bound (const key_type &key) {
@@ -691,32 +676,22 @@ public:
         return _FIND_UPPER_BOUND(node, key);
     }
 
+    void print(Nodeptr node) {
+
+        if (node == root_) {
+            return;
+        }
+
+        print(node->getLeft());
+        std::cout << node->getData() << " ";
+        print(node->getRight());
+    }
 
 
 protected:
-    Nodeptr *root_;
+    Nodeptr  root_;
     size_t   size_;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -730,6 +705,45 @@ int main() {
     
     
     // std::map<int, int>;
+
+    BinarySearchTree<int,int> tree;
+    tree.insert( std::make_pair<int,int>(1,1) );
+    tree.insert( std::make_pair<int,int>(1,1) );
+    tree.insert( std::make_pair<int,int>(2,2) );
+    tree.insert( std::make_pair<int,int>(3,3) );
+    tree.insert( std::make_pair<int,int>(3,3) );
+    tree.insert( std::make_pair<int,int>(4,4) );  
+    tree.insert( std::make_pair<int,int>(5,5) );  
+    tree.insert( std::make_pair<int,int>(6,6) );  
+    tree.insert( std::make_pair<int,int>(7,7) );  
+    tree.insert( std::make_pair<int,int>(8,8) );  
+    tree.insert( std::make_pair<int,int>(9,9) );  
+    tree.insert( std::make_pair<int,int>(10,10) );  
+    tree.insert( std::make_pair<int,int>(11,11) );  
+
+    tree.print(tree.getRoot());          
+
+
      
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
