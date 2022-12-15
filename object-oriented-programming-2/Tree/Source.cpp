@@ -1,198 +1,322 @@
-﻿#include <iostream>   // to get std::cout
+#include <iostream>   // to get std::cout
 #include <cassert>    // to get assert() and static assert()
 #include <iterator>   // to get iterators' tags
 #include <cstddef>    // to get std::ptrdiff_t
-#include <limits.h>
-// #include <memory>     // to get 
+#include <limits.h> 
+#include <memory>   
 #include <utility>    // to get std::pair<,>
 #include <map>        // to get std::map<,>
 //#define NDEBUG
 
 
 // TODO: move semantics
-// TODO: recode iterators with right inheretance
 
-namespace MY_BASE {
+namespace  IMPL {
 
-    template <class Ty>
-    void swap(Ty &a, Ty &b) {     
-    // it's just a copy of std::swap() implementation
-        if (*a == *b) {
-            return;
+    namespace MY_BASE {
+
+        template <class Ty> void swap(Ty &a, Ty &b) {     
+        // it's just a copy of std::swap() implementation
+            if (&a == &b) {
+                return;
+            }
+
+            Ty tmp = std::move(a);
+            a = std::move(b);
+            b = std::move(tmp);
         }
 
-        Ty tmp = std::move(a);
-        a = std::move(b);
-        b = std::move(tmp);
     }
 
-}
+
+// ****************************************************************************
+// ************************* ContainerNodeInterface ***************************
+// ****************************************************************************
+
+    template <
+        class Dty_,
+        class Alloc_ = std::allocator<Dty_>
+    > 
+    class ContainerNodeInterface {
+    public:
+
+        // tags:
+        using value_type      = Dty_;          
+        using pointer         = Dty_*;
+        using const_pointer   = const Dty_*;  
+        using reference       = Dty_&; 
+        using const_reference = const Dty_&; 
+        using allocator_type  = Alloc_;
 
 
 
+        virtual ContainerNodeInterface *operator= (const ContainerNodeInterface*);
+        virtual ~ContainerNodeInterface();
 
-// class ContainerNodeInterface {};
+    };
 
 
 // ****************************************************************************
 // ********************************* TreeNode *********************************
 // ****************************************************************************
+// template <typename Kty_, typename Ity_> class TreeNode : public ContainerNodeInterface {
+    template <
+        class Kty_,
+        class Ity_
+    > 
+    // class TreeNode : public ContainerNodeInterface<std::pair<const Kty_, Ity_>> {
+    class TreeNode {
+    public:
 
-// template <typename Kty_, typename Dty_> class TreeNode : public ContainerNodeInterface {
-template <typename Kty_, typename Dty_>
-class TreeNode {
-public:
-
-    // tags:
-    using usI             = unsigned short int;                    // just to get code more readable
-    using value_type      = std::pair<const Kty_, Dty_>;           // the type the TreeNode iterates over 
-    using pointer         = value_type*;  
-    using reference       = value_type&; 
-    using const_reference = const value_type&; 
-
-
-
-// https://stackoverflow.com/questions/74764195/why-does-the-compiler-declare-a-class-method-deleted
-    TreeNode(
-        const_reference             pairValue,
-        usI                         height  = 0,
-        TreeNode<const Kty_, Dty_> *parent  = nullptr,
-        TreeNode<const Kty_, Dty_> *left    = nullptr,
-        TreeNode<const Kty_, Dty_> *right   = nullptr
-    ) :
-        left_(left),
-        parent_(parent),
-        right_(right),
-        pairValue_(pairValue),
-        height_(height)
-    {}
-
-    TreeNode (const TreeNode *other) {
-        assert(other != nullptr);
-
-        left_       = other->left_;
-        parent_     = other->parent_;
-        right_      = other->right_;
-        pairValue_  = other->pairValue_;
-        height_     = other->height_;
-    }
-
-    TreeNode *operator = (const TreeNode *other) noexcept {
-        // assert(other != nullptr);  // TODO: what is other == nullptr
-
-        left_       = other->left_;
-        parent_     = other->parent_;
-        right_      = other->right_;
-        pairValue_  = other->pairValue_;
-        height_     = other->height_;
-
-        return this;
-    }
-
-    ~TreeNode() = default;
+        // tags:
+        using key_type        = Kty_;
+        using value_type      = std::pair<const Kty_, Ity_>;           // the type the TreeNode iterates over 
+        using pointer         = std::pair<const Kty_, Ity_>*;
+        using const_pointer   = const std::pair<const Kty_, Ity_>*;  
+        using reference       = std::pair<const Kty_, Ity_>&; 
+        using const_reference = const std::pair<const Kty_, Ity_>&; 
 
 
 
-    TreeNode *getLeft() const noexcept { return left_; }
-    TreeNode *getParent() const noexcept { return parent_; }
-    TreeNode *getRight() const noexcept { return right_; } 
-    const Dty_ &getData() const noexcept { return pairValue_.second; } 
-    const Kty_ &getKey() const noexcept { return pairValue_.first; }
-    usI getHeight() const noexcept { return height_; }
+    // https://stackoverflow.com/questions/74764195/why-does-the-compiler-declare-a-class-method-deleted
+        TreeNode(
+            const_reference             pairValue,
+            unsigned short int          height     = 0,
+            TreeNode<const Kty_, Ity_> *parent     = nullptr,
+            TreeNode<const Kty_, Ity_> *left       = nullptr,
+            TreeNode<const Kty_, Ity_> *right      = nullptr
+        ) noexcept :
+            _left(left),
+            _parent(parent),
+            _right(right),
+            _value(pairValue),
+            _height(height)
+        {}
 
+        TreeNode (const TreeNode *other) noexcept {
+            assert(other != nullptr);
 
-
-    void setLeft(TreeNode *left) noexcept { left_ = left; }
-    void setParent(TreeNode *parent) noexcept { parent_ = parent; }
-    void setRight(TreeNode *right) noexcept { right_ = right; }
-    void setData(const Dty_ &data) noexcept { pairValue_.second = data; }
-    void setValue(reference value_pair) { pairValue_ = value_pair; }
-    void setHeight(const usI &height) { height_ = height; }
-
-
-    // reference operator *() {} // TODO
-    // pointer operator ->() {}  // TODO
-
-public:
-    
-    reference operator * () const { 
-        assert(this != nullptr);
-
-        return pairValue_;
-    }
-
-    bool operator == (const TreeNode *node) const noexcept {
-        if ( this == nullptr && node == nullptr ) {
-            return true;
+            _left       = other->_left;
+            _parent     = other->_parent;
+            _right      = other->_right;
+            _value      = other->_value;
+            _height     = other->_height;
         }
-        else if ( this == nullptr || node == nullptr ) {
-            return false;
+
+        TreeNode *operator= (const TreeNode *other) noexcept {
+            // assert(other != nullptr);  // TODO: what is other == nullptr
+
+            _left       = other->_left;
+            _parent     = other->_parent;
+            _right      = other->_right;
+            _value      = other->_value;
+            _height     = other->_height;
+
+            return this;
+        }
+
+        virtual ~TreeNode() {
+            delete _left;   _left   = nullptr;
+            delete _right;  _right  = nullptr;
+            delete _parent; _parent = nullptr;
         }
 
 
-        return (pairValue_.first == node->pairValue_.first && pairValue_.second == node->pairValue_.second);
-    }
 
-    bool operator != (const TreeNode *node) const noexcept {
-        return !(this == node);
-    }
-
-    // bool operator > (const TreeNode *node) const noexcept {
-    //     assert(this != nullptr && node != nullptr);
-
-    //     return (pairValue_.first > node->pairValue_.first);
-    // }
-
-    // bool operator >= (const TreeNode *node) const noexcept {
-    //     return (pairValue_.first > node->pairValue_.first || pairValue_.first == node->pairValue_.first);
-    // }
-
-    // bool operator < (const TreeNode *node) const noexcept {
-    //     return !(this >= node);
-    // }
-
-    // bool operator <= (const TreeNode *node) const noexcept {
-    //     return !(this > node);
-    // }
+        TreeNode *getLeft() const noexcept { return _left; }
+        
+        TreeNode *getParent() const noexcept { return _parent; }
+        
+        TreeNode *getRight() const noexcept { return _right; } 
+        
+        const Ity_ &getData() const noexcept { return _value.second; } 
+        
+        const key_type &getKey() const noexcept { return _value.first; }
+        
+        unsigned short int getHeight() const noexcept { return _height; }
 
 
 
-protected:
-    TreeNode<const Kty_, Dty_> *left_;
-    TreeNode<const Kty_, Dty_> *parent_;
-    TreeNode<const Kty_, Dty_> *right_;
-    
-    value_type                  pairValue_;
-    usI                         height_;
-};
+        void setLeft (TreeNode *left) noexcept { _left = left; }
+        
+        void setParent (TreeNode *parent) noexcept { _parent = parent; }
+        
+        void setRight (TreeNode *right) noexcept { _right = right; }
+        
+        void setData (const Ity_ &data) noexcept { _value.second = data; }
+        // virtual void setData (const_reference value) noexcept {_value = value; }
+        
+        void setValue (reference value_pair) { _value = value_pair; }
+        
+        void setHeight (const unsigned short int &height) { _height = height; }
+
+
+        
+        explicit operator bool () const {
+           return _value;
+        }
+
+
+
+        virtual bool operator== (const TreeNode *node) const noexcept {
+            return (_value.first == node->_value.first && _value.second == node->_value.second);
+        }
+
+        virtual bool operator != (const TreeNode *node) const noexcept {
+            return !(this == node);
+        }
+
+        // bool operator > (const TreeNode *node) const noexcept {
+        //     assert(this != nullptr && node != nullptr);
+
+        //     return (_value.first > node->_value.first);
+        // }
+
+        // bool operator >= (const TreeNode *node) const noexcept {
+        //     return (_value.first > node->_value.first || _value.first == node->_value.first);
+        // }
+
+        // bool operator < (const TreeNode *node) const noexcept {
+        //     return !(this >= node);
+        // }
+
+        // bool operator <= (const TreeNode *node) const noexcept {
+        //     return !(this > node);
+        // }
+
+
+
+    protected:
+        TreeNode<const Kty_, Ity_> *_left;   // left subtree, or smallest element if head
+        TreeNode<const Kty_, Ity_> *_parent; // parent, or root of tree if head
+        TreeNode<const Kty_, Ity_> *_right;  // right subtree, or largest element if head
+        
+        value_type                  _value;
+        unsigned short int          _height;
+    };
+
+
+
+// ****************************************************************************
+// ******************************* iterator_base ******************************
+// ****************************************************************************
+
+    template <
+        class Ity_
+    >
+    class iterator_base {
+    public: 
+        
+        // tags:
+        using iterator_category  = std::bidirectional_iterator_tag; 
+        using deffirence_type    = std::ptrdiff_t;
+        using value_type         = Ity_;
+        using pointer            = Ity_*;
+        using const_pointer      = const Ity_*;
+        using reference          = Ity_&;
+        using const_reference    = const Ity_&;
+
+
+
+        explicit iterator_base (pointer item = nullptr) : _item(item) {}
+        
+        iterator_base (const iterator_base&) = default;
+        
+        iterator_base (iterator_base&&) noexcept = default;
+        
+        iterator_base& operator= (const iterator_base&) = default;
+        
+        iterator_base& operator= (iterator_base&&) noexcept = default;
+        
+        iterator_base& operator= (pointer item) {
+            _item = item;
+            return *this;
+        }
+
+        ~iterator_base() = default;
+
+
+
+        explicit operator bool() const {
+            return _item; // is nullptr
+        }
+
+
+
+        bool operator== (const iterator_base& itt_ref) const noexcept { return _item == itt_ref._item; }
+       
+        bool operator!= (const iterator_base& itt_ref) const noexcept {return !(*this == itt_ref); }
+
+        iterator_base& operator++ () noexcept {
+            ++_item; // why not item_++;
+            return *this;
+        }
+
+        iterator_base operator++(int) noexcept {
+            auto tmp = *this;
+            ++_item;
+
+            return tmp;
+        }
+
+        iterator_base& operator-- () noexcept {
+            --_item; // why not item_++;
+            return *this;
+        }
+
+        iterator_base operator--(int) noexcept {
+            auto tmp = *this;
+            --_item;
+
+            return tmp;
+        }
+
+
+
+        reference operator* () { return *_item; }
+
+        const_reference operator* () const { return *_item; }
+        
+        pointer operator-> () const { return _item; }
+
+
+
+    private:
+        pointer _item;
+
+    };
+
+}
 
 
 // ****************************************************************************
 // ***************************** BinarySearchTree *****************************
 // ****************************************************************************
 
-
+using namespace IMPL;
 // TODO: inherate from ContainerInterface
 // TODO: change std::pait to my own pait class
 // BinarySearchTree dosn't allow store values with the same keys
 // TODO: make a container that allow store values with the same keys based on BinarySearchTree
 template <
     class Kty_,
-    class Dty_, 
-    class Pr_ = std::less<Kty_>,
-    class Alloc_ = std::allocator<std::pair<const Kty_, Dty_>>
+    class Ity_, 
+    class Pr_    = std::less<Kty_>,
+    class Alloc_ = std::allocator<std::pair<const Kty_, Ity_>>
 >
 class BinarySearchTree {
 public:
     
     // tags:
-    using value_type      = typename std::pair<const Kty_, Dty_>; // a type that BST store
+    using value_type      = typename std::pair<const Kty_, Ity_>; // a type that BST store                     
+    using mapped_type     = Ity_;
     using key_type        = Kty_;
-    using mapped_type     = Dty_;
-    using Nodeptr         = TreeNode<const Kty_, Dty_>*;          // a pointer to node of BST
-    using const_Nodeptr   = const Nodeptr;                      
-    using reference       = value_type&;                        
-    using const_reference = const value_type&;
+    using Nodeptr         = TreeNode<const Kty_, Ity_>*;          // a pointer to node of BST
+    using reference       = std::pair<const Kty_, Ity_>&;                        
+    using const_reference = const std::pair<const Kty_, Ity_>&;
+
+    using iterator = IMPL::iterator_base<TreeNode<const Kty_, Ity_>>;
+    using const_iterator = IMPL::iterator_base<const TreeNode<const Kty_, Ity_>>;
 
 
 
@@ -216,146 +340,16 @@ public:
     
 
 
-class const_iterator {
-    private:
-
-        // tags:
-        using iterator_category  = std::input_iterator_tag;  // read-only iterator 
-        using difference_type    = std::ptrdiff_t;
-        using value_type         = TreeNode<const Kty_, Dty_>;
-        using pointer            = value_type*;              // it_pointer = Nodeptr = TreeNode<,>* 
-        using reference          = value_type&;
-        using const_pointer      = const value_type*;
-        using const_reference    = const value_type&;
-        
-
-    public:
-
-        const_iterator (pointer ptr) : itt_(ptr) {}     
-           
-
-        virtual const_reference operator *() const noexcept { return *itt_; }
-        
-        virtual const_pointer operator ->() const noexcept { return itt_; }
-
-    protected:
-
-        pointer itt_;
-
-    };
-
-    class forward_iterator {
-    public:
-
-        // tags:
-        using iterator_category  = std::forward_iterator_tag;  // read-only iterator 
-        using difference_type    = std::ptrdiff_t;
-        using value_type         = TreeNode<const Kty_, Dty_>;
-        using pointer            = value_type*;             // it_pointer = Nodeptr 
-        using reference          = value_type&;
 
 
-
-        forward_iterator (pointer ptr) : f_itt_(ptr) {}
-        
-        forward_iterator (const_iterator c_itt) {
-            f_itt_ = c_itt.itt_;
-        }
-
-
-        reference operator *() const noexcept { return *f_itt_; }
-        
-        pointer operator ->() const { return f_itt_; }
-
-
-        forward_iterator& operator ++() { f_itt_++; return *this; }
-        
-        forward_iterator operator ++(int) { // why we dont return a reference? 
-            forward_iterator tmp = *this;
-            ++(*this);
-
-            return tmp;
-        }    
-
-        friend bool operator == (const forward_iterator& a, const forward_iterator& b) {
-            return a.f_itt_ == b.f_itt_;
-        };
-
-
-        friend bool operator != (const forward_iterator& a, const forward_iterator& b) {
-            return a.f_itt_ != b.f_itt_; 
-        };  
-
-    private:
-
-        pointer f_itt_;
-
-    };
-
-    class iterator  {
-    public:
-
-        // tags:
-        using iterator_category  = std::bidirectional_iterator_tag;  // read-only iterator 
-        using difference_type    = std::ptrdiff_t;
-        using value_type         = TreeNode<const Kty_, Dty_>;
-        using pointer            = value_type*;                     // it_pointer = Nodeptr 
-        using reference          = value_type&;
-
-
-
-        iterator (pointer ptr) : i_itt_(ptr) {}
-
-        // iterator (const_iterator c_itt) {
-        //     i_itt_ = c_itt.itt_;
-        // }
-
-
-        reference operator *() const noexcept { return *i_itt_; }
-        
-        pointer operator ->() const { return i_itt_; }
-
-
-        iterator& operator ++() { i_itt_++; return *this; }
-        
-        iterator operator ++(int) { // why we dont return a reference? 
-            auto tmp = *this;
-            ++(*this);
-
-            return tmp;
-        }
-
-        iterator& operator --() { i_itt_--; return *this; }
-        
-        iterator operator --(int) { // why we dont return a reference? 
-            iterator tmp = *this;
-            --(*this);
-
-            return tmp;
-        }     
-
-        friend bool operator == (const iterator& a, const iterator& b) {
-            return a.i_itt_ == b.i_itt_;
-        };
-
-
-        friend bool operator != (const iterator& a, const iterator& b) {
-            return a.i_itt_ != b.i_itt_; 
-        };  
-
-    private:
-
-        pointer i_itt_; 
-
-
-    };
+    
     // class reverse_iterator : public forward_iterator {
     // public:
 
     //     // tags:
     //     using iterator_category  = std::bidirectional_iterator_tag;  // read-only iterator 
     //     using difference_type    = std::ptrdiff_t;
-    //     using value_type         = TreeNode<const Kty_, Dty_>;
+    //     using value_type         = TreeNode<const Kty_, Ity_>;
     //     using pointer            = value_type*;                     // it_pointer = Nodeptr 
     //     using reference          = value_type&;
 
@@ -390,9 +384,9 @@ class const_iterator {
     // };
     
 
-    const Dty_ &at (const Kty_ &key) const {}
+    const Ity_ &at (const Kty_ &key) const {}
 
-    Dty_ &operator [] (const Kty_ &key) const {}
+    Ity_ &operator [] (const Kty_ &key) const {}
 
 
 
@@ -452,7 +446,7 @@ class const_iterator {
         }
 
         if (key_exists != true) { // value with the same key doens't exists 
-            auto nodeptrInserting = new TreeNode<const Kty_, Dty_>(
+            auto nodeptrInserting = new TreeNode<const Kty_, Ity_>(
                                                                    value,
                                                                   (size_ > 0 ? node_parent->getHeight() + 1 : 1),
                                                                    node_parent
@@ -476,7 +470,7 @@ class const_iterator {
 
     }
 
-    void insert (std::initializer_list<Dty_> ilist) {}  // TODO
+    void insert (std::initializer_list<Ity_> ilist) {}  // TODO
     
     std::pair<iterator, bool> insert_or_assign (const key_type &key, const mapped_type &data) {} // TODO
 
@@ -518,6 +512,7 @@ class const_iterator {
 
     // O(h * std::ptrdiff_t(first, last))
     iterator erase (const_iterator first, const_iterator last) { // [first, last) // TODO 
+        
     }
 
     // O(h + cont.count(key)) ~ O(h)
@@ -533,22 +528,19 @@ class const_iterator {
         return 0;
     }
 
-    void swap (BinarySearchTree &other) {
-        MY_BASE::swap(this->size_, other->size_);
-        MY_BASE::swap(*(this->root_), *(other->root_));
+    void swap (BinarySearchTree &other) noexcept { // TODO: move constructor or somthing like that
+        MY_BASE::swap(this->size_, other.size_);
+        MY_BASE::swap(*(this->root_), *(other.root_));
     }
 
-
-
-    size_t count (const key_type &key) const {
-        return static_cast<size_t>(contains(key));
-    } // return 0 or 1
+    size_t count (const key_type &key) const noexcept {
+        return static_cast<size_t>(contains(key)); // return 0 or 1
+    } 
 
 protected:
 
-
     // O(h)
-    void _CLEAR_SUBTREE (Nodeptr subTreeRoot) {
+    void _CLEAR_SUBTREE (Nodeptr subTreeRoot) noexcept {
         if (subTreeRoot == nullptr) { // recursion stop point 
             return;
         }
@@ -565,23 +557,21 @@ protected:
 
     }
 
-
     // O(1)
-    void _DELETE_NODE_UNCHECK (Nodeptr node) {
+    void _DELETE_NODE_UNCHECK (Nodeptr node) noexcept {
         delete node;
         node = nullptr;
     } 
 
     // O(1); 
     void _SWAP_NODES_VALUES (Nodeptr a, Nodeptr b) {  
+        assert(a != nullptr && b != nullptr);
         // MY_BASE::swap(*a, *b);
-        
+
         auto tmp = *a;
         a->setValue(*b);
         b->setValue(tmp);
     }
-
-
 
     // O(h), h - height of the tree
     Nodeptr _FIND (const Nodeptr subTreeRoot, const Kty_ &key) const noexcept {
@@ -654,8 +644,6 @@ public:
         return (_FIND(root_, key) != nullptr);
     }
 
-
-
 protected:
 
     // O(h), h - height of the tree; not less; the key of found node mustn't equals kye 
@@ -665,29 +653,29 @@ protected:
 
         if ( node->right != nullptr ) 
         {
-            node = node->right_;
+            node = node->_right;
             
             while ( true )
             {
-                if ( node->left_ != nullptr ) {
-                    node = node->left_;
+                if ( node->_left != nullptr ) {
+                    node = node->_left;
                 }
                 else { break; } 
             }
 
             return node; 
         } 
-        else if (node == _MAX()) { return node->parent_; }
+        else if (node == _MAX()) { return node->_parent; }
         else {
 
-            auto parent_node = node->parent_;
+            auto parent_node = node->_parent;
 
-            if (node == parent_node->left_) // node is MIN in subTree
+            if (node == parent_node->_left) // node is MIN in subTree
             {
-                return parent_node->right_;
+                return parent_node->_right;
             }
             else {                          // node is MAX in subTree
-                return node->parent_->parent_; 
+                return node->_parent->_parent; 
             }
         }
         
@@ -705,36 +693,37 @@ public:
     iterator lower_bound (const key_type &key) {
         auto node = _FIND(root_, key);
         
-        return _FIND_LOWER_BOUND(node, key);
+        return iterator(_FIND_LOWER_BOUND(node, key));
     }
 
     const_iterator lower_bound (const key_type &key) const {
         auto node = _FIND(root_, key);
         
-        return _FIND_LOWER_BOUND(node, key);
+        return const_iterator(_FIND_LOWER_BOUND(node, key));
     }
 
     iterator upper_bound (const key_type &key) {
         auto node = _FIND(root_, key);
         
-        return _FIND_UPPER_BOUND(node, key);
+        return iterator(_FIND_UPPER_BOUND(node, key));
     }
     const_iterator upper_bound (const key_type &key) const { 
         auto node = _FIND(root_, key);
         
-        return _FIND_UPPER_BOUND(node, key);
+        return const_iterator(_FIND_UPPER_BOUND(node, key));
     }
 
-    void print(Nodeptr node) {
-
+    void print (Nodeptr node) const noexcept {
         if (node == nullptr) {
             return;
         }
 
         print(node->getLeft());
         std::cout << node->getData() << " ";
+        
         print(node->getRight());
     }
+
 
 
 protected:
@@ -771,14 +760,35 @@ int main() {
     bstree.insert( std::make_pair<int,int>(5,5) );  
 
     bstree.print(bstree.getRoot()); 
+    std::cout << '\n' << "bstree count: " << bstree.size() << '\n';
 
     // bstree.erase(1);
     // bstree.erase(6);
 
-    std::cout << '\n';
     // bstree.print(bstree.getRoot());
 
-     
+    // BinarySearchTree<int,int> tree;
+    // tree.insert( std::make_pair<int,int>(7,7) );  
+    // tree.insert( std::make_pair<int,int>(1,1) );
+    // tree.insert( std::make_pair<int,int>(9,9) );  
+    // tree.insert( std::make_pair<int,int>(3,3) );
+    // tree.insert( std::make_pair<int,int>(8,8) );  
+    // tree.insert( std::make_pair<int,int>(1,1) );
+    // tree.insert( std::make_pair<int,int>(6,6) );  
+    // tree.insert( std::make_pair<int,int>(2,2) );
+
+    // tree.print(tree.getRoot());
+    // std::cout << '\n' << "tree count" << tree.size() << '\n';
+
+    // tree.swap(bstree);
+
+    // bstree.print(bstree.getRoot()); 
+    // std::cout << '\n' << "bstree count" << bstree.size() << '\n';
+    
+    // tree.print(tree.getRoot());
+    // std::cout << '\n' << "tree count" << tree.size() << '\n';
+
+
     return 0;
 }
 
