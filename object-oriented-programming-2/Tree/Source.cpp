@@ -80,7 +80,7 @@ namespace  IMPL {
 
     // https://stackoverflow.com/questions/74764195/why-does-the-compiler-declare-a-class-method-deleted
         TreeNode(
-            const_reference             pairValue,
+            const_reference             value,
             unsigned short int          height     = 0,
             TreeNode<const Kty_, Ity_> *parent     = nullptr,
             TreeNode<const Kty_, Ity_> *left       = nullptr,
@@ -89,28 +89,39 @@ namespace  IMPL {
             _left(left),
             _parent(parent),
             _right(right),
-            _value(pairValue),
+            _value(value),
             _height(height)
         {}
 
-        TreeNode (const TreeNode *other) noexcept {
-            assert(other != nullptr);
+        TreeNode (const TreeNode *otherptr) noexcept {
+            assert(otherptr != nullptr);
 
-            _left       = other->_left;
-            _parent     = other->_parent;
-            _right      = other->_right;
-            _value      = other->_value;
-            _height     = other->_height;
+            _left       = otherptr->_left;
+            _parent     = otherptr->_parent;
+            _right      = otherptr->_right;
+            _value      = otherptr->_value;
+            _height     = otherptr->_height;
         }
 
-        TreeNode *operator= (const TreeNode *other) noexcept {
+        // TODO
+        TreeNode (TreeNode *otherptr) noexcept {
+            assert(otherptr != nullptr);
+
+            _left       = otherptr->_left;
+            _parent     = otherptr->_parent;
+            _right      = otherptr->_right;
+            _value      = otherptr->_value;
+            _height     = otherptr->_height;
+        }
+
+        TreeNode *operator= (const TreeNode *otherptr) noexcept {
             // assert(other != nullptr);  // TODO: what is other == nullptr
 
-            _left       = other->_left;
-            _parent     = other->_parent;
-            _right      = other->_right;
-            _value      = other->_value;
-            _height     = other->_height;
+            _left       = otherptr->_left;
+            _parent     = otherptr->_parent;
+            _right      = otherptr->_right;
+            _value      = otherptr->_value;
+            _height     = otherptr->_height;
 
             return this;
         }
@@ -123,17 +134,25 @@ namespace  IMPL {
 
 
 
-        TreeNode *getLeft() const noexcept { return _left; }
+        TreeNode *getLeft() noexcept { return _left; }
         
-        TreeNode *getParent() const noexcept { return _parent; }
+        TreeNode *getParent() noexcept { return _parent; }
         
-        TreeNode *getRight() const noexcept { return _right; } 
+        TreeNode *getRight() noexcept { return _right; } 
+
+        TreeNode *getChild() noexcept {
+            if (_left != nullptr) {
+                return _left;
+            }
+
+            return _right;
+        }
         
         const Ity_ &getData() const noexcept { return _value.second; } 
         
         const key_type &getKey() const noexcept { return _value.first; }
         
-        unsigned short int getHeight() const noexcept { return _height; }
+        unsigned short int getHeight() noexcept { return _height; }
 
 
 
@@ -143,7 +162,7 @@ namespace  IMPL {
         
         void setRight (TreeNode *right) noexcept { _right = right; }
         
-        void setData (const Ity_ &data) noexcept { _value.second = data; }
+        void setItem (const Ity_ &item) noexcept { _value.second = item; }
         // virtual void setData (const_reference value) noexcept {_value = value; }
         
         void setValue (reference value_pair) { _value = value_pair; }
@@ -315,78 +334,34 @@ public:
     using reference       = std::pair<const Kty_, Ity_>&;                        
     using const_reference = const std::pair<const Kty_, Ity_>&;
 
-    using iterator = IMPL::iterator_base<TreeNode<const Kty_, Ity_>>;
-    using const_iterator = IMPL::iterator_base<const TreeNode<const Kty_, Ity_>>;
+    using iterator        = IMPL::iterator_base<TreeNode<const Kty_, Ity_>>;
+    using const_iterator  = IMPL::iterator_base<const TreeNode<const Kty_, Ity_>>;
 
 
 
     BinarySearchTree() { root_ = nullptr; size_ = 0; }
 
-    BinarySearchTree(const BinarySearchTree &other) {
-        root_ = other.root_;
-        size_ = other.size_;
+    BinarySearchTree(const BinarySearchTree &otherref) {
+        root_ = otherref.root_;
+        size_ = otherref.size_;
     }
 
-    BinarySearchTree &operator = (const BinarySearchTree *other) {
+    BinarySearchTree &operator= (const BinarySearchTree &otherref) {
         this->_CLEAR_SUBTREE(root_);
 
-        root_ = other->root_;
-        size_ = other->size_;
+        root_ = otherref->root_;
+        size_ = otherref->size_;
 
         return *this;
     }
 
     ~BinarySearchTree() = default;
     
-
-
-
-
-    
-    // class reverse_iterator : public forward_iterator {
-    // public:
-
-    //     // tags:
-    //     using iterator_category  = std::bidirectional_iterator_tag;  // read-only iterator 
-    //     using difference_type    = std::ptrdiff_t;
-    //     using value_type         = TreeNode<const Kty_, Ity_>;
-    //     using pointer            = value_type*;                     // it_pointer = Nodeptr 
-    //     using reference          = value_type&;
-
-    //     using const_iterator::itt_;
-
-
-    //     reverse_iterator(pointer ptr) : const_iterator::itt_(ptr) {}
-
-
-    //     virtual reference operator *() const noexcept { return *itt_; }
-        
-    //     virtual pointer operator ->() const { return itt_; }
-
-
-    //     virtual reverse_iterator& operator --() { itt_++; return *this; }
-        
-    //     virtual reverse_iterator operator --(int) { // why we dont return a reference? 
-    //         reverse_iterator tmp = *this;
-    //         ++(*this);
-
-    //         return tmp;
-    //     }
-
-    //     virtual reverse_iterator& operator ++() { itt_--; return *this; }
-        
-    //     virtual reverse_iterator operator ++(int) { // why we dont return a reference? 
-    //         reverse_iterator tmp = *this;
-    //         --(*this);
-
-    //         return tmp;
-    //     }     
-    // };
     
 
     const Ity_ &at (const Kty_ &key) const {}
 
-    Ity_ &operator [] (const Kty_ &key) const {}
+    Ity_ &operator[] (const Kty_ &key) const {}
 
 
 
@@ -418,22 +393,29 @@ public:
 
 
 
-    // O(h)
+    // O(h) // TODO
     std::pair<iterator, bool> insert (const_reference value) {
         assert (size_ < SIZE_MAX );
 
-        auto node = root_;
-        auto node_parent = root_;
+        Nodeptr node = root_;
+        Nodeptr node_parent = root_;
+
+        // TODO
+        // Nodeptr node_p = root_;
+        // Nodeptr node_c = (key > node_p->getKey() : node_p->getRight() : node_p->getLeft());
+
         auto key = value.first;
-        bool key_exists = false;  // i need it to 
-        bool this_right_child = false;
+        
+        bool key_exists = false;  // is node with the same key already exsists in the tree
+        bool is_right_child = false; // is inserting value would be a right child of his parent  
+
 
         while ( node != nullptr ) {
             node_parent = node;
 
             if ( key > node->getKey() ) {
                 node = node->getRight();
-                this_right_child = true;
+                is_right_child = true;
             }
             else if ( key == node->getKey() ) {
                 key_exists = true;
@@ -441,18 +423,19 @@ public:
             }
             else {
                 node = node->getLeft();
-                this_right_child = false;
+                is_right_child = false;
             }
         }
 
         if (key_exists != true) { // value with the same key doens't exists 
-            auto nodeptrInserting = new TreeNode<const Kty_, Ity_>(
-                                                                   value,
-                                                                  (size_ > 0 ? node_parent->getHeight() + 1 : 1),
-                                                                   node_parent
-                                                                   );
-            if ( size_ > 0 ) {
-                (this_right_child) ? node_parent->setRight(nodeptrInserting) : node_parent->setLeft(nodeptrInserting);
+            Nodeptr nodeptrInserting = new TreeNode<const Kty_, Ity_>(
+                                                                      value,
+                                                                     (size_ > 0 ? node_parent->getHeight() + 1 : 1),
+                                                                      node_parent, nullptr, nullptr
+                                                                     );
+
+            if ( size_ > 0 ) { 
+                (is_right_child) ? node_parent->setRight(nodeptrInserting) : node_parent->setLeft(nodeptrInserting);
             }
             else {
                 root_ = nodeptrInserting;
@@ -463,56 +446,115 @@ public:
             return std::make_pair(iterator(nodeptrInserting), !(key_exists));
         }
 
-        return std::make_pair(iterator(node), !(key_exists)); // value with the same key already exists
+        return std::make_pair(iterator(node_parent), !(key_exists)); // value with the same key already exists
     }
-
+    // TODO
     iterator insert (const_iterator pos, const_reference value) { // TODO
 
     }
 
     void insert (std::initializer_list<Ity_> ilist) {}  // TODO
     
-    std::pair<iterator, bool> insert_or_assign (const key_type &key, const mapped_type &data) {} // TODO
+    std::pair<iterator, bool> insert_or_assign (const key_type &key, const mapped_type &item) {
+        assert (size_ < SIZE_MAX );
+
+        Nodeptr node = root_;
+        Nodeptr node_parent = root_;
+
+        // TODO
+        // Nodeptr node_p = root_;
+        // Nodeptr node_c = (key > node_p->getKey() : node_p->getRight() : node_p->getLeft());
+        
+        bool key_exists = false;  // is node with the same key already exsists in the tree
+        bool is_right_child = false; // is inserting value would be a right child of his parent  
+
+
+        while ( node != nullptr ) {
+            node_parent = node;
+
+            if ( key > node->getKey() ) {
+                node = node->getRight();
+                is_right_child = true;
+            }
+            else if ( key == node->getKey() ) {
+                key_exists = true;
+                break;
+            }
+            else {
+                node = node->getLeft();
+                is_right_child = false;
+            }
+        }
+
+        if (key_exists != true) { // value with the same key doens't exists 
+            Nodeptr nodeptrInserting = new TreeNode<const Kty_, Ity_>(
+                                                                      std::map<Kty_, Ity_>(key, item),
+                                                                     (size_ > 0 ? node_parent->getHeight() + 1 : 1),
+                                                                      node_parent, nullptr, nullptr
+                                                                     );
+
+            if ( size_ > 0 ) { 
+                (is_right_child) ? node_parent->setRight(nodeptrInserting) : node_parent->setLeft(nodeptrInserting);
+            }
+            else {
+                root_ = nodeptrInserting;
+            }
+            
+            size_++;
+            return std::make_pair(iterator(nodeptrInserting), !(key_exists));
+        }
+        else {
+            node->setItem(item);
+        }
+
+        return std::make_pair(iterator(node_parent), !(key_exists)); // value with the same key already exists
+    } // TODO
 
     iterator erase (const_iterator pos) {
-        
+        // return iterator(_ERASE_NODE( static_cast<Nodeptr>(*pos) )); // TODO
+        this->_ERASE_NODE( static_cast<Nodeptr>( &(*pos) ) );
     }
 
     // O(h) 
-
     Nodeptr _ERASE_NODE (Nodeptr nodeptrErasing) { // TODO: const_iterator // 
         // case 1: no child 
         // case 2: only child
         // case 3: two children
         
-        auto nodeptrReturn = _FIND_NEXT(nodeptrErasing);
+        Nodeptr nodeptrTmp = nodeptrErasing;
 
-        if ( nodeptrErasing->getRight() != nullptr && nodeptrErasing->getLeft() != nullptr ) { // case 3
-            nodeptrReturn = _MIN(nodeptrErasing->getRight());
-
-            _SWAP_NODES_VALUES(nodeptrReturn, nodeptrErasing);
-            _DELETE_NODE_UNCHECK(nodeptrErasing);
-        }
-        else if (nodeptrErasing->getRight() != nullptr || nodeptrErasing->getLeft() != nullptr) { // case 2
-            auto nodeptr_child = (nodeptrErasing->getRight() != nullptr ? nodeptrErasing->getRight() : nodeptrErasing->getLeft());
-
-            _SWAP_NODES_VALUES(nodeptrErasing, nodeptr_child);
+        if ( nodeptrErasing->getRight() == nullptr && nodeptrErasing->getLeft() == nullptr) { // case 1
+            nodeptrTmp = nodeptrErasing->getParent();
             _DELETE_NODE_UNCHECK(nodeptrErasing);
 
-            // nodeptrReturn = 
-        }
-        else { // case 1
-            _DELETE_NODE_UNCHECK(nodeptrErasing); 
+            return nodeptrTmp;
         } 
+        else if ( nodeptrErasing->getRight() != nullptr || nodeptrErasing->getLeft() != nullptr ) { // case 2
+            nodeptrTmp = nodeptrErasing->getChild();
+            _SWAP_NODES_VALUES(nodeptrTmp, nodeptrErasing);
+            _DELETE_NODE_UNCHECK(nodeptrTmp);
 
-        
+            return nodeptrErasing;
 
-        return nodeptrReturn;
+        }   
+        else { // case 3
+            nodeptrTmp = _MIN(nodeptrErasing->getRight());
+            _SWAP_NODES_VALUES(nodeptrTmp, nodeptrErasing);
+            _DELETE_NODE_UNCHECK(nodeptrTmp);
+
+            return nodeptrErasing;
+        }
     }
 
     // O(h * std::ptrdiff_t(first, last))
-    iterator erase (const_iterator first, const_iterator last) { // [first, last) // TODO 
-        
+    iterator erase (const_iterator first, const_iterator last) {  
+        while (first != last) {
+            // this->_ERASE_NODE( static_cast<Nodeptr>(*first) ); // TODO
+            this->_ERASE_NODE( static_cast<Nodeptr>( &(*first) ) ); 
+            first++;
+        }
+
+        return const_cast<iterator>(last);
     }
 
     // O(h + cont.count(key)) ~ O(h)
@@ -521,23 +563,44 @@ public:
         auto nodeptrErasing = _FIND(root_, key);
 
         if ( nodeptrErasing != nullptr ) {
-            this->erase(iterator(nodeptrErasing));
+            this->_ERASE_NODE(nodeptrErasing);
             return 1;
         }
 
         return 0;
     }
 
+    // O(1)
     void swap (BinarySearchTree &other) noexcept { // TODO: move constructor or somthing like that
         MY_BASE::swap(this->size_, other.size_);
         MY_BASE::swap(*(this->root_), *(other.root_));
     }
 
+    // O(1)
     size_t count (const key_type &key) const noexcept {
         return static_cast<size_t>(contains(key)); // return 0 or 1
     } 
 
 protected:
+
+    // O(1)
+    Nodeptr _INSERT(Nodeptr parentptr, const_reference value) {
+        
+        Nodeptr nodeptrInserting = new TreeNode<Kty_, Ity_>(
+                                                            value,
+                                                            (parentptr == nullptr ? 1 : parentptr->getHeight() + 1),
+                                                            parentptr, nullptr, nullptr);
+        if (parentptr != nullptr) {
+            value.first > parentptr->getKey() ? parentptr->setRight(nodeptrInserting) : parentptr->setLeft(nodeptrInserting);
+        }
+        else {
+            root_ = nodeptrInserting;
+        }
+
+        size_++;
+
+        return nodeptrInserting;
+    }
 
     // O(h)
     void _CLEAR_SUBTREE (Nodeptr subTreeRoot) noexcept {
@@ -557,8 +620,20 @@ protected:
 
     }
 
+    // O(h) 0
+    void _INSERT (Nodeptr parent, reference value) noexcept {
+        if (parent == nullptr) {
+            Nodeptr node = new TreeNode<const Kty_, Ity_>(value, parent);
+
+        }
+        // parent->getKey() > value.first ? parent->setRight(TreeNode<Kty_, Ity_> *right)
+
+    }
+
     // O(1)
-    void _DELETE_NODE_UNCHECK (Nodeptr node) noexcept {
+    void _DELETE_NODE_UNCHECK (Nodeptr node) noexcept { // TODO does assert have access to private fields c++
+        // assert(node->getRight() == nullptr && node->getLeft() != nullptr);
+
         delete node;
         node = nullptr;
     } 
