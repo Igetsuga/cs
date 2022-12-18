@@ -4,10 +4,11 @@
 #include <cstddef>    // to get std::ptrdiff_t
 #include <limits.h> 
 #include <memory>   
+#include <sal.h>
 #include <utility>    // to get std::pair<,>
 #include <map>        // to get std::map<,>
 //#define NDEBUG
-
+#define _STD       ::std::
 
 // TODO: move semantics
 
@@ -15,9 +16,13 @@ namespace  IMPL {
 
     namespace MY_BASE {
 
+        template <class Ty> Ty* addressof(Ty &arg) {
+            return &arg;
+        }        
+
         template <class Ty> void swap(Ty &a, Ty &b) {     
         // it's just a copy of std::swap() implementation
-            if (&a == &b) {
+            if (MY_BASE::addressof(a) == MY_BASE::addressof(b)) {
                 return;
             }
 
@@ -26,32 +31,43 @@ namespace  IMPL {
             b = std::move(tmp);
         }
 
+
+
     }
 
+// ****************************************************************************
+// ************************************ pair **********************************
+// ****************************************************************************
+
+    // i'm done
 
 // ****************************************************************************
 // ************************* ContainerNodeInterface ***************************
 // ****************************************************************************
 
     template <
-        class Dty_,
-        class Alloc_ = std::allocator<Dty_>
+        class Vty_,
+        class Alloc_ = std::allocator<Vty_>
     > 
     class ContainerNodeInterface {
     public:
 
         // tags:
-        using value_type      = Dty_;          
-        using pointer         = Dty_*;
-        using const_pointer   = const Dty_*;  
-        using reference       = Dty_&; 
-        using const_reference = const Dty_&; 
+        using value_type      = Vty_;          
+        using pointer         = Vty_*;
+        using const_pointer   = const Vty_*;  
+        using reference       = Vty_&; 
+        using const_reference = const Vty_&; 
         using allocator_type  = Alloc_;
 
 
+        ContainerNodeInterface() {};
+        ContainerNodeInterface (const ContainerNodeInterface *) {};
+        // ContainerNodeInterface *operator= (const ContainerNodeInterface*) {};
+        virtual ~ContainerNodeInterface() = 0;
 
-        virtual ContainerNodeInterface *operator= (const ContainerNodeInterface*);
-        virtual ~ContainerNodeInterface();
+        // virtual void setValue (reference) = 0;
+        // virtual const_reference getValue() = 0; 
 
     };
 
@@ -64,8 +80,8 @@ namespace  IMPL {
         class Kty_,
         class Ity_
     > 
-    // class TreeNode : public ContainerNodeInterface<std::pair<const Kty_, Ity_>> {
-    class TreeNode {
+    class TreeNode : public ContainerNodeInterface<std::pair<const Kty_, Ity_>> {
+    // class TreeNode {
     public:
 
         // tags:
@@ -93,38 +109,31 @@ namespace  IMPL {
             _height(height)
         {}
 
+        // TODO 
         TreeNode (const TreeNode *otherptr) noexcept {
             assert(otherptr != nullptr);
 
-            _left       = otherptr->_left;
-            _parent     = otherptr->_parent;
-            _right      = otherptr->_right;
-            _value      = otherptr->_value;
-            _height     = otherptr->_height;
+            _left     = otherptr->_left;
+            _parent   = otherptr->_parent;
+            _right    = otherptr->_right;
+            _value    = otherptr->_value;
+            _height   = otherptr->_height;
         }
 
-        // TODO
-        TreeNode (TreeNode *otherptr) noexcept {
-            assert(otherptr != nullptr);
+        // virtual TreeNode *operator= (const TreeNode *otherptr) noexcept { // do i need a virtual assigment operator 
+        //     // assert(other != nullptr);  // TODO: what is other == nullptr
 
-            _left       = otherptr->_left;
-            _parent     = otherptr->_parent;
-            _right      = otherptr->_right;
-            _value      = otherptr->_value;
-            _height     = otherptr->_height;
-        }
+        //     _left       = otherptr->_left;
+        //     _parent     = otherptr->_parent;
+        //     _right      = otherptr->_right;
+        //     _height     = otherptr->_height;
 
-        TreeNode *operator= (const TreeNode *otherptr) noexcept {
-            // assert(other != nullptr);  // TODO: what is other == nullptr
+        //     // const_cast<key_type>(_value.first);
+        //     _value.second = otherptr->_value.second;
+        //     // _value.first = otherptr->_value.first;
 
-            _left       = otherptr->_left;
-            _parent     = otherptr->_parent;
-            _right      = otherptr->_right;
-            _value      = otherptr->_value;
-            _height     = otherptr->_height;
-
-            return this;
-        }
+        //     return this;
+        // }
 
         virtual ~TreeNode() {
             delete _left;   _left   = nullptr;
@@ -134,13 +143,20 @@ namespace  IMPL {
 
 
 
+        virtual void setValue (reference value) noexcept {
+            _value = std::make_pair(value.first, value.second);
+        } 
+        virtual const_reference getValue() const noexcept { return _value; } 
+
+
+
         TreeNode *getLeft() noexcept { return _left; }
         
         TreeNode *getParent() noexcept { return _parent; }
         
         TreeNode *getRight() noexcept { return _right; } 
 
-        TreeNode *getChild() noexcept {
+        TreeNode *getChild() noexcept { // get any child
             if (_left != nullptr) {
                 return _left;
             }
@@ -148,9 +164,11 @@ namespace  IMPL {
             return _right;
         }
         
-        const Ity_ &getData() const noexcept { return _value.second; } 
+        
         
         const key_type &getKey() const noexcept { return _value.first; }
+
+        const Ity_ &getItem() const noexcept { return _value.second; }
         
         unsigned short int getHeight() noexcept { return _height; }
 
@@ -162,10 +180,7 @@ namespace  IMPL {
         
         void setRight (TreeNode *right) noexcept { _right = right; }
         
-        void setItem (const Ity_ &item) noexcept { _value.second = item; }
-        // virtual void setData (const_reference value) noexcept {_value = value; }
-        
-        void setValue (reference value_pair) { _value = value_pair; }
+        void setItem (const Ity_ &item) noexcept { _value.second = const_cast<Ity_>(item); }
         
         void setHeight (const unsigned short int &height) { _height = height; }
 
@@ -572,8 +587,10 @@ public:
 
     // O(1)
     void swap (BinarySearchTree &other) noexcept { // TODO: move constructor or somthing like that
-        MY_BASE::swap(this->size_, other.size_);
-        MY_BASE::swap(*(this->root_), *(other.root_));
+        if (this != IMPL::MY_BASE::addressof(other)) { 
+            MY_BASE::swap(this->size_, other.size_);
+            MY_BASE::swap(*(this->root_), *(other.root_));
+        }
     }
 
     // O(1)
@@ -620,7 +637,7 @@ protected:
 
     }
 
-    // O(h) 0
+    // O(h) 
     void _INSERT (Nodeptr parent, reference value) noexcept {
         if (parent == nullptr) {
             Nodeptr node = new TreeNode<const Kty_, Ity_>(value, parent);
@@ -794,7 +811,7 @@ public:
         }
 
         print(node->getLeft());
-        std::cout << node->getData() << " ";
+        std::cout << node->getItem() << " ";
         
         print(node->getRight());
     }
