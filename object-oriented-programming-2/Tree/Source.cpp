@@ -4,11 +4,13 @@
 #include <cstddef>    // to get std::ptrdiff_t
 #include <limits.h> 
 #include <memory>   
-#include <sal.h>
+// #include <sal.h>
 #include <utility>    // to get std::pair<,>
 #include <map>        // to get std::map<,>
-//#define NDEBUG
+// #define NDEBUG
+
 #define _STD       ::std::
+#define _MYBASE  MY_BASE::
 
 // TODO: move semantics
 
@@ -16,13 +18,14 @@ namespace  IMPL {
 
     namespace MY_BASE {
 
+
         template <class Ty> Ty* addressof(Ty &arg) {
             return &arg;
         }        
 
         template <class Ty> void swap(Ty &a, Ty &b) {     
         // it's just a copy of std::swap() implementation
-            if (MY_BASE::addressof(a) == MY_BASE::addressof(b)) {
+            if (_MYBASE addressof(a) == _MYBASE addressof(b)) {
                 return;
             }
 
@@ -30,9 +33,6 @@ namespace  IMPL {
             a = std::move(b);
             b = std::move(tmp);
         }
-
-
-
     }
 
 // ****************************************************************************
@@ -46,8 +46,7 @@ namespace  IMPL {
 // ****************************************************************************
 
     template <
-        class Vty_,
-        class Alloc_ = std::allocator<Vty_>
+        class Vty_
     > 
     class ContainerNodeInterface {
     public:
@@ -61,13 +60,10 @@ namespace  IMPL {
         using allocator_type  = Alloc_;
 
 
-        ContainerNodeInterface() {};
-        ContainerNodeInterface (const ContainerNodeInterface *) {};
-        // ContainerNodeInterface *operator= (const ContainerNodeInterface*) {};
+
+        ContainerNodeInterface();
         virtual ~ContainerNodeInterface() = 0;
 
-        // virtual void setValue (reference) = 0;
-        // virtual const_reference getValue() = 0; 
 
     };
 
@@ -78,7 +74,8 @@ namespace  IMPL {
 // template <typename Kty_, typename Ity_> class TreeNode : public ContainerNodeInterface {
     template <
         class Kty_,
-        class Ity_
+        class Ity_,
+        class Pr_  = std::less<Kty_>
     > 
     class TreeNode : public ContainerNodeInterface<std::pair<const Kty_, Ity_>> {
     // class TreeNode {
@@ -144,9 +141,21 @@ namespace  IMPL {
 
 
         virtual void setValue (reference value) noexcept {
-            _value = std::make_pair(value.first, value.second);
+            // _value = std::make_pair(value.first, value.second);
+            // auto newThis = new TreeNode<Kty_, Ity_>(
+            //                                              value,
+            //                                              this->_height,
+            //                                              this->_parent,
+            //                                              this->_left,
+            //                                              this->_right
+            //                                              ); 
+            // delete this; this = &newThis;
+
         } 
-        virtual const_reference getValue() const noexcept { return _value; } 
+
+        // virtual const_reference getValue() const noexcept { return _value; }
+        virtual const std::pair<const Kty_, Ity_> &getValue() const noexcept { return _value; } 
+        // virtual const_reference getValue() = 0;
 
 
 

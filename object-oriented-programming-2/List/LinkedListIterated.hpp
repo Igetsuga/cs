@@ -365,7 +365,7 @@ typename LinkedListIterated<Type>::const_iterator LinkedListIterated<Type>::eras
     }
 
 
-    return const_pos;
+    return this->end();
 }
 
 

@@ -1,29 +1,27 @@
 #include <iostream>
+#include <utility>
+#include <math.h>
+#include <tuple>
+#include <set>
 
+int main() {	
 
-void print (int* value) {
-	std::cout << value << " ";
-}
+	int a = 0; std::cin >> a;
+	int b = 0; std::cin >> b;
+	int c = 0; std::cin >> c;
 
+	int x = 0; std::cin >> x;
+	int y = 0; std::cin >> y;
+	int z = 0; std::cin >> z;
 
+	int sum = (a * x) + (y * b) + (z * c);
+	
+	std::tuple<int, int, int> tuple;
+	std::set<std::tuple<int,int,int>> set_tuple;	
 
+	
 
-int main() {
-
-	int x = 25;
-	int &ref = x;
-	int *ptr = &x;
-	const int *cptr = &x;
-
-	std::cout << &ref << " " << ptr << '\n';
-
-	print(ptr);
-	print(&ref);
-
-	std::cout << '\n' << typeid(&ref).name() << " " << typeid(ptr).name() << '\n';	
-	std::cout << '\n' << typeid(&ref).name() << " " << typeid(cptr).name() << '\n';	
-	std::cout << '\n' << typeid(const_cast<int*>(cptr)).name();
-
+	// std::cout << 
 
 
 }

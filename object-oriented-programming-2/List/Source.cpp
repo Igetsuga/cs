@@ -226,10 +226,10 @@ int main()
     QueueIterated<int>::Iterator q_it = queue.begin() + 2;
     std::cout << queue; std::cout << *q_it;
 
-    queue.erase(); queue.erase(); queue.erase();
+    auto RETURN_ = queue.erase(); queue.erase(); queue.erase();
     std::cout << queue;
 
-
+    std::cout << *(RETURN_.getNode());
 
     StackIterated<int> stack;
     for ( int i = 0; i < 10; i++ ) {
