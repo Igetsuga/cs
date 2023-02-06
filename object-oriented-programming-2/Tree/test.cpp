@@ -19,6 +19,7 @@ int main() {
 	std::tuple<int, int, int> tuple;
 	std::set<std::tuple<int,int,int>> set_tuple;	
 
+	int aa {2.4};
 	
 
 	// std::cout << 
